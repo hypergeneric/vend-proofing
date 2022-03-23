@@ -1,0 +1,434 @@
+<?xml version="1.0"?>
+<data default="true">
+	<general>
+		<password_required>Password Required</password_required>
+		<password_incorrect>Password Incorrect!</password_incorrect>
+		<set_expired_error>The Requested Proofing Gallery has Expired!</set_expired_error>
+		<session_dialog_directions markdown="true" toolbar="true" lines="4" tags="IMAGE_COUNT,EXPIRY"><![CDATA[Please enter your email address to begin your proofing session. Your selections will be saved to our server, and will be accessible on any computer as long as you use the same email address to login.]]></session_dialog_directions>
+		<session_enter_email_address>Please enter your email address</session_enter_email_address>
+		<session_start_resume>Start/Resume Session</session_start_resume>
+		<session_invalid_email_address>Invalid Email address</session_invalid_email_address>
+		<return_to_gateway>Return To Login</return_to_gateway>
+		<dialog_submit>Submit!</dialog_submit>
+		<dialog_confim>O.K.</dialog_confim>
+		<dialog_approve>Continue</dialog_approve>
+		<dialog_cancel>Cancel</dialog_cancel>
+		<dialog_no_remind>Don't Remind Me</dialog_no_remind>
+		<dialog_close_window>CLOSE WINDOW</dialog_close_window>
+		<contact_us>Contact Us</contact_us>
+		<browser_error_browser_title>Bummer! Your Device or Browser Isn't Compatible!</browser_error_browser_title>
+		<browser_error_browser_description markdown="true" toolbar="true" lines="4"><![CDATA[This application leverages all the latest browser technologies to ensure that it works seamlessly on any modern HTML5-capable modern browser.  We currently support Firefox (version 4 or higher), Chrome (version 18 or higher), Safari/Webkit (version 534 or higher), and IE10 on any device/browser/computer that has a minimum screen size of 1024x768.  Mobile phones are not supported due to size restrictions and usability.]]></browser_error_browser_description>
+		<page_not_found_title>404 Not Found</page_not_found_title>
+		<page_not_found_description markdown="true" toolbar="true" lines="12"><![CDATA[Not Found
+=========
+
+The requested URL was not found on this server.
+
+Additionally, a 404 Not Found error was encountered while trying to use an ErrorDocument to handle the request.
+]]></page_not_found_description>
+	</general>
+	<splash>
+		<login_field_prompt>Enter Proofing Gallery ID</login_field_prompt>
+		<login_failure lines="3">The Requested Proofing Gallery is Invalid or Unavailable</login_failure>
+		<login_submit>Start Proofing!</login_submit>
+		<expiration_never>Never</expiration_never>
+		<set_images>Images:</set_images>
+		<set_expired_on>Expired:</set_expired_on>
+		<set_expires_on>Expires:</set_expires_on>
+		<view_gallery>View Gallery</view_gallery>
+		<view_gallery_login>Login and View Gallery</view_gallery_login>
+	</splash>
+	<contact>
+		<contact_form_title_success>Success!</contact_form_title_success>
+		<contact_form_title_fail>Whoops!</contact_form_title_fail>
+		<contact_form_submit>submit</contact_form_submit>
+		<contact_form_send_success>Message Sent!</contact_form_send_success>
+		<contact_form_send_failure>Message Failed to Send!</contact_form_send_failure>
+		<contact_form_ml_optin>Mailing List Opt-in</contact_form_ml_optin>
+		<contact_form_ml_checkbox>Add me to your mailing list</contact_form_ml_checkbox>
+		<email_address_invalid>Email Address Invalid!</email_address_invalid>
+		<highlighted_fields_required>Highlighted Fields Required!</highlighted_fields_required>
+		<form_idle_message>awaiting activity ...</form_idle_message>
+		<sending_data_to_server>sending data to server ...</sending_data_to_server>
+		<form_email_subject
+			tags="SERVER_NAME,SITE_URL,SENDER_EMAIL,SENDER_NAME,OWNER_NAME,OWNER_EMAIL"
+			>[{SITE_URL}] - A New Message From ({SENDER_NAME})</form_email_subject>
+		<form_email_message_body
+			tags="SERVER_NAME,SITE_URL,SENDER_EMAIL,SENDER_NAME,FORMATTED_FORM_BLOCK,DEBUG_DATA,OWNER_NAME,OWNER_EMAIL,SET_URL,SET_ID"
+			markdown="true"
+			toolbar="true"
+			lines="12"><![CDATA[{FORMATTED_FORM_BLOCK}]]></form_email_message_body>
+		<contact_form_autoresponder_subject 
+			tags="SERVER_NAME,SITE_URL,SENDER_EMAIL,SENDER_NAME,OWNER_NAME,OWNER_EMAIL">Thank You For Contacting Us!</contact_form_autoresponder_subject>
+		<contact_form_autoresponder_message_body 
+			tags="SERVER_NAME,SITE_URL,SENDER_EMAIL,SENDER_NAME,DEBUG_DATA,OWNER_NAME,OWNER_EMAIL,SET_URL,SET_ID" 
+			markdown="true" 
+			toolbar="true" 
+			lines="12"><![CDATA[Hello There!
+------------
+
+Hello {SENDER_NAME},
+
+Thank you for contacting us.  We'll respond to your message promptly.]]></contact_form_autoresponder_message_body>
+		<order_client_reciept_subject tags="OWNER_NAME,OWNER_EMAIL,ORDER_ID">Receipt For Your Order</order_client_reciept_subject>
+		<order_client_reciept_message_body tags="OWNER_NAME,OWNER_EMAIL,ORDER_ID,INVOICE_URL,SERVER_NAME,DEBUG_DATA" markdown="true" toolbar="true" lines="12"><![CDATA[
+Receipt For Your Order
+----------------------
+
+Order {ORDER_ID} has been created, and now available for you to review.  If you used paypal to pay for your order, you will be receiving a notification of payment shortly.  If you intend to pay offline, you will need to contact your photographer to arrange payment.
+
+If you have purchased digital downloads, the download link is available in your invoice to process and then download.
+
+[Invoice]({INVOICE_URL})
+
+**Contact Name** - {OWNER_NAME}
+**Contact Email** - {OWNER_EMAIL}
+]]></order_client_reciept_message_body>
+		<order_merchant_reciept_subject tags="PURCHASER_NAME,PURCHASER_EMAIL,ORDER_ID">[{ORDER_ID}] - A New Order Has Been Created</order_merchant_reciept_subject>
+		<order_merchant_reciept_message_body tags="PURCHASER_NAME,PURCHASER_EMAIL,ORDER_ID,INVOICE_URL,OUTPUT_URL,SERVER_NAME,DEBUG_DATA" markdown="true" toolbar="true" lines="12"><![CDATA[
+A New Order Has Been Created!
+-----------------------------
+
+Order {ORDER_ID} has been created, and now available for you to review.  If the purchaser is using paypal, you will receive a notification of payment shortly after.  If the purchaser intends to pay offline, you will need to contact them to arrange payment.
+
+[Invoice]({INVOICE_URL})
+
+[tear Sheet]({OUTPUT_URL})
+
+**Contact Name** - {PURCHASER_NAME}
+**Contact Email** - {PURCHASER_EMAIL}
+**Contact Phone** - {PURCHASER_PHONE}
+]]></order_merchant_reciept_message_body>
+		<output_notify_subject tags="OWNER_NAME,OWNER_EMAIL">Your Photos Are Ready To Proof!</output_notify_subject>
+		<output_notify_message_body tags="OWNER_NAME,OWNER_EMAIL,MESSAGE,SET_URL,SET_ID,PASSWORD,EXPIRATION,SERVER_NAME,DEBUG_DATA" markdown="true" toolbar="true" lines="12"><![CDATA[
+Your Photos Are Ready To Proof!
+-------------------------------
+
+A new proofing set of photos has been created for you, and is now ready for you to review, select and purchase!
+
+[Photocart URL]({SET_URL})
+
+**Expires** - {EXPIRATION}
+
+**Password (if any)** - {PASSWORD}
+
+**Contact Name** - {OWNER_NAME}
+
+**Contact Email** - {OWNER_EMAIL}
+
+{MESSAGE}
+]]></output_notify_message_body>
+		<output_reminder_subject tags="OWNER_NAME,OWNER_EMAIL">Your Photo Cart is Expiring Soon!</output_reminder_subject>
+		<output_reminder_message_body tags="OWNER_NAME,OWNER_EMAIL,MESSAGE,SET_URL,SET_ID,PASSWORD,EXPIRATION,SERVER_NAME,DEBUG_DATA" markdown="true" toolbar="true" lines="12"><![CDATA[
+Your Photo Cart is Expiring Soon!
+---------------------------------
+
+Just wanted to drop you a quick note reminding you that your set of photos will be expiring soon.
+
+[Photocart URL]({SET_URL})
+
+**Expires** - {EXPIRATION}
+
+**Password (if any)** - {PASSWORD}
+
+**Contact Name** - {OWNER_NAME}
+
+**Contact Email** - {OWNER_EMAIL}
+
+{MESSAGE}
+]]></output_reminder_message_body>
+		<output_general_subject tags="OWNER_NAME,OWNER_EMAIL">A Messgage About Your Photos</output_general_subject>
+		<output_general_message_body tags="OWNER_NAME,OWNER_EMAIL,MESSAGE,SET_URL,SET_ID,PASSWORD,EXPIRATION,SERVER_NAME,DEBUG_DATA" markdown="true" toolbar="true" lines="12"><![CDATA[
+A Messgage About Your Photos
+-----------------------------------
+
+{MESSAGE}
+
+[Photocart URL]({SET_URL})
+
+**Expires** - {EXPIRATION}
+
+**Password (if any)** - {PASSWORD}
+
+**Contact Name** - {OWNER_NAME}
+
+**Contact Email** - {OWNER_EMAIL}
+]]></output_general_message_body>
+		<dropbox_reset_approved_subject>Download Limit Reset Request Approved</dropbox_reset_approved_subject>
+		<dropbox_reset_approved_body tags="ORDER_ID,OWNER_NAME,OWNER_EMAIL,INVOICE_URL" markdown="true" toolbar="true" lines="12"><![CDATA[
+Download Limit Reset Request Approved
+-------------------------------------
+
+Your request for your download limit to be reset for order {ORDER_ID} has been approved.
+
+[View Invoice]({INVOICE_URL})
+
+**Contact Name** - {OWNER_NAME}
+
+**Contact Email** - {OWNER_EMAIL}
+]]></dropbox_reset_approved_body>
+		<dropbox_reset_request_subject>Download Limit Reset Request</dropbox_reset_request_subject>
+		<dropbox_reset_request_body tags="ORDER_ID,PURCHASER_NAME,PURCHASER_EMAIL,PURCHASER_PHONE,INVOICE_URL,RESET_URL" markdown="true" toolbar="true" lines="12"><![CDATA[
+Download Limit Reset Request
+----------------------------
+		
+A client has requested that their download limit for order {ORDER_ID} be reset.
+
+[Click to Approve]({RESET_URL})
+
+[View Invoice]({INVOICE_URL})
+
+**Contact Name** - {PURCHASER_NAME}
+
+**Contact Email** - {PURCHASER_EMAIL}
+
+**Contact Phone** - {PURCHASER_PHONE}
+]]></dropbox_reset_request_body>
+		<dropbox_reset_notify_subject>Dropbox API Issues</dropbox_reset_notify_subject>
+		<dropbox_reset_notify_body tags="ORDER_ID,PURCHASER_NAME,PURCHASER_EMAIL,PURCHASER_PHONE,INVOICE_URL" markdown="true" toolbar="true" lines="12"><![CDATA[
+Dropbox API Issues
+------------------
+
+A client is trying to download files for order {ORDER_ID} but there seems to be an issue.  You may need to re-authorize your Dropbox app, or you might have been rate-limited.
+
+[Invoice URL]({INVOICE_URL})
+
+* **Contact Name** - {PURCHASER_NAME}
+
+* **Contact Email** - {PURCHASER_EMAIL}
+
+* **Contact Phone** - {PURCHASER_PHONE}
+]]></dropbox_reset_notify_body>
+	</contact>
+	<ordering>
+		<alacarte_label>A La Carte</alacarte_label>
+		<favorites_label>Favorites</favorites_label>
+		<favorites_tooltip_add>Add to Favorites</favorites_tooltip_add>
+		<favorites_tooltip_remove>Remove from Favorites</favorites_tooltip_remove>
+		<sidebar_add_to_cart>ADD TO CART</sidebar_add_to_cart>
+		<sidebar_none_selected>None Selected</sidebar_none_selected>
+		<sidebar_choose_a_size>Choose a Format</sidebar_choose_a_size>
+		<sidebar_choose_quantity>Choose a Quantity</sidebar_choose_quantity>
+		<sidebar_choose_tone>Choose a Color/Tone</sidebar_choose_tone>
+		<sidebar_tone_black_and_white>Black &amp; White</sidebar_tone_black_and_white>
+		<sidebar_tone_sepia>Sepia</sidebar_tone_sepia>
+		<sidebar_choose_paper>Choose a Paper</sidebar_choose_paper>
+		<sidebar_choose_modifier>More Options</sidebar_choose_modifier>
+		<sidebar_enable_crop>Enable Crop Preview</sidebar_enable_crop>
+		<sidebar_crop_portrait>Portrait</sidebar_crop_portrait>
+		<sidebar_crop_landscape>Landscape</sidebar_crop_landscape>
+		<sidebar_comments>Comments</sidebar_comments>
+		<sidebar_package_remaining>remaining</sidebar_package_remaining>
+		<sidebar_browse_packages>Shop for a Package/Product</sidebar_browse_packages>
+		<sidebar_currently_adding_to>Currently Adding To:</sidebar_currently_adding_to>
+		<image_preview_return>RETURN TO BROWSING</image_preview_return>
+		<image_preview_return_to_wall>CLOSE AND RETURN TO WALL</image_preview_return_to_wall>
+		<image_preview_tooltip_previous>View Previous Item In Cart</image_preview_tooltip_previous>
+		<image_preview_tooltip_next>View Next Item In Cart</image_preview_tooltip_next>
+		<image_browser_tooltip_left>Previous Image (Left Key)</image_browser_tooltip_left>
+		<image_browser_tooltip_right>Next Image (Spacebar or Right Key)</image_browser_tooltip_right>
+		<image_browser_tooltip_fullscreen>Zoom In &amp; Pan</image_browser_tooltip_fullscreen>
+		<image_browser_tooltip_favorite>Toggle This Image In Favorites(Up or Down Key)</image_browser_tooltip_favorite>
+		<overview_change_quantity>Change the Quantity</overview_change_quantity>
+		<overview_package_maximum>maximum</overview_package_maximum>
+		<overview_toning>Chosen Color/Toning</overview_toning>
+		<overview_image_format>Image Format</overview_image_format>
+		<overview_orientation>Orientation</overview_orientation>
+		<overview_paper_format>Paper Format</overview_paper_format>
+		<overview_modifier>Format Modifier</overview_modifier>
+		<overview_comments>Your Comments</overview_comments>
+		<overview_save_changes>SAVE</overview_save_changes>
+		<overview_empty>CART EMPTY</overview_empty>
+		<overview_view_cart>VIEW CART</overview_view_cart>
+		<cart_checkout>CHECKOUT</cart_checkout>
+		<cart_clear_cart>CLEAR CART</cart_clear_cart>
+		<cart_delete_confirmation_title>Are you Sure?</cart_delete_confirmation_title>
+		<cart_delete_confirmation_description lines="3">Deleting items from your cart session is a permanent action.  Are you sure you want to delete?</cart_delete_confirmation_description>
+		<cart_alacarte_items>items</cart_alacarte_items>
+		<cart_package_delete>DELETE</cart_package_delete>
+		<cart_item_delete>DELETE</cart_item_delete>
+		<cart_alacarte_delete>CLEAR ITEMS</cart_alacarte_delete>
+		<cart_package_completion>Complete</cart_package_completion>
+		<package_add_dialog_enter_nickname>Assign A Nickname</package_add_dialog_enter_nickname>
+		<package_add_dialog_submit>Add To Cart</package_add_dialog_submit>
+		<package_tooltip_previous>View Previous Item</package_tooltip_previous>
+		<package_tooltip_next>View Next Item</package_tooltip_next>
+		<package_add_to_cart>ADD TO CART</package_add_to_cart>
+		<package_no_description_heading>Contains the Following:</package_no_description_heading>
+		<packages_available_packages>Available Packages</packages_available_packages>
+		<packages_available_products>Available Products</packages_available_products>
+		<packages_return_to_browsing>RETURN TO BROWSING</packages_return_to_browsing>
+		<navigation_images_title>Images</navigation_images_title>
+		<navigation_images_all>All Images</navigation_images_all>
+		<navigation_images_page>Page</navigation_images_page>
+		<navigation_favorites_title>Favorites</navigation_favorites_title>
+		<navigation_favorites_all>All Favorites</navigation_favorites_all>
+		<navigation_favorites_page>Favorites Page</navigation_favorites_page>
+		<navigation_cart_title>Cart Items</navigation_cart_title>
+		<navigation_cart_all>All Cart Items</navigation_cart_all>
+		<navigation_cart_page>Cart Items Page</navigation_cart_page>
+		<navigation_clear_favorites>Clear Favorites</navigation_clear_favorites>
+		<navigation_cart_empty>Cart Empty</navigation_cart_empty>
+		<navigation_no_favorites>No Favorites</navigation_no_favorites>
+		<navigation_view_cart>View Cart</navigation_view_cart>
+		<navigation_clear_cart>Clear Cart</navigation_clear_cart>
+		<navigation_checkout>Checkout</navigation_checkout>
+		<navigation_download_all_high>Download All High Resolution</navigation_download_all_high>
+		<navigation_download_all_low>Download All Low Resolution</navigation_download_all_low>
+		<imagewall_next>Next Page</imagewall_next>
+		<imagewall_back_to_top>Back To Top</imagewall_back_to_top>
+		<image_browser_options>CART OPTIONS</image_browser_options>
+		<image_browser_options_done>DONE</image_browser_options_done>
+		<sidebar_download>Download</sidebar_download>
+		<sidebar_return>RETURN</sidebar_return>
+		<packages_none_available>There Are No Packages Available</packages_none_available>
+		<packages_items_label>Items</packages_items_label>
+		<packages_price_label>Price</packages_price_label>
+		<packages_cancel>Cancel</packages_cancel>
+		<packages_close>Close</packages_close>
+		<overview_close>Close</overview_close>
+		<cart_download_all_confirmation_title>Are you Sure?</cart_download_all_confirmation_title>
+		<cart_download_all_confirmation_description tags="QUANTITY,QUALITY,PRICE" lines="3">You are about to download {QUANTITY} {QUALITY} images to your cart for {PRICE}.  Are you sure you want to continue?</cart_download_all_confirmation_description>
+		<downloads_label>Digital Downloads</downloads_label>
+		<cart_empty>There Are No Items In Your Cart</cart_empty>
+		<overview_image_quality>Image Quality</overview_image_quality>
+		<sidebar_comments_done>Done</sidebar_comments_done>
+		<sidebar_high_resolution>High Resolution</sidebar_high_resolution>
+		<sidebar_low_resolution>Web Resolution</sidebar_low_resolution>
+	</ordering>
+	<checkout>
+		<checkout_return_to_checkout>RETURN TO CHECKOUT</checkout_return_to_checkout>
+		<checkout_return_to_cart>RETURN TO CART</checkout_return_to_cart>
+		<checkout_terms_accept>I Accept The</checkout_terms_accept>
+		<checkout_terms_label>Terms And Conditions</checkout_terms_label>
+		<checkout_package_incomplete_title>Something Isn't Complete!</checkout_package_incomplete_title>
+		<checkout_package_incomplete_description lines="3">You have either a package or product in your cart that requires more images added to it.  Please review your selections, and be sure each product or package is completely filled out.  Thanks!</checkout_package_incomplete_description>
+		<checkout_minimum_title>Cart Minimum Not Fulfilled</checkout_minimum_title>
+		<checkout_minimum_count_description tags="COUNT_MINIMUM" lines="3">Before you can checkout, you need to fulfill minimum requirements.  The minimum number of items in your cart must be {COUNT_MINIMUM}.  Please return to browsing and add more items in your cart to continue.</checkout_minimum_count_description>
+		<checkout_minimum_subtotal_description tags="SUBTOTAL_MINIMUM" lines="3">Before you can checkout, you need to fulfill minimum requirements.  The minimum total value of your cart must be {SUBTOTAL_MINIMUM}.  Please return to browsing and add more items in your cart to continue.</checkout_minimum_subtotal_description>
+		<checkout_highlighted_fields_required_title>Highlighted Fields Required!</checkout_highlighted_fields_required_title>
+		<checkout_highlighted_fields_required_description lines="3">Please be sure to completely fill out all available and highlighted fields with valid information.  Thank you!</checkout_highlighted_fields_required_description>
+		<checkout_email_addresses_do_not_match_title>Whoops!</checkout_email_addresses_do_not_match_title>
+		<checkout_email_addresses_do_not_match_description lines="3">The email addresses you supplied don't match.  It's vitally important we get it right, as it will be the primary form of notification.</checkout_email_addresses_do_not_match_description>
+		<checkout_invalid_email_address_title>Whoops!</checkout_invalid_email_address_title>
+		<checkout_invalid_email_address_description lines="3">The email addresses you supplied is invalid. It's vitally important we get it right, as it will be the primary form of notification.</checkout_invalid_email_address_description>
+		<checkout_discount_code_error_title>Discount Code Error!</checkout_discount_code_error_title>
+		<checkout_discount_code_error_description lines="3">Since you've started the checkout process, the discount code you've supplied is no longer valid.  Please contact us as soon as possible to investigate this.</checkout_discount_code_error_description>
+		<checkout_paypal_order>Order</checkout_paypal_order>
+		<checkout_return_to_browsing>BACK TO BROWSING</checkout_return_to_browsing>
+		<checkout_purchase_now>PURCHASE NOW</checkout_purchase_now>
+		<checkout_choose_payment_method>Choose a payment method</checkout_choose_payment_method>
+		<checkout_payment_method_offline>Arrange Offline Payment</checkout_payment_method_offline>
+		<checkout_payment_method_paypal>Pay now via Paypal</checkout_payment_method_paypal>
+		<checkout_payment_method_merchant>Pay now with a Credit Card</checkout_payment_method_merchant>
+		<checkout_choose_shipping_method>Choose a shipping method</checkout_choose_shipping_method>
+		<checkout_shipping_method_local>Pick it up locally</checkout_shipping_method_local>
+		<checkout_shipping_method_ship>Specify Shipping Address</checkout_shipping_method_ship>
+		<checkout_shipping_method_ship_paypal>Paypal Shipping Address</checkout_shipping_method_ship_paypal>
+		<checkout_cc_number>Your Credit Card Number</checkout_cc_number>
+		<checkout_cc_cvv_number>CVV Number</checkout_cc_cvv_number>
+		<checkout_cc_expiry_month>Expiry Month</checkout_cc_expiry_month>
+		<checkout_cc_expiry_year>Expiry Year</checkout_cc_expiry_year>
+		<checkout_cc_billing_postal_code>Billing Postal Code</checkout_cc_billing_postal_code>
+		<checkout_info_name>Your Full Name</checkout_info_name>
+		<checkout_info_email_address>Your Email Address</checkout_info_email_address>
+		<checkout_info_email_check>Your Email Address Again</checkout_info_email_check>
+		<checkout_info_phone>Your Phone Number</checkout_info_phone>
+		<checkout_shipping_address>Full Shipping Address</checkout_shipping_address>
+		<checkout_shipping_address_line1>Address Line 1</checkout_shipping_address_line1>
+		<checkout_shipping_address_line2>Address Line 2</checkout_shipping_address_line2>
+		<checkout_shipping_address_city>City</checkout_shipping_address_city>
+		<checkout_shipping_country>Shipping Country</checkout_shipping_country>
+		<checkout_shipping_postal_code>Shipping Postal Code</checkout_shipping_postal_code>
+		<checkout_billing_country>Billing Country</checkout_billing_country>
+		<checkout_billing_postal_code>Billing Postal Code</checkout_billing_postal_code>
+		<checkout_discount_code>Discount Code</checkout_discount_code>
+		<checkout_discount_code_apply>Apply</checkout_discount_code_apply>
+		<checkout_cart_total>Cart Subtotal</checkout_cart_total>
+		<checkout_cart_discount>Discount Amount</checkout_cart_discount>
+		<checkout_cart_subtotal>Subtotal</checkout_cart_subtotal>
+		<checkout_cart_tax>Tax</checkout_cart_tax>
+		<checkout_cart_shipping>Shipping</checkout_cart_shipping>
+		<checkout_cart_handling_i18l>International Handling Fee</checkout_cart_handling_i18l>
+		<checkout_cart_handling>Handling Fee</checkout_cart_handling>
+		<checkout_cart_final_total>Purchase Price</checkout_cart_final_total>
+		<checkout_cart_no_calculate>(calculated at time of purchase)</checkout_cart_no_calculate>
+		<checkout_discount_does_not_exist>Discount Code Does Not Exist!</checkout_discount_does_not_exist>
+		<checkout_discount_expired>Discount Code Expired!</checkout_discount_expired>
+		<checkout_discount_maximum_uses_filled>Discount Code All Used Up!</checkout_discount_maximum_uses_filled>
+		<checkout_discount_cart_minimum_not_fulfilled>Cart Minimum not Fulfilled!</checkout_discount_cart_minimum_not_fulfilled>
+		<checkout_paypal_price_zero_title>Whoops!</checkout_paypal_price_zero_title>
+		<checkout_paypal_price_zero_description>Paypal purchases must be greater than zero.  Please either choose another form of payment, or contact the photographer directly for help processing this order.</checkout_paypal_price_zero_description>
+		<checkout_credit_card_error>Whoops!</checkout_credit_card_error>
+		<checkout_credit_card_card_expired lines="3">Looks like the card you are trying to use has expired.  Please try another card.</checkout_credit_card_card_expired>
+		<checkout_credit_card_cvv_invalid lines="3">The CVV number (Card Verification Value) you have supplied from the back of your card is either invalid or incorrect.</checkout_credit_card_cvv_invalid>
+		<checkout_credit_card_processor_declined lines="3">Your issuing bank has declined this transaction.  Please contact your bank, or credit company, or try another card.</checkout_credit_card_processor_declined>
+		<checkout_credit_card_invalid_expiration lines="3">The expiration date you have supplied is incorrect.  It should consist of a 2 digit month (MM) and a 4 digit year (YYYY).  Please check the values and try again.</checkout_credit_card_invalid_expiration>
+		<checkout_credit_card_invalid_card_type lines="3">We cannot verify the card information you have supplied.  It is coming back as not valid.  Please check the values you have submitted for veracity and try again.</checkout_credit_card_invalid_card_type>
+		<checkout_credit_card_zip_code_no_match lines="3">The postal code supplied does not match what your bank has on file. Please check the values and try again.</checkout_credit_card_zip_code_no_match>
+		<checkout_credit_card_gateway_decline lines="3">Our payment processor cannot accept this payment.  Please try a different card, or please check the values you have submitted for veracity and try again.</checkout_credit_card_gateway_decline>
+		<checkout_credit_card_filter_declined lines="3">Our payment processor cannot accept this payment.  Your payment method does not conform to our security standards.  Please try a different card, or please check the values you have submitted for veracity and try again.</checkout_credit_card_filter_declined>
+		<checkout_credit_card_temporarily_unavailable lines="3">Our payment processor is currently unresponsive.  Please try again later.</checkout_credit_card_temporarily_unavailable>
+		<checkout_credit_card_general_error lines="3">Our payment processor cannot accept this payment.  Please try a different card, or please check the values you have submitted for veracity and try again.</checkout_credit_card_general_error>
+		<checkout_offline_unavailable_with_downloads_title>Whoops!</checkout_offline_unavailable_with_downloads_title>
+		<checkout_offline_unavailable_with_downloads_description>When purchasing digital downloads, you must choose a real-time payment option due to it's live delivery.</checkout_offline_unavailable_with_downloads_description>
+		<checkout_cart_insecure_title>Security Warning</checkout_cart_insecure_title>
+		<checkout_cart_insecure_description lines="3">You are about to send your sensitive credit card information over an insecure connection that any hacker with a sniffer can listen in on.  Doing so is a security risk that exposes you to security vulnerabilities.  It's really not recommended ... you've been warned!</checkout_cart_insecure_description>
+	</checkout>
+	<invoice>
+		<invoice_please_login>Invoice View</invoice_please_login>
+		<invoice_dialog_orderid>Order ID</invoice_dialog_orderid>
+		<invoice_dialog_email_address>Purchaser Email Address</invoice_dialog_email_address>
+		<invoice_dialog_submit>Submit</invoice_dialog_submit>
+		<invoice_email_not_matching lines="3">The email address supplied does not match the one we have on file for this invoice.  Please check again and re-submit.</invoice_email_not_matching>
+		<invoice_order_inexistent lines="3">We have no record of this order on file.  Please check the Order ID again and re-submit.</invoice_order_inexistent>
+		<invoice_title>INVOICE</invoice_title>
+		<invoice_order_date_label>Order Date:</invoice_order_date_label>
+		<invoice_orderid>Order ID:</invoice_orderid>
+		<invoice_setid>Set ID:</invoice_setid>
+		<invoice_payment_method>Payment Method:</invoice_payment_method>
+		<invoice_payment_offline>Offline</invoice_payment_offline>
+		<invoice_payment_paypal>Paypal</invoice_payment_paypal>
+		<invoice_payment_merchant>Credit Card</invoice_payment_merchant>
+		<invoice_phone_prefix>Phone:</invoice_phone_prefix>
+		<invoice_email_prefix>Email:</invoice_email_prefix>
+		<invoice_web_prefix>Web:</invoice_web_prefix>
+		<invoice_item_label>Item</invoice_item_label>
+		<invoice_quantity_label>Quantity</invoice_quantity_label>
+		<invoice_unit_price_label>Unit Price</invoice_unit_price_label>
+		<invoice_unit_total_label>Unit Total</invoice_unit_total_label>
+		<invoice_purchaser_notes>Purchase Notes</invoice_purchaser_notes>
+		<invoice_download_label>Downloads</invoice_download_label>
+		<invoice_quality_label>Quality</invoice_quality_label>
+		<download_start>Start Processing Download</download_start>
+		<download_start_label lines="2">This may take some time, depending on how many images and thier sizes.</download_start_label>
+		<download_show>Show Downloads</download_show>
+		<download_show_label lines="2">Downloads may be split into multiple downloads.</download_show_label>
+		<download_continue_processing>Continue Processing Package</download_continue_processing>
+		<download_continue_processing_label lines="2">This may take some time, depending on how many images and thier sizes.</download_continue_processing_label>
+		<download_processing>Processing Package</download_processing>
+		<download_processing_label tags="PERCENT" lines="2">{PERCENT}% Complete</download_processing_label>
+		<download_reset>Request Reset</download_reset>
+		<download_reset_label lines="2">You have reached your download limit.  Please request a download limit reset.</download_reset_label>
+		<download_reset_reply lines="2">Your request has been sent -- we'll notify you by email once the limit has been reset.</download_reset_reply>
+		<download_notify>Something Is Wrong</download_notify>
+		<download_notify_label lines="2">Something is not setup correctly on our end.  Please let us know so we can fix it!</download_notify_label>
+		<download_notify_reply lines="2">Thanks for the heads up!  We'll get back to you ASAP.</download_notify_reply>
+		<download_reply_sent>Sent!</download_reply_sent>
+		<download_link_format tags="COUNT,TOTAL">File Group {COUNT} of {TOTAL}</download_link_format>
+		<invoice_high_resolution>High</invoice_high_resolution>
+		<invoice_low_resolution>Low</invoice_low_resolution>
+	</invoice>
+	<localization>
+		<currency_shipping_and_handling_abbreviation>S&amp;H</currency_shipping_and_handling_abbreviation>
+		<currency_decimal_symbol>.</currency_decimal_symbol>
+		<currency_digits_after_decimal_num>2</currency_digits_after_decimal_num>
+		<currency_grouping_symbol>,</currency_grouping_symbol>
+		<currency_digits_per_group_num>3</currency_digits_per_group_num>
+		<currency_negative_pattern>-#</currency_negative_pattern>
+		<currency_display_leading_zeros_bool>false</currency_display_leading_zeros_bool>
+		<currency_leading_zero_digits_num>0</currency_leading_zero_digits_num>
+		<currency_currency_pattern>$#</currency_currency_pattern>
+		<date_pattern>m/d/Y</date_pattern>
+	</localization>
+</data>

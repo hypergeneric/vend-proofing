@@ -1,0 +1,25 @@
+<?php
+
+	/* get the image array
+		*/
+	$final_class_name = $isAuthenticated ? "Display" : "Login";
+	$final_class_name = $isExpired ? "Expired" : $final_class_name;
+
+	if ( $isAuthenticated && !$isExpired ) {
+		if ($this->flag_cache==true) {
+			$filename = md5($this->query_original) . ($detect->isMobile()?"-mobile":"-browser") . ($detect->isFirefox()?"-ff":"") . ($detect->isIOS()?"-ios":"") . "." . $this->render_type;
+			$filepath = SA_DIR_CACHE . "/" . $filename;
+			if (file_exists($filepath)) {
+				readFile($filepath);
+			} else {
+				ob_start();
+				include "2.content.display.tmpl";
+				$content = "<!-- cached on " . date(DATE_RFC822) . " -->\n" . ob_get_contents();
+				Filesystem::makeFile($filepath, $content, "w", true);
+			}
+		} else {
+			include "2.content.display.tmpl";
+		}
+	}
+
+?>

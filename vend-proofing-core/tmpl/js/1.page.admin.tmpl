@@ -1,0 +1,85 @@
+<?php
+
+	$CLEAN_URLS = false;
+
+	/* ---- Necessary Files ---- */
+	$framework = array(
+	
+		"jquery.js", 
+		"modernizr.js", 
+		"extend/jquery.browser.min.js", 
+		
+		"extend/clipboard.min.js", 
+		"extend/datatables.min.js", 
+		"extend/jquery.alphanum.js", 
+		"extend/jquery.ba-hashchange.min.js", 
+		"extend/jquery.base64.min.js", 
+		"extend/jquery.selection.js", 
+		"extend/md5.min.js", 
+		"extend/mobile-detect.min.js", 
+		"extend/sha1.min.js", 
+		"extend/showdown.min.js", 
+		"extend/simplemde.min.js", 
+		"extend/spectrum.min.js", 
+		"extend/spin.min.js", 
+		
+		"extend/bootstrap/js/bootstrap.min.js", 
+		
+		"extend/jquery-toggles/toggles.min.js", 
+		"extend/jquery-ui/jquery-ui.min.js", 
+		
+	);
+	
+	/* ---- Add Via readfile() ---- */
+	foreach($framework as $filename) {
+		readfile( SA_DIR_COREPATH . "/admin/js/$filename" );
+		print "\n\n";
+	}
+
+?>
+	
+	var NAMESPACE = "<?php echo SA_NAMESPACE; ?>";
+	
+	var md = new MobileDetect(window.navigator.userAgent);
+	var IS_MOBILE = md.phone()!=null;
+	var IS_TABLET = md.tablet()!=null;
+
+	$("html").addClass($.browser.name+"Browser");
+	$("html").addClass($.browser.platform+"Platform");
+	
+	if (typeof classes == "undefined") classes = new Object();
+	if (typeof classes.data == "undefined") classes.data = new Object();
+	if (typeof classes.helpers == "undefined") classes.helpers = new Object();
+	if (typeof classes.components == "undefined") classes.components = new Object();
+	if (typeof classes.components.formobjects == "undefined") classes.components.formobjects = new Object();
+	if (typeof classes.dialogs == "undefined") classes.dialogs = new Object();
+	if (typeof classes.applications == "undefined") classes.applications = new Object();
+	if (typeof classes.panels == "undefined") classes.panels = new Object();
+
+<?php
+
+	function readAllInFolder( $path ) {
+		$handle = @opendir( $path );
+		if (!$handle) {
+			$result = false;
+		} else {
+			while (false !== ( $file = readdir($handle) )) {
+				if ($file == '.' || $file == '..' || is_dir("$path/$file")) continue;
+				readfile( "$path/$file" );
+				print "\n\n";
+			}
+			closedir($handle);
+		}
+	}
+	
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/helpers/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/data/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/components/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/components/formobjects/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/dialogs/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/applications/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/panels/" );
+	readAllInFolder( SA_DIR_COREPATH . "/admin/js/classes/panels/" );
+
+?>

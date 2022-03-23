@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<data default="true">
+	<settings>
+		<title></title>
+		<description markdown="true" toolbar="true" lines="6"></description>
+		<splash_page_view options="splash_page_views.view">wall</splash_page_view>
+		<sorting_mechanism options="splash_wall_sort.type">P,dc,a;S,dc,a;E,dc,a</sorting_mechanism>
+		<hide_image_counts_bool>false</hide_image_counts_bool>
+		<auto_hide_expired_sets_bool>false</auto_hide_expired_sets_bool>
+	</settings>
+</data>

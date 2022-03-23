@@ -1,0 +1,39 @@
+<?php
+
+	/* find the base path
+		*/
+	$script_uri = Func::getBaseUrl();
+	$data_contact = $this->getData("contact", true);
+
+	/* print doctype
+		*/
+	print '<?xml version="1.0"?>' . "\n";
+
+?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url><loc><?php echo $script_uri . "/" . SA_DIR_INDEXPATH; ?></loc></url>
+<?php
+	/* loop through and spit it all out
+		*/
+	foreach ($this->getData("page") as $page_id => $page_info) {
+		$page_data = Flatfile::getXmlArray(strtolower($page_info[2]), $page_id, true);
+		$hasExpired = false;
+		$pwdRequired = false;
+		if ($page_data!=false) {
+			$hasExpired = $this->isPageExpired($page_id, $page_data);
+			$pwdRequired = $page_data->getNodeVal("data.settings.password")!="";
+		}
+		if ($hasExpired||$pwdRequired) continue;
+		$uri = "?/" . $this->flag_label_page . "/" . $page_id . "/" . $this->cleanTitleFragment($page_info[1]) . "/";
+?>
+	<url><loc><?php echo $script_uri . "/" . SA_DIR_INDEXPATH . $uri; ?></loc></url>
+<?php
+	}
+	if ($data_contact!=false) {
+?>
+	<url><loc><?php echo $script_uri . "/" . SA_DIR_INDEXPATH . "?/" . $this->flag_label_special . "/" . $this->flag_label_contact . "/" . $this->cleanTitleFragment($data_contact->getNodeVal("data.settings.title")); ?>/</loc></url>
+<?php
+	}
+?>
+	<url><loc><?php echo $script_uri . "/" . SA_DIR_INDEXPATH . "?/credits/"; ?></loc></url>
+</urlset>

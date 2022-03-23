@@ -1,0 +1,1071 @@
+<?php
+
+	function partition( $list, $p ) {
+		$listlen = count( $list );
+		$partlen = floor( $listlen / $p );
+		$partrem = $listlen % $p;
+		$partition = array();
+		$mark = 0;
+		for ($px = 0; $px < $p; $px++) {
+			$incr = ($px < $partrem) ? $partlen + 1 : $partlen;
+			$partition[$px] = array_slice( $list, $mark, $incr );
+			$mark += $incr;
+		}
+		return $partition;
+	}
+
+	switch ($this->info("class")) {
+		case "DropboxSet" :
+			$images = Flatfile::getFileTable("image", $this->info("id"));
+			$category = Flatfile::getSetTable("category", $this->info("id"));
+			if (count($category)==0) {
+				$category = array("page" => array("page", "", count($images)));
+			}
+			break;
+		case "UploadSet" :
+			$images = Flatfile::getFileTable("image", $this->info("id"));
+			$category = array("page" => array("page", "", count($images)));
+			break;
+		case "ZipFile" :
+			$images = Flatfile::getSetTable("zipfile-fileindex", $this->info("id"));
+			$category = Flatfile::getSetTable("zipfile-category", $this->info("id"));
+			break;
+		case "CategorySet" :
+			$images = Flatfile::getFileTable("image", $this->info("id"));
+			$category = Flatfile::getSetTable("category", $this->info("id"));
+			break;
+	}
+	
+	$show_in_navigation_bool = 				$this->getTypedValue("contact", "settings", "show_in_navigation_bool");
+	$tile_gutter_width_num = 				$this->getTypedValue("design", "design", "tile_gutter_width_num");
+	$toning_enable_bw_bool = 				$this->getTypedValue("setup", "settings", "toning_enable_bw_bool");
+	$toning_enable_sepia_bool = 			$this->getTypedValue("setup", "settings", "toning_enable_sepia_bool");
+	$navigation_logo_asset = 				$this->getTypedValue("design", "design", "navigation_logo_asset");
+	$navigation_logo_linkage = 				$this->getTypedValue("design", "design", "navigation_logo_linkage");
+	$show_image_wall_tooltips_bool = 		$this->getTypedValue("setup", "settings", "show_image_wall_tooltips_bool");
+	$date_pattern = 						$this->getTypedValue("language", "localization", "date_pattern");
+	$use_global_soundtrack_bool = 			$this->getTypedValue($page_data, "settings", "use_global_soundtrack_bool");
+	$expires_on_date = 						$this->getTypedValue($page_data, "settings", "expires_on_date");
+	$enable_quantity_ui_bool = 				$this->getTypedValue($page_data, "settings", "enable_quantity_ui_bool");
+	$enable_color_options_bool = 			$this->getTypedValue($page_data, "settings", "enable_color_options_bool");
+	$enable_cropping_tool_bool = 			$this->getTypedValue($page_data, "settings", "enable_cropping_tool_bool");
+	$enable_comments_bool = 				$this->getTypedValue($page_data, "settings", "enable_comments_bool");
+	$set_welcome_message = 					$this->getTypedValue($page_data, "settings", "set_welcome_message");
+	$enable_watermarking_bool = 			$this->getTypedValue($page_data, "settings", "enable_watermarking_bool");
+	$set_cover_image_asset = 				$this->getTypedValue($page_data, "settings", "set_cover_image_asset");
+	$set_cover_image_asset_path = 			Func::getBaseUrl() . "/" . SA_NAMESPACE . "-gateway.php?action=get_public_asset&folder=" . $this->info("id") . "&filename=" . $set_cover_image_asset["child"];
+
+	$default_country = 						$this->getTypedValue("ordering", "ordering", "default_country");
+	$default_us_state = 					$this->getTypedValue("ordering", "ordering", "default_us_state");
+	$default_ca_province = 					$this->getTypedValue("ordering", "ordering", "default_ca_province");
+	$default_currency = 					$this->getTypedValue("ordering", "ordering", "default_currency");
+	$allow_international_purchases_bool = 	$this->getTypedValue("ordering", "ordering", "allow_international_purchases_bool");
+	$allow_offline_payment_bool = 			$this->getTypedValue("ordering", "ordering", "allow_offline_payment_bool");
+	$allow_offsite_paypal_payments_bool = 	$this->getTypedValue("ordering", "ordering", "allow_offsite_paypal_payments_bool");
+	$calculate_and_display_shipping_bool = 	$this->getTypedValue("ordering", "ordering", "calculate_and_display_shipping_bool");
+	$calculate_and_display_sales_tax_bool = $this->getTypedValue("ordering", "ordering", "calculate_and_display_sales_tax_bool");	
+	$allow_local_pickup_bool = 				$this->getTypedValue("ordering", "ordering", "allow_local_pickup_bool");
+	$allow_discount_codes_bool = 			$this->getTypedValue("ordering", "ordering", "allow_discount_codes_bool");
+	$handling_flat_fee_num = 				$this->getTypedValue("ordering", "ordering", "handling_flat_fee_num");
+	$international_handling_flat_fee_num = 	$this->getTypedValue("ordering", "ordering", "international_handling_flat_fee_num");
+	$purchase_price_includes_tax_bool = 	$this->getTypedValue("ordering", "ordering", "purchase_price_includes_tax_bool");
+	$shipping_flat_fee_num = 				$this->getTypedValue("ordering", "ordering", "shipping_flat_fee_num");
+	$shipping_flat_rate_num = 				$this->getTypedValue("ordering", "ordering", "shipping_flat_rate_num");
+	$shipping_taxable_bool = 				$this->getTypedValue("ordering", "ordering", "shipping_taxable_bool");
+	$handling_taxable_bool = 				$this->getTypedValue("ordering", "ordering", "handling_taxable_bool");
+	$downloads_taxable_bool = 				$this->getTypedValue("ordering", "ordering", "downloads_taxable_bool");
+	$cart_minimum_value_num = 				$this->getTypedValue("ordering", "ordering", "cart_minimum_value_num");
+	$cart_minimum_count_num = 				$this->getTypedValue("ordering", "ordering", "cart_minimum_count_num");
+	$paypal_email_address = 				$this->getTypedValue("ordering", "payment_gateway", "paypal_email_address");
+	$enable_paypal_merchant_account_bool = 	$this->getTypedValue("ordering", "ordering", "enable_paypal_merchant_account_bool");
+
+	$postal_code_pattern = 					"";
+		if ($default_country=="US") $postal_code_pattern = "(\d{5}([\-]\d{4})?)";
+		if ($default_country=="CA") $postal_code_pattern = "[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]";
+	$page_title = 							htmlspecialchars($this->info("title"));
+	$expires_on_date = 						$expires_on_date["value"]>0 ? date($date_pattern["value"], $expires_on_date["value"]/1000) : "0";
+	$expires_on_date = 						htmlspecialchars($expires_on_date);
+	$lang_table = 							$LANG->getTableArray();
+	$country_iso_codes = 					$lang_table["data"]["_c"]["country_iso_codes"]["_c"]["code"];
+		array_shift($country_iso_codes);
+	$us_states = 							$lang_table["data"]["_c"]["us_states"]["_c"]["code"];
+		array_shift($us_states);
+	$ca_province = 							$lang_table["data"]["_c"]["ca_province"]["_c"]["code"];
+		array_shift($ca_province);
+	$taxchart = 							Flatfile::getSetTable($default_country=="CA"||$default_country=="US" ? strtolower($default_country)."taxchart" : "vattaxchart");
+
+	$icon_mail_asset_tag = 			"";
+	if ($show_in_navigation_bool==true) {
+		$icon_mail_asset_tag .= 	"\t\t\t";
+		$icon_mail_asset_tag .= 	'<div id="icon-mail" class="Icon"></div>';
+		$icon_mail_asset_tag .= 	"\n";
+	}
+
+	// music icon
+	$tracks = 								$use_global_soundtrack_bool ? Flatfile::getFileTable("audio") : Flatfile::getFileTable("track", $this->info("id"));
+	$tracks = 								$detect->isMobile() ? array() : $tracks;
+	$icon_music_asset_tag = 				"";
+	if ( count($tracks)>0 ) {
+		$icon_music_asset_tag .= 	"\t\t\t";
+		$icon_music_asset_tag .= 	'<div id="icon-music" class="Icon"></div><div id="jp-player"></div><div id="jp-container"><div class="jp-gui"></div><div class="jp-playlist"><ul><li></li></ul></div></div>';
+		$icon_music_asset_tag .= 	"\n";
+	}
+
+	// set options
+	$formats = 								Flatfile::getSetTable("format", $page_data->getNodeVal("data.settings.format_set"));
+	$papers = 								Flatfile::getSetTable("paper", $page_data->getNodeVal("data.settings.paper_set"));
+	$modifiers = 							Flatfile::getSetTable("modifier", $page_data->getNodeVal("data.settings.modifier_set"));
+	$packages = 							Flatfile::getSetTable("package", $page_data->getNodeVal("data.settings.package_set"));
+	$products = 							Flatfile::getSetTable("product", $page_data->getNodeVal("data.settings.product_set"));
+	
+	// download options -- dropbox only
+	if ($this->info("class")=="DropboxSet") {
+		$this->data_lookup["downloads"] = 	Flatfile::getXmlArray("downloads", $page_data->getNodeVal("data.settings.download_set"));
+	} else {
+		$this->data_lookup["downloads"] = 	Flatfile::getXmlArray("downloads");
+	}
+	$allow_single_downloads_bool = 			$this->getTypedValue("downloads", "settings", "allow_single_downloads_bool");
+	$allow_web_version_bool = 				$this->getTypedValue("downloads", "settings", "allow_web_version_bool");
+	$allow_download_all_bool = 				$this->getTypedValue("downloads", "settings", "allow_download_all_bool");
+	$single_download_price = 				$this->getTypedValue("downloads", "settings", "single_download_price");
+	$web_version_download_price = 			$this->getTypedValue("downloads", "settings", "web_version_download_price");
+	$single_download_all_price = 			$this->getTypedValue("downloads", "settings", "single_download_all_price");
+	$web_version_download_all_price = 		$this->getTypedValue("downloads", "settings", "web_version_download_all_price");
+	$download_all_flatfee_bool = 			$this->getTypedValue("downloads", "settings", "download_all_flatfee_bool");
+	$downloads_available = 					$allow_single_downloads_bool || $allow_web_version_bool || $allow_download_all_bool;
+
+	//clickwrap
+	$this->data_lookup["policies"] = 		Flatfile::getXmlArray("policies", null, true);
+	$clickwrap_title = 						"";
+	$clickwrap_description = 				"";
+	if ($this->getData("policies")!=false) {
+		$clickwrap_title = 					$this->getTypedValue("policies", "settings", "title");
+		$clickwrap_description = 			$this->getTypedValue("policies", "settings", "description");
+	}
+
+	//navigation
+	$navigation_images_all = 				$this->getTypedValue("language", "ordering", "navigation_images_all");
+	$navigation_images_page = 				$this->getTypedValue("language", "ordering", "navigation_images_page");
+	$navigation_images_title = 				$this->getTypedValue("language", "ordering", "navigation_images_title");
+	$navigation_no_favorites = 				$this->getTypedValue("language", "ordering", "navigation_no_favorites");
+	$navigation_cart_empty = 				$this->getTypedValue("language", "ordering", "navigation_cart_empty");
+	//overlay	
+	$dialog_close_window = 					$this->getTypedValue("language", "general", "dialog_close_window");
+	// browser	
+	$image_browser_tooltip_left = 			$this->getTypedValue("language", "ordering", "image_browser_tooltip_left");
+	$image_browser_tooltip_fullscreen = 	$this->getTypedValue("language", "ordering", "image_browser_tooltip_fullscreen");
+	$image_browser_tooltip_favorite = 		$this->getTypedValue("language", "ordering", "image_browser_tooltip_favorite");
+	$image_browser_tooltip_right = 			$this->getTypedValue("language", "ordering", "image_browser_tooltip_right");
+	// preview	
+	$image_preview_tooltip_previous  = 		$this->getTypedValue("language", "ordering", "image_preview_tooltip_previous");
+	$image_preview_tooltip_next  = 			$this->getTypedValue("language", "ordering", "image_preview_tooltip_next");
+	// overveiw	
+	$overview_save_changes = 				$this->getTypedValue("language", "ordering", "overview_save_changes");
+	$overview_empty = 						$this->getTypedValue("language", "ordering", "overview_empty");
+	$cart_clear_cart = 						$this->getTypedValue("language", "ordering", "cart_clear_cart");
+	$cart_checkout = 						$this->getTypedValue("language", "ordering", "cart_checkout");
+	$checkout_return_to_cart = 				$this->getTypedValue("language", "checkout", "checkout_return_to_cart");
+	$checkout_return_to_checkout = 			$this->getTypedValue("language", "checkout", "checkout_return_to_checkout");
+	// sidebar	
+	$sidebar_currently_adding_to = 			$this->getTypedValue("language", "ordering", "sidebar_currently_adding_to");
+	$sidebar_add_to_cart = 					$this->getTypedValue("language", "ordering", "sidebar_add_to_cart");
+	$sidebar_browse_packages = 				$this->getTypedValue("language", "ordering", "sidebar_browse_packages");
+	$sidebar_choose_a_size = 				$this->getTypedValue("language", "ordering", "sidebar_choose_a_size");
+	$sidebar_choose_quantity = 				$this->getTypedValue("language", "ordering", "sidebar_choose_quantity");
+	$sidebar_choose_tone = 					$this->getTypedValue("language", "ordering", "sidebar_choose_tone");
+	$sidebar_none_selected = 				$this->getTypedValue("language", "ordering", "sidebar_none_selected");
+	$sidebar_tone_black_and_white = 		$this->getTypedValue("language", "ordering", "sidebar_tone_black_and_white");
+	$sidebar_tone_sepia = 					$this->getTypedValue("language", "ordering", "sidebar_tone_sepia");
+	$sidebar_choose_paper = 				$this->getTypedValue("language", "ordering", "sidebar_choose_paper");
+	$sidebar_choose_modifier = 				$this->getTypedValue("language", "ordering", "sidebar_choose_modifier");
+	$sidebar_enable_crop = 					$this->getTypedValue("language", "ordering", "sidebar_enable_crop");
+	$sidebar_crop_portrait = 				$this->getTypedValue("language", "ordering", "sidebar_crop_portrait");
+	$sidebar_crop_landscape = 				$this->getTypedValue("language", "ordering", "sidebar_crop_landscape");
+	$sidebar_comments = 					$this->getTypedValue("language", "ordering", "sidebar_comments");
+	// packages	
+	$packages_return_to_browsing = 			$this->getTypedValue("language", "ordering", "packages_return_to_browsing");
+	$packages_available_packages = 			$this->getTypedValue("language", "ordering", "packages_available_packages");
+	$packages_available_products = 			$this->getTypedValue("language", "ordering", "packages_available_products");
+	$package_tooltip_previous = 			$this->getTypedValue("language", "ordering", "package_tooltip_previous");
+	$package_add_to_cart = 					$this->getTypedValue("language", "ordering", "package_add_to_cart");
+	$package_tooltip_next = 				$this->getTypedValue("language", "ordering", "package_tooltip_next");
+	$navigation_download_all_high = 		$this->getTypedValue("language", "ordering", "navigation_download_all_high");
+	$navigation_download_all_low = 			$this->getTypedValue("language", "ordering", "navigation_download_all_low");
+	$imagewall_next = 						$this->getTypedValue("language", "ordering", "imagewall_next");
+	$imagewall_back_to_top = 				$this->getTypedValue("language", "ordering", "imagewall_back_to_top");
+	$image_browser_options = 				$this->getTypedValue("language", "ordering", "image_browser_options");
+	$image_browser_options_done = 			$this->getTypedValue("language", "ordering", "image_browser_options_done");
+	$sidebar_download = 					$this->getTypedValue("language", "ordering", "sidebar_download");
+	$sidebar_return = 						$this->getTypedValue("language", "ordering", "sidebar_return");
+	$packages_none_available = 				$this->getTypedValue("language", "ordering", "packages_none_available");
+	$packages_items_label = 				$this->getTypedValue("language", "ordering", "packages_items_label");
+	$packages_price_label = 				$this->getTypedValue("language", "ordering", "packages_price_label");
+	$packages_cancel = 						$this->getTypedValue("language", "ordering", "packages_cancel");
+	$packages_close = 						$this->getTypedValue("language", "ordering", "packages_close");
+	$overview_close = 						$this->getTypedValue("language", "ordering", "overview_close");
+	// checkout	
+	$checkout_terms_accept = 				$this->getTypedValue("language", "checkout", "checkout_terms_accept");
+	$checkout_terms_label = 				$this->getTypedValue("language", "checkout", "checkout_terms_label");
+	$checkout_discount_code = 				$this->getTypedValue("language", "checkout", "checkout_discount_code");
+	$checkout_discount_code_apply = 		$this->getTypedValue("language", "checkout", "checkout_discount_code_apply");
+	$checkout_choose_payment_method = 		$this->getTypedValue("language", "checkout", "checkout_choose_payment_method");
+	$checkout_payment_method_offline = 		$this->getTypedValue("language", "checkout", "checkout_payment_method_offline");
+	$checkout_payment_method_paypal = 		$this->getTypedValue("language", "checkout", "checkout_payment_method_paypal");
+	$checkout_payment_method_merchant = 	$this->getTypedValue("language", "checkout", "checkout_payment_method_merchant");
+	$checkout_cc_number = 					$this->getTypedValue("language", "checkout", "checkout_cc_number");
+	$checkout_cc_cvv_number = 				$this->getTypedValue("language", "checkout", "checkout_cc_cvv_number");
+	$checkout_cc_expiry_month = 			$this->getTypedValue("language", "checkout", "checkout_cc_expiry_month");
+	$checkout_cc_expiry_year = 				$this->getTypedValue("language", "checkout", "checkout_cc_expiry_year");
+	$checkout_cc_billing_postal_code = 		$this->getTypedValue("language", "checkout", "checkout_cc_billing_postal_code");
+	$checkout_choose_shipping_method = 		$this->getTypedValue("language", "checkout", "checkout_choose_shipping_method");
+	$checkout_shipping_method_local = 		$this->getTypedValue("language", "checkout", "checkout_shipping_method_local");
+	$checkout_shipping_method_ship = 		$this->getTypedValue("language", "checkout", "checkout_shipping_method_ship");
+	$checkout_shipping_address = 			$this->getTypedValue("language", "checkout", "checkout_shipping_address");
+	$checkout_shipping_address_line1 = 		$this->getTypedValue("language", "checkout", "checkout_shipping_address_line1");
+	$checkout_shipping_address_line2 = 		$this->getTypedValue("language", "checkout", "checkout_shipping_address_line2");
+	$checkout_shipping_address_city = 		$this->getTypedValue("language", "checkout", "checkout_shipping_address_city");
+	$checkout_shipping_postal_code = 		$this->getTypedValue("language", "checkout", "checkout_shipping_postal_code");
+	$checkout_shipping_country = 			$this->getTypedValue("language", "checkout", "checkout_shipping_country");
+	$checkout_info_name = 					$this->getTypedValue("language", "checkout", "checkout_info_name");
+	$checkout_info_email_address = 			$this->getTypedValue("language", "checkout", "checkout_info_email_address");
+	$checkout_info_email_check = 			$this->getTypedValue("language", "checkout", "checkout_info_email_check");
+	$checkout_info_phone = 					$this->getTypedValue("language", "checkout", "checkout_info_phone");
+	$checkout_return_to_browsing = 			$this->getTypedValue("language", "checkout", "checkout_return_to_browsing");
+	$checkout_purchase_now = 				$this->getTypedValue("language", "checkout", "checkout_purchase_now");
+	$checkout_cart_total = 					$this->getTypedValue("language", "checkout", "checkout_cart_total");
+	$checkout_cart_discount = 				$this->getTypedValue("language", "checkout", "checkout_cart_discount");
+	$checkout_cart_subtotal = 				$this->getTypedValue("language", "checkout", "checkout_cart_subtotal");
+	$checkout_cart_shipping = 				$this->getTypedValue("language", "checkout", "checkout_cart_shipping");
+	$checkout_cart_handling_i18l = 			$this->getTypedValue("language", "checkout", "checkout_cart_handling_i18l");
+	$checkout_cart_handling = 				$this->getTypedValue("language", "checkout", "checkout_cart_handling");
+	$checkout_cart_tax = 					$this->getTypedValue("language", "checkout", "checkout_cart_tax");
+	$checkout_cart_final_total = 			$this->getTypedValue("language", "checkout", "checkout_cart_final_total");
+	$checkout_cart_no_calculate = 			$this->getTypedValue("language", "checkout", "checkout_cart_no_calculate");
+	// dialog	
+	$dialog_approve = 						$this->getTypedValue("language", "general", "dialog_approve");
+	$dialog_cancel = 						$this->getTypedValue("language", "general", "dialog_cancel");
+	$dialog_no_remind = 					$this->getTypedValue("language", "general", "dialog_no_remind");
+	$session_dialog_directions = 			$this->getTypedValue("language", "general", "session_dialog_directions");
+
+	/* --- sort the images into an array --- */
+	$sorted = 								array();
+	foreach ($category as $cathash => $catobj) {
+		$sorted[$cathash] = array(
+			"hash" => $cathash,
+			"label" => $catobj[1],
+			"images" => array()
+		);
+	}
+	foreach ($images as $image) {
+		$cathash = isset($image[6]) ? strlen($image[6])==0 ? "page" : $image[6] : "page";
+		$dimensions = $image[2];
+		$filename = $image[1];
+		if ($this->info("class")=="ZipFile") {
+			$cathash = $image[1];
+			$dimensions = $image[3];
+			$filename = $image[2];
+		}
+		if ($dimensions=="x") continue;
+		$dimensions = explode("x", $dimensions);
+		$sorted[$cathash]["images"][] = array( "c" => $image[0], "f" => $filename, "w" => $dimensions[0], "h" => $dimensions[1] );
+	}
+	$page_breakpoint = $detect->isMobile() ? 150 : 300;
+	$sorted_final = array();
+	foreach ($sorted as $obj) {
+		if (count($obj["images"])==0) continue;
+		if (count($obj["images"])<=$page_breakpoint) {
+			$label = count($sorted)==1 ? $navigation_images_all["html"] : $obj["label"];
+			$label .= " (" . count($obj["images"]) . ")";
+			$sorted_final[] = array(
+				"hash" => $obj["hash"],
+				"label" => $label,
+				"images" => $obj["images"]
+			);
+		} else {
+			$images_chunked = partition($obj["images"], ceil(count($obj["images"])/$page_breakpoint));
+			for ($i=0; $i<count($images_chunked); ++$i) {
+				$sorted_final[] = array(
+					"hash" => $obj["hash"] . "-" . $i,
+					"label" => $obj["label"] . " " . $navigation_images_page["html"] . " " . ($i+1) . " (" . count($images_chunked[$i]) . ")",
+					"images" => $images_chunked[$i]
+				);
+			}
+		}
+	}
+	
+	$session_dialog_directions_str = $session_dialog_directions["markdown"];
+	$session_dialog_directions_str = str_replace(
+		array("\n", "\r", "'", '{IMAGE_COUNT}'), 
+		array("", "", "\'", count($images)), 
+		$session_dialog_directions_str
+	);
+	
+	$set_welcome_message_str = $set_welcome_message["markdown"];
+	$set_welcome_message_str = str_replace(
+		array("\n", "\r", "'", '{IMAGE_COUNT}'), 
+		array("", "", "\'", count($images)),  
+		$set_welcome_message_str
+	);
+
+?>
+		<script>
+<?php if ($enable_watermarking_bool==false) { ?>
+			VEND_GRAPHIC_WATERMARK = false;
+			VEND_GRAPHIC_CROSSHAIRS = false;
+			
+<?php } if ( $set_cover_image_asset["source"]!="" && $set_cover_image_asset["height"]>800 && $set_cover_image_asset["width"]>800 ) { ?>
+			classes.content.Display.setCoverImage(["<?php echo $set_cover_image_asset_path; ?>", "<?php echo $set_cover_image_asset["width"]; ?>", "<?php echo $set_cover_image_asset["height"]; ?>"]);
+<?php } ?>
+			classes.content.Display.setIntroText('<?php echo $session_dialog_directions_str; ?>');
+			classes.content.Display.setWelcomeText('<?php echo $set_welcome_message_str; ?>');
+			classes.content.Display.settings({ 
+				title: "<?php echo $page_title; ?>", 
+				gutter: <?php echo $tile_gutter_width_num; ?>, 
+				expiry: "<?php echo $expires_on_date; ?>", 
+				expired: <?php echo $isExpired ? "true" : "false"; ?>, 
+				tooltips: <?php echo $show_image_wall_tooltips_bool ? "true" : "false"; ?>, 
+				mono: <?php echo $toning_enable_bw_bool ? "true" : "false"; ?>, 
+				sepia: <?php echo $toning_enable_sepia_bool ? "true" : "false"; ?> 
+			});
+<?php 
+	for ($i=0; $i<count($sorted_final); ++$i) {
+		$category = $sorted_final[$i];
+?>
+			classes.Overlay.addImageSet("<?php echo $category["hash"]; ?>",
+<?php
+		$provider = "\t\t\t\t[ ";
+		foreach ($category["images"] as $obj) {
+			$provider .= '{w:' . $obj["w"] . ',h:' . $obj["h"] . ',f:"' . htmlspecialchars($obj["f"]) . '",c:"' . $obj["c"] . '"}, ';
+		}
+		print substr($provider, 0, -2) . " ]\n";
+?>
+			);
+<?php
+	}
+	foreach ($tracks as $key => $row) {
+		$track_url = Func::getBaseUrl() . "/" . SA_NAMESPACE . "-gateway.php?action=get_public_asset&folder=" . ($use_global_soundtrack_bool?"audio":$this->info("id")) . "&filename=" . $row[0];
+?>
+			classes.Overlay.addAudioTrack({ title: "<?php echo htmlentities($row[1]); ?>", mp3: "<?php echo $track_url; ?>" });
+<?php
+	}
+?>
+			classes.overlay.Checkout.settings({ 
+				country: "<?php echo $default_country; ?>", 
+				state: "<?php echo $default_us_state; ?>", 
+				province: "<?php echo $default_ca_province; ?>", 
+				currency: "<?php echo $default_currency; ?>", 
+				intl: <?php echo $allow_international_purchases_bool ? "true" : "false"; ?>, 
+				pickup: <?php echo $allow_local_pickup_bool ? "true" : "false"; ?>, 
+				offline: <?php echo $allow_offline_payment_bool ? "true" : "false"; ?>, 
+				paypal: <?php echo $allow_offsite_paypal_payments_bool ? "true" : "false"; ?>, 
+				merchant: <?php echo $enable_paypal_merchant_account_bool ? "true" : "false"; ?>, 
+				downloads: { 
+					use: <?php echo $downloads_available ? "true" : "false"; ?>, 
+					tax: <?php echo $downloads_taxable_bool ? "true" : "false"; ?>, 
+					high: {
+						use: <?php echo $allow_single_downloads_bool ? "true" : "false"; ?>, 
+						price: "<?php echo $single_download_price["value"]; ?>" 
+					},
+					low: {
+						use: <?php echo $allow_web_version_bool ? "true" : "false"; ?>, 
+						price: "<?php echo $web_version_download_price["value"]; ?>" 
+					},
+					all: {
+						use: <?php echo $allow_download_all_bool ? "true" : "false"; ?>, 
+						flat: <?php echo $download_all_flatfee_bool ? "true" : "false"; ?>, 
+						high: "<?php echo $single_download_all_price["value"]; ?>",
+						low: "<?php echo $web_version_download_all_price["value"]; ?>" 
+					}
+				}, 
+				shipping: { 
+					use: <?php echo $calculate_and_display_shipping_bool ? "true" : "false"; ?>, 
+					tax: <?php echo $shipping_taxable_bool ? "true" : "false"; ?>, 
+					flat: <?php echo $shipping_flat_fee_num; ?>, 
+					rate: <?php echo $shipping_flat_rate_num; ?> 
+				}, 
+				handling: { 
+					use: <?php echo ( $allow_international_purchases_bool && $international_handling_flat_fee_num>0 ) || ($handling_flat_fee_num>0) ? "true" : "false"; ?>, 
+					tax: <?php echo $handling_taxable_bool ? "true" : "false"; ?>, 
+					flat: <?php echo $handling_flat_fee_num; ?>, 
+					intl: <?php echo $international_handling_flat_fee_num; ?> 
+				}, 
+				tax: { 
+					use: <?php echo $calculate_and_display_sales_tax_bool ? "true" : "false"; ?>, 
+					included: <?php echo $purchase_price_includes_tax_bool ? "true" : "false"; ?> 
+				}, 
+				discount: <?php echo $allow_discount_codes_bool ? "true" : "false"; ?>, 
+				business: "<?php echo $paypal_email_address["value"]; ?>", 
+				minimum: { 
+					value: <?php echo $cart_minimum_value_num; ?>, 
+					count: <?php echo $cart_minimum_count_num; ?> 
+				} 
+			});
+<?php
+	foreach ($taxchart as $rule) {
+		if ($default_country=="US") {
+			$rule = array('"'.$rule[0].'"', $rule[3]);
+		} else if ($default_country=="CA") {
+			$rule = array('"'.$rule[0].'"', $rule[2], $rule[3], $rule[4]);
+		} else {
+			$rule = array('"'.$rule[0].'"', $rule[2]);
+		}
+?>
+			classes.overlay.Checkout.addTaxRule([<?php echo implode(", ", $rule); ?>]);
+<?php
+	}
+?>
+		</script>
+		<div id="start-screen"></div>
+		<div id="controlbar">
+			<div id="controlbar-left">
+				<span><?php echo $page_title; ?></span>
+			</div>
+			<div id="controlbar-inner">
+<?php if ($detect->isMobile()) { ?>
+			<select class="SuperNavSelect" id="controlbar-set">
+				<option disabled="disabled"><?php echo $navigation_images_title["html"] . " (" . count($images) . ")"; ?></option>
+<?php
+		for ($i=0; $i<count($sorted_final); ++$i) {
+			$category = $sorted_final[$i];
+?>
+				<option data-key="<?php echo $category["hash"]; ?>"><?php echo htmlspecialchars($category["label"]); ?></option>
+<?php
+		}
+?>
+<?php if ($allow_download_all_bool) { ?>
+				<option disabled="disabled">-----</option>
+<?php 	if ($allow_single_downloads_bool) { ?>
+				<option data-key="download-all-cart-high"><?php echo $navigation_download_all_high["html"]; ?></option>
+<?php 	} ?>
+<?php 	if ($allow_web_version_bool) { ?>
+				<option data-key="download-all-cart-low"><?php echo $navigation_download_all_low["html"]; ?></option>
+<?php 	} ?>
+<?php } ?>
+			</select>
+			<select disabled class="SuperNavSelect" id="controlbar-favorites">
+				<option><?php echo $navigation_no_favorites["html"]; ?></option>
+			</select>
+			<select disabled class="SuperNavSelect" id="controlbar-cart">
+				<option><?php echo $navigation_cart_empty["html"]; ?></option>
+			</select>
+<?php } else { ?>
+			<div class="SuperNav" id="controlbar-set">
+				<div>
+					<span class="icon">&nbsp;</span>
+					<span class="label"><?php echo $navigation_images_title["html"]; ?></span>
+					<span class="count">(<?php echo count($images); ?>)</span>
+				</div>
+				<ul>
+<?php
+			for ($i=0; $i<count($sorted_final); ++$i) {
+				$category = $sorted_final[$i];
+?>
+					<li data-key="<?php echo $category["hash"]; ?>"><?php echo htmlspecialchars($category["label"]); ?></li>
+<?php			} ?>
+<?php if ($allow_download_all_bool) { ?>
+					<li class="BreakLine"></li>
+<?php 	if ($allow_single_downloads_bool) { ?>
+					<li data-key="download-all-cart-high"><?php echo $navigation_download_all_high["html"]; ?></li>
+<?php 	} ?>
+<?php 	if ($allow_web_version_bool) { ?>
+					<li data-key="download-all-cart-low"><?php echo $navigation_download_all_low["html"]; ?></li>
+<?php 	} ?>
+<?php } ?>
+				</ul>
+			</div>
+			<div class="SuperNav" id="controlbar-favorites">
+				<div>
+					<span class="icon">&nbsp;</span>
+					<span class="label"><?php echo $navigation_no_favorites["html"]; ?></span>
+					<span class="count"></span>
+				</div>
+				<ul><li></li></ul>
+			</div>
+			<div class="SuperNav" id="controlbar-cart">
+				<div>
+					<span class="icon">&nbsp;</span>
+					<span class="label"><?php echo $navigation_cart_empty["html"]; ?></span>
+					<span class="count"></span>
+				</div>
+				<ul><li></li></ul>
+			</div>
+<?php } ?>
+			</div>
+			<div id="controlbar-right">
+				<?php echo $icon_mail_asset_tag; ?><?php echo $icon_music_asset_tag; ?>
+			</div>
+		</div>
+		<div id="image-wall-wrapper">
+			<div id="image-wall"></div>
+			<div class="ControlBar">
+				<div class="uiPushButton" id="imagewall-controlbar-more" data-tooltip=""><?php echo $imagewall_next["html"]; ?></div>
+				<div class="uiPushButton" id="imagewall-controlbar-top" data-tooltip=""><?php echo $imagewall_back_to_top["html"]; ?></div>
+			</div>
+		</div>
+		<div id="overlay-container">
+			<div id="overlay-screen"></div>
+			<div id="overlay-skirt"></div>
+			<div id="sidebar-input">
+				<div id="sidebar-input-screen"></div>
+				<div id="sidebar-input-content"></div>
+			</div>
+			<div class="OverlayView" id="overlay-browser">
+				<div class="ControlBar">
+					<div class="IBLeft" id="browse-controlbar-prev" data-tooltip="<?php echo $image_browser_tooltip_left["html"]; ?>"></div>
+					<div class="IBLeft" id="browse-controlbar-fs" data-tooltip="<?php echo $image_browser_tooltip_fullscreen["html"]; ?>"></div>
+					<div class="TACenter" id="browse-controlbar-options" data-tooltip=""><?php echo $image_browser_options["html"]; ?></div>
+					<div class="TACenter" id="browse-controlbar-done" data-tooltip=""><?php echo $image_browser_options_done["html"]; ?></div>
+					<div class="Center" id="browse-controlbar-title"></div>
+					<div class="IBRight" id="browse-controlbar-close" data-tooltip="<?php echo $dialog_close_window["html"]; ?>"></div>
+					<div class="IBRight" id="browse-controlbar-next" data-tooltip="<?php echo $image_browser_tooltip_right["html"]; ?>"></div>
+					<div class="IBRight" id="browse-controlbar-fav" data-tooltip="<?php echo $image_browser_tooltip_favorite["html"]; ?>"></div>
+				</div>
+				<div class="Inner">
+					<div class="Display Blank"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" /></div>
+					<div id="browser-paddles">
+						<div id="browser-hitarea-prev" data-tooltip="<?php echo $image_browser_tooltip_left["html"]; ?>"></div>
+						<div id="browser-hitarea-next" data-tooltip="<?php echo $image_browser_tooltip_right["html"]; ?>"></div>
+					</div>
+					<div id="browser-cropview">
+						<div id="browser-cropview-t"></div>
+						<div id="browser-cropview-l"></div>
+						<div id="browser-cropview-b"></div>
+						<div id="browser-cropview-r"></div>
+						<div id="browser-cropview-o"></div>
+					</div>
+					<div id="browser-zoom">
+						<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" />
+					</div>
+				</div>
+			</div><!-- end overlay-browser -->
+			<div class="OverlayView" id="overlay-sidebar">
+				<div id="sidebar-screen"></div>
+				<div class="Inner">
+					<div class="Button" id="sidebar-browse">
+						<button class="uiPushButton" type="button"><?php echo $sidebar_browse_packages["html"]; ?></button>
+					</div>
+<?php if ($downloads_available) {  
+		$input_type = $allow_single_downloads_bool && $allow_web_version_bool ? "radio" : "checkbox";
+?>
+					<div class="Input" id="sidebar-download">
+						<h3><?php echo $sidebar_download["html"]; ?></h3>
+						<form>
+<?php if ($input_type=="radio") {  ?>
+							<input type="<?php echo $input_type; ?>" id="sidebar-download-none" name="sidebar-download-selection" value="">
+							<label for="sidebar-download-none"></label>
+							<br />
+<?php }  ?>
+<?php if ($allow_single_downloads_bool) {  ?>
+							<input type="<?php echo $input_type; ?>" id="sidebar-download-high" name="sidebar-download-selection" value="high">
+							<label for="sidebar-download-high"></label>
+							<br />
+<?php }  ?>
+<?php if ($allow_web_version_bool) {  ?>
+							<input type="<?php echo $input_type; ?>" id="sidebar-download-low" name="sidebar-download-selection" value="low">
+							<label for="sidebar-download-low"></label>
+							<br />
+<?php }  ?>
+						</form>
+					</div>
+<?php }  ?>
+					<div class="Input Selection" id="sidebar-selection">
+						<h3><?php echo $sidebar_currently_adding_to["html"]; ?></h3>
+						<span></span>
+						<select></select>
+						<form></form>
+						<div></div>
+					</div>
+					<div class="Input Selection" id="sidebar-formats">
+						<h3><?php echo $sidebar_choose_a_size["html"]; ?></h3>
+						<span></span>
+						<select></select>
+						<form></form>
+						<div></div>
+						<script>
+<?php foreach ($formats as $key => $row) {  ?>
+							classes.overlay.Sidebar.addFormat("<?php echo $key; ?>", {
+								title: "<?php echo htmlspecialchars($row[1]); ?>",
+								price: "<?php echo htmlspecialchars($row[4]); ?>" ,
+								shipping: "<?php echo htmlspecialchars($row[5]); ?>",
+								aspect: "<?php echo @($row[2]/$row[3]); ?>",
+								area: "<?php echo ($row[2]*$row[3]); ?>"
+							});
+<?php }  ?>
+						</script>
+					</div>
+<?php if ($enable_quantity_ui_bool) { ?>
+					<div class="Input Numeric" id="sidebar-quantity">
+						<h3><?php echo $sidebar_choose_quantity["html"]; ?></h3>
+						<button value="1" type="button">+</button>
+						<button value="-1" type="button">-</button>
+						<span>1</span>
+						<div></div>
+					</div>
+<?php } if ( $enable_color_options_bool && ( $toning_enable_bw_bool || $toning_enable_sepia_bool ) ) { ?>
+					<div class="Input Selection" id="sidebar-toning">
+						<h3><?php echo $sidebar_choose_tone["html"]; ?></h3>
+						<span></span>
+						<select></select>
+						<form></form>
+						<div></div>
+					</div>
+<?php } if (count($papers)>0) { ?>
+					<div class="Input Selection" id="sidebar-papers">
+						<h3><?php echo $sidebar_choose_paper["html"]; ?></h3>
+						<span></span>
+						<select></select>
+						<form></form>
+						<div></div>
+						<script>
+<?php foreach ($papers as $key => $row) {  ?>
+							classes.overlay.Sidebar.addPaper("<?php echo $key; ?>", {
+								title: "<?php echo htmlspecialchars($row[1]); ?>",
+								price: "<?php echo htmlspecialchars($row[2]); ?>",
+								shipping: "<?php echo htmlspecialchars($row[3]); ?>"
+							});
+<?php }  ?>
+						</script>
+					</div>
+<?php } if (count($modifiers)>0) { ?>
+					<div class="Input Selection" id="sidebar-modifiers">
+						<h3><?php echo $sidebar_choose_modifier["html"]; ?></h3>
+						<span></span>
+						<select></select>
+						<form></form>
+						<div></div>
+						<script>
+<?php foreach ($modifiers as $key => $row) {  ?>
+							classes.overlay.Sidebar.addModifier("<?php echo $key; ?>", {
+								title: "<?php echo htmlspecialchars($row[1]); ?>",
+								price: "<?php echo htmlspecialchars($row[2]); ?>",
+								shipping: "<?php echo htmlspecialchars($row[3]); ?>"
+							});
+<?php }  ?>
+						</script>
+					</div>
+<?php } if ($enable_cropping_tool_bool) { ?>
+					<div class="Input Selection" id="sidebar-crop">
+						<h3><?php echo $sidebar_enable_crop["html"]; ?></h3>
+						<span></span>
+						<select></select>
+						<form></form>
+						<div></div>
+					</div>
+<?php } if ($enable_comments_bool) { ?>
+					<div class="Input Text" id="sidebar-comments">
+						<h3><?php echo $sidebar_comments["html"]; ?></h3>
+						<span><?php echo $sidebar_none_selected["html"]; ?></span>
+						<form></form>
+						<div></div>
+					</div>
+<?php }  ?>
+				</div>
+				<div class="ControlBar">
+					<div class="TACenter" id="browse-controlbar-add" data-tooltip=""><?php echo $sidebar_add_to_cart["html"]; ?></div>
+					<div class="TACenter" id="browse-controlbar-return" data-tooltip=""><?php echo $sidebar_return["html"]; ?></div>
+					<div class="IBRight" id="browse-controlbar-return-icon" data-tooltip="<?php echo $sidebar_return["html"]; ?>"></div>
+				</div>
+			</div><!-- end overlay-sidebar -->
+		</div><!-- overlay-container -->
+		<div class="PageViews">
+			<div class="PageView" id="overlay-packages">
+				<div class="Wide">
+					<div class="Inner">
+<?php if (count($packages)==0&&count($products)==0) { ?>
+						<div class="EmptyNotice"><?php echo $packages_none_available["html"]; ?></div>
+<?php } ?>
+<?php if (count($packages)>0) { ?>
+					<table id="packages-packages">
+						<tr class="GroupHeading">
+							<td class="col1"><?php echo $packages_available_packages["html"]; ?></td>
+							<td class="col2"><?php echo $packages_items_label["html"]; ?></td>
+							<td class="col3"><?php echo $packages_price_label["html"]; ?></td>
+							<td class="col4"></td>
+						</tr>
+<?php 	
+		foreach ($packages as $key => $row) {
+?>
+						<tr class="LineItem" data-value="<?php echo $key; ?>" id="cart-item-<?php echo md5(htmlspecialchars($row[0])); ?>">
+							<td class="col1"><?php echo htmlspecialchars($row[1]); ?></td>
+							<td class="col2">0</td>
+							<td class="col3"><?php echo htmlspecialchars($row[3]); ?></td>
+							<td class="col4"><button data-hash="<?php echo md5(htmlspecialchars($row[0])); ?>"><?php echo $package_add_to_cart["html"]; ?></button></td>
+						</tr>
+<?php 	
+		}
+?>
+					</table>
+					<script>
+<?php 	foreach ($packages as $key => $row) {
+			$filename = basename($row[2]);
+			$description = isset($row[5]) ? $this->doMarkdown($row[5]) : "";
+			$description = str_replace(array("\n", "\r", "'"), array("", "", "\'"), $description);
+			$lineitems = Flatfile::getSetTable("lineitem", $row[0]);
+?>
+						classes.overlay.Package.add("<?php echo $key; ?>", {
+							hash: "<?php echo md5(htmlspecialchars($row[0])); ?>",
+							title: "<?php echo htmlspecialchars($row[1]); ?>",
+							description: '<?php echo $description; ?>',
+							filename: "<?php echo htmlspecialchars($filename); ?>",
+							price: "<?php echo htmlspecialchars($row[3]); ?>",
+							shipping: "<?php echo htmlspecialchars($row[4]); ?>",
+							formats: [
+<?php 		foreach ($lineitems as $key => $row) { ?>
+								{ title: "<?php echo htmlspecialchars($row[1]); ?>", quantity: "<?php echo $row[2]; ?>", aspect: "<?php echo @($row[3]/$row[4]); ?>", area: "<?php echo ($row[3]*$row[4]); ?>" },
+<?php 		} ?>
+							]
+						});
+<?php 	}  ?>
+					</script>
+<?php } if (count($products)>0) { ?> 
+					<table id="packages-products">
+						<tr class="GroupHeading">
+							<td class="col1"><?php echo $packages_available_products["html"]; ?></td>
+							<td class="col2"><?php echo $packages_items_label["html"]; ?></td>
+							<td class="col3"><?php echo $packages_price_label["html"]; ?></td>
+							<td class="col4"></td>
+						</tr>
+<?php 	
+		foreach ($products as $key => $row) {
+?>
+						<tr class="LineItem" data-value="<?php echo $key; ?>" id="cart-item-<?php echo md5(htmlspecialchars($row[0])); ?>">
+							<td class="col1"><?php echo htmlspecialchars($row[1]); ?></td>
+							<td class="col2">0</td>
+							<td class="col3"><?php echo htmlspecialchars($row[3]); ?></td>
+							<td class="col4"><button data-hash="<?php echo md5(htmlspecialchars($row[0])); ?>"><?php echo $package_add_to_cart["html"]; ?></button></td>
+						</tr>
+<?php 	
+		}
+?>
+					</table>
+					<script>
+<?php 	foreach ($products as $key => $row) {
+			$filename = basename($row[2]);
+			$description = isset($row[5]) ? $this->doMarkdown($row[5]) : "";
+			$description = str_replace(array("\n", "\r", "'"), array("", "", "\'"), $description);
+			$lineitems = Flatfile::getSetTable("lineitem", $row[0]);
+?>
+						classes.overlay.Package.add("<?php echo $key; ?>", {
+							hash: "<?php echo md5(htmlspecialchars($row[0])); ?>",
+							title: "<?php echo htmlspecialchars($row[1]); ?>",
+							description: '<?php echo $description; ?>',
+							filename: "<?php echo htmlspecialchars($filename); ?>",
+							price: "<?php echo htmlspecialchars($row[3]); ?>",
+							shipping: "<?php echo htmlspecialchars($row[4]); ?>",
+							formats: [
+<?php 		foreach ($lineitems as $key => $row) { ?>
+								{ title: "<?php echo htmlspecialchars($row[1]); ?>", quantity: "<?php echo $row[2]; ?>", aspect: "<?php echo @($row[3]/$row[4]); ?>", area: "<?php echo ($row[3]*$row[4]); ?>" },
+<?php 		} ?>
+							]
+						});
+<?php 	}  ?>
+					</script>
+<?php } ?>
+						<div class="ControlBar" id="overlay-package-controlbar">
+							<div class="uiPushButton" id="overlay-package-cancel" data-tooltip=""><?php echo $packages_cancel["html"]; ?></div>
+						</div>
+					</div>
+				</div><!-- end Column2 -->
+				<div class="Column1">
+					<div class="Inner">
+						<div id="overlay-package">
+							<div class="Display Blank"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" /></div>
+							<div id="package-context">
+								<h2></h2>
+								<h3></h3>
+								<div class="Description"></div>
+							</div>
+						</div>
+						<div id="overlay-packages-controlbar">
+							<div class="uiPushButton" id="packages-controlbar-add" data-tooltip=""><?php echo $package_add_to_cart["html"]; ?></div>
+							<div class="uiPushButton" id="packages-controlbar-back" data-tooltip=""><?php echo $packages_close["html"]; ?></div>
+						</div>
+					</div>
+				</div><!-- end Column1 -->
+			</div><!-- end overlay-packages -->
+			<div class="PageView" id="overlay-cartview">
+				<div id="overview-screen"></div>
+				<div class="Wide">
+					<div class="Inner">
+						<div id="overlay-cart">
+							<div id="cart-groups"></div>
+						</div>
+						<div class="ControlBar" id="overlay-cartview-controlbar">
+							<div class="uiPushButton" id="overview-controlbar-clearcart" data-tooltip=""><?php echo $cart_clear_cart["html"]; ?></div>
+							<div class="uiPushButton" id="overview-controlbar-checkout" data-tooltip=""><?php echo $cart_checkout["html"]; ?></div>
+						</div>
+					</div>
+				</div><!-- end Column1 -->
+				<div class="Column2">
+					<div id="overlay-overview">
+						<div id="overview-options">
+							<div class="Input">
+								<div class="Display Blank"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" /></div>
+								<h2></h2>
+							</div>
+							<div class="Input" id="overview-quantity">
+								<h3></h3>
+								<button value="1" type="button">+</button>
+								<button value="-1" type="button">-</button>
+								<span></span>
+							</div>
+							<div class="Input" id="overview-quality">
+								<h3></h3>
+								<span></span>
+							</div>
+							<div class="Input" id="overview-format">
+								<h3></h3>
+								<span></span>
+							</div>
+							<div class="Input" id="overview-paper">
+								<h3></h3>
+								<span></span>
+							</div>
+							<div class="Input" id="overview-modifier">
+								<h3></h3>
+								<span></span>
+							</div>
+							<div class="Input" id="overview-comments">
+								<h3></h3>
+								<span></span>
+							</div>
+							<div id="overlay-packages-controlbar">
+								<div class="uiPushButton" id="overview-controlbar-update" data-tooltip=""><?php echo $overview_save_changes["html"]; ?></div>
+								<div class="uiPushButton" id="overview-controlbar-cancel" data-tooltip=""><?php echo $overview_close["html"]; ?></div>
+							</div>
+						</div>
+					</div>
+				</div><!-- end Column2 -->
+				<div class="clear"></div>
+			</div><!-- end overlay-cartview -->
+			<div class="PageView" id="overlay-checkout">
+				<div id="checkout-screen"></div>
+				<div class="Column2">
+					<div id="checkout-blocks">
+						<div class="Input" id="checkout-comments">
+							<textarea class="uiField" maxlength="200" placeholder="<?php echo $sidebar_comments["html"]; ?>"></textarea>
+						</div>
+						<div class="Input" id="checkout-info">
+							<div class="Block">
+								<input class="uiField" id="checkout-fullname" type="text" placeholder="<?php echo $checkout_info_name["html"]; ?>" />
+								<input class="uiField" id="checkout-phone-number" type="text" placeholder="<?php echo $checkout_info_phone["html"]; ?>" />
+								<input class="uiField" id="checkout-email-address" type="email" placeholder="<?php echo $checkout_info_email_address["html"]; ?>" />
+								<input class="uiField" id="checkout-email-address-check" type="email" placeholder="<?php echo $checkout_info_email_check["html"]; ?>" />
+							</div>
+						</div>
+						<div class="Input" id="checkout-shipping">
+							<div class="Block">
+<?php if ( $allow_local_pickup_bool ) { ?>
+								<h2><?php echo $checkout_choose_shipping_method["html"]; ?></h2>
+								<div class="Wrapper">
+									<input id="shipping-method-local" name="shipping-method" type="radio" value="local">
+									<label for="shipping-method-local"><?php echo $checkout_shipping_method_local["html"]; ?></label>
+									<br />
+									<input id="shipping-method-ship" checked="checked" name="shipping-method" type="radio" value="ship">
+									<label for="shipping-method-ship"><?php echo $checkout_shipping_method_ship["html"]; ?></label>
+									<br />
+									<div class="clear"></div>
+								</div>
+<?php }  ?>
+<?php 		if ( $default_country=="US" || $default_country=="CA") { ?>
+								<div id="checkout-shipping_address">
+									<input class="uiField" id="checkout-shipping_address-line1" type="text" placeholder="<?php echo $checkout_shipping_address_line1["html"]; ?>" />
+									<input class="uiField" id="checkout-shipping_address-line2" type="text" placeholder="<?php echo $checkout_shipping_address_line2["html"]; ?>" />
+									<input class="uiField" id="checkout-shipping_address-city" type="text" placeholder="<?php echo $checkout_shipping_address_city["html"]; ?>" />
+								</div>
+<?php 		} else { ?>
+								<textarea class="INTL uiField" id="checkout-shipping_address" placeholder="<?php echo $checkout_shipping_address["html"]; ?>"></textarea>
+<?php 		} ?>
+<?php  if ( $calculate_and_display_sales_tax_bool ) {?>
+								<input class="uiField" id="checkout-shipping-postal-code" pattern="<?php echo $postal_code_pattern; ?>" type="text" placeholder="<?php echo $checkout_shipping_postal_code["html"]; ?>" />
+<?php } if ( $calculate_and_display_sales_tax_bool && ( $default_country=="US" || $default_country=="CA") ) { ?>
+								<select class="uiField" id="checkout-state" name="checkout-state">
+<?php 	if ($default_country=="US") { ?>
+									<option value="">State</option>
+<?php 		foreach($us_states as $code) { ?>
+									<option<?php echo $code["_a"]["value"]==$default_us_state ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_a"]["value"]; ?>"><?php echo htmlspecialchars($code["_a"]["name"]); ?></option>
+<?php 		}
+		} else if ($default_country=="CA") { ?>
+									<option value="">Province</option>
+<?php 		foreach($ca_province as $code) { ?>
+									<option<?php echo $code["_a"]["value"]==$default_ca_province ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_a"]["value"]; ?>"><?php echo htmlspecialchars($code["_a"]["name"]); ?></option>
+<?php 		}
+		} ?>
+								</select>
+<?php } if ( ( $calculate_and_display_sales_tax_bool || ( $calculate_and_display_shipping_bool && $international_handling_flat_fee_num>0 ) ) && $allow_international_purchases_bool ) {?>
+								<select class="uiField" id="checkout-country" name="checkout-country">
+									<option value=""><?php echo $checkout_shipping_country["html"]; ?></option>
+<?php 	foreach($country_iso_codes as $code) { ?>
+									<option<?php echo $code["_a"]["value"]==$default_country ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_a"]["value"]; ?>"><?php echo htmlspecialchars($code["_a"]["name"]); ?></option>
+<?php 	} ?>
+								</select>
+<?php } ?>
+							</div>
+						</div>
+						<div class="Input" id="checkout-payment">
+							<div class="Block">
+								<h2><?php echo $checkout_choose_payment_method["html"]; ?></h2>
+								<div class="Wrapper">
+<?php if ($allow_offline_payment_bool /*&& (count($packages)>0||count($products)>0||count($formats)>0)*/ ) { ?>
+									<input id="checkout-method-offline" name="checkout-method" type="radio" value="offline">
+									<label for="checkout-method-offline"><?php echo $checkout_payment_method_offline["html"]; ?></label>
+									<br />
+<?php } if ($allow_offsite_paypal_payments_bool) { ?>
+									<input id="checkout-method-paypal" name="checkout-method" type="radio" value="paypal">
+									<label for="checkout-method-paypal"><?php echo $checkout_payment_method_paypal["html"]; ?></label>
+									<br />
+<?php } if ($enable_paypal_merchant_account_bool) { ?>
+									<input id="checkout-method-merchant" name="checkout-method" type="radio" value="merchant">
+									<label for="checkout-method-merchant"><?php echo $checkout_payment_method_merchant["html"]; ?></label>
+									<br />
+<?php } ?>
+									<div class="clear"></div>
+								</div>
+							</div>
+						</div>
+<?php if ($enable_paypal_merchant_account_bool) { ?>
+						<div class="Input" id="checkout-cc">
+							<div class="Block">
+								<input class="uiField" id="checkout-cc-number" pattern="[0-9]{13,16}" type="text" placeholder="<?php echo $checkout_cc_number["html"]; ?>" />
+								<input class="uiField" id="checkout-cvv-number" pattern="[0-9]{3,4}" type="text" placeholder="<?php echo $checkout_cc_cvv_number["html"]; ?>" />
+								<select class="uiField" id="checkout-cc-expiry-month">
+									<option value=""><?php echo $checkout_cc_expiry_month["html"]; ?></option>
+<?php 	for($i=1;$i<13;$i++){ ?>
+									<option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></option>
+<?php 	} ?>
+								</select>
+								<select class="uiField" id="checkout-cc-expiry-year">
+									<option value=""><?php echo $checkout_cc_expiry_year["html"]; ?></option>
+<?php 	for($i=0;$i<21;$i++){ ?>
+									<option value="<?php echo date('Y') + $i; ?>"><?php echo date('Y') + $i; ?></option>
+<?php 	} ?>
+								</select>
+								<input class="uiField" id="checkout-cc-billing-postal-code" pattern="<?php echo $postal_code_pattern; ?>" type="text" placeholder="<?php echo $checkout_cc_billing_postal_code["html"]; ?>" />
+							</div>
+						</div>
+<?php } if ($allow_discount_codes_bool) { ?>
+						<div class="Input" id="checkout-discount">
+							<div class="Block">
+								<input class="uiField" id="checkout-discount_code" type="text" placeholder="<?php echo $checkout_discount_code["html"]; ?>" />
+								<button class="uiPushButton" type="button"><?php echo $checkout_discount_code_apply["html"]; ?></button>
+							</div>
+						</div>
+<?php } ?>
+					</div>
+				</div><!-- end Column2 -->
+				<div class="Column1">
+					<div id="checkout-summary">
+						<div class="Inner">
+							<table id="summary-table">
+								<colgroup></colgroup>
+								<colgroup></colgroup>
+								<tr id="cart-total">
+									<td class="Label"><?php echo $checkout_cart_total["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+<?php 
+	if ($allow_discount_codes_bool) { 
+?>
+								<tr id="cart-discount">
+									<td class="Label"><?php echo $checkout_cart_discount["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+								<tr id="cart-subtotal">
+									<td class="Label"><?php echo $checkout_cart_subtotal["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+								
+<?php 
+	}
+	if ( $calculate_and_display_shipping_bool ) {
+?>
+								<tr id="cart-shipping">
+									<td class="Label"><?php echo $checkout_cart_shipping["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+<?php 
+		if ( $allow_international_purchases_bool && $international_handling_flat_fee_num>0 ) { ?>
+								<tr id="cart-handling-intl">
+									<td class="Label"><?php echo $checkout_cart_handling_i18l["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+<?php 	} if ( $handling_flat_fee_num>0 ) { ?>
+								<tr id="cart-handling">
+									<td class="Label"><?php echo $checkout_cart_handling["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+<?php 	}
+	} if ( $default_country=="CA" ) { ?>
+								<tr id="cart-tax-hst">
+									<td class="Label">HST</td>
+									<td class="Value">0</td>
+								</tr>
+								<tr id="cart-tax-gst">
+									<td class="Label">GST</td>
+									<td class="Value">0</td>
+								</tr>
+								<tr id="cart-tax-pst">
+									<td class="Label">PST</td>
+									<td class="Value">0</td>
+								</tr>
+<?php } else { ?>
+								<tr id="cart-tax">
+									<td class="Label"><?php echo $checkout_cart_tax["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+<?php } ?>
+								<tr id="cart-final-total">
+									<td class="Label"><?php echo $checkout_cart_final_total["html"]; ?></td>
+									<td class="Value">0</td>
+								</tr>
+							</table>
+<?php if ($this->getData("policies")!=false) { ?>
+							<div id="clickwrap">
+								<input id="checkout-accept" type="checkbox" />
+								<label for="checkout-accept"><?php echo $checkout_terms_accept["html"]; ?></label>
+								<a id="checkout-clickwrap"><?php echo $checkout_terms_label["html"]; ?></a>
+							</div>
+<?php } ?>
+							<div id="overlay-checkout-controlbar">
+								<div class="uiPushButton" id="checkout-controlbar-process" data-tooltip=""><?php echo $checkout_purchase_now["html"]; ?></div>
+							</div>
+						</div>
+						
+					</div>
+				</div><!-- end Column1 -->
+				<div class="clear"></div>
+			</div><!-- end overlay-checkout -->
+			<div class="PageView" id="overlay-clickwrap">
+<?php if ($this->getData("policies")!=false) { ?>
+				<div id="clickwrap-context">
+					<div class="Inner">
+						<h2><?php echo $clickwrap_title["html"]; ?></h2>
+						<div class="Description"><?php echo $clickwrap_description["markdown"]; ?></div>
+					</div>
+				</div>
+<?php } ?>
+				<div id="overlay-clickwrap-controlbar">
+					<div class="uiPushButton" id="clickwrap-controlbar-back" data-tooltip=""><?php echo $checkout_return_to_checkout["html"]; ?></div>
+				</div>
+			</div><!-- end overlay-checkout -->
+			<div class="PageView Contact" id="overlay-contact">
+<?php if ($show_in_navigation_bool==true) { include "2.content.contact.tmpl"; } ?>
+			</div><!-- end overlay-contact -->
+		</div><!-- end PageViews -->
+		<div id="dialog-container">
+			<div id="dialog-screen"></div>
+			<div id="dialog">
+				<div id="dialog-inner">
+					<h2 id="dialog-title"></h2>
+					<div id="dialog-description" class="Description"></div>
+					<form onsubmit="return false;">
+						<button id="dialog-accept" class="uiPushButton" type="button"><?php echo $dialog_approve["html"]; ?></button>
+						<button id="dialog-cancel" class="uiPushButton" type="button"><?php echo $dialog_cancel["html"]; ?></button>
+						<div id="dialog-noremind-wrap">
+							<input autocomplete="off" id="dialog-noremind" type="checkbox" value="noremind" />
+							<label id="dialog-noremind-label" for="dialog-noremind"><?php echo $dialog_no_remind["html"]; ?></label>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>

@@ -1,0 +1,16 @@
+<?
+
+	header("HTTP/1.0 404 Not Found");
+	$page_not_found_title = $this->getTypedValue("language", "general", "page_not_found_title");
+	$page_not_found_description = $this->getTypedValue("language", "general", "page_not_found_description");
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+		<title><? echo $page_not_found_title["html"]; ?></title>
+	</head>
+	<body><? echo $page_not_found_description["markdown"]; ?>
+	</body><!-- end markdown markup -->
+</html>

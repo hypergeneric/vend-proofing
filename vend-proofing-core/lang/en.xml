@@ -1,0 +1,835 @@
+﻿<?xml version="1.0"?>
+<data>
+
+	<!-- Order and Stats Tab -->
+	<order_id name="Order ID" />
+	<set_id name="Set ID" />
+	<export_data_as_csv name="Export Data As CSV" />
+	<order_csv_output name="CSV Output" />
+	<download_csv name="Download CSV" />
+	<tax_gst_vat name="Tax/GST/VAT" />
+	
+	<!-- Content -->
+	<browser_not_supported name="Whoops! Browser Not Supported!" />
+	<browser_not_supported_description name="&#x3C;br /&#x3E;This new type of Vend set is very easy to use -- it&#x27;s just drag n&#x27; drop -- as long as you are using a supported browser.  Unfortunately, Safari is the only major browser not supported:  the latest versions of Chrome, Firefox, Opera and even Microsoft&#x27;s Edge all support &#x3C;b&#x3E;&#x3C;i&#x3E;folder&#x3C;/i&#x3E;&#x3C;/b&#x3E; uploads.  So, spark up just about any other browser, and get uploading!  The list of tested and supported browsers:&#x3C;br /&#x3E;&#x3C;br /&#x3E;&#x3C;ul&#x3E;&#x3C;li&#x3E;Chrome 21+&#x3C;/li&#x3E;&#x3C;li&#x3E;Firefox 50+&#x3C;/li&#x3E;&#x3C;li&#x3E;Opera 15+&#x3C;/li&#x3E;&#x3C;li&#x3E;Microsoft Edge&#x3C;/li&#x3E;&#x3C;/ul&#x3E;&#x3C;br /&#x3E;If you are seeing this message and you aren&#x27;t using Safari, your browser is either out of date or a browser we haven&#x27;t tested.  Please update or switch browsers." />
+	<uploadset name="Basic" />
+	<uploadset_description name="Single Category - Upload via this CMS" />
+	<categoryset_description name="Multiple Categories - Upload via this CMS" />
+	<categoryset name="Category" />
+	<zipfile name="Zip Archive" />
+	<zipfile_description name="Multiple categories - FTP a Zip file" />
+	<dropboxset name="Dropbox Set" />
+	<dropboxset_description name="Use Dropbox to Offer Digital Downloads" />
+	<expires_on_date name="Date and Time Site Expires&#10;(timezone aware)" />
+	<format_set name="Format Group" />
+	<paper_set name="Paper Group" />
+	<modifier_set name="Modifier Group" />
+	<package_set name="Package Group" />
+	<product_set name="Product Group" />
+	<enable_quantity_ui_bool name="Enable Quantity Selection" />
+	<enable_color_options_bool name="Enable Color Options" />
+	<enable_cropping_tool_bool name="Enable Cropping Tool" />
+	<enable_comments_bool name="Enable Comments" />
+	<enable_watermarking_bool name="Enable Watermarking" />
+	<use_global_soundtrack_bool name="Use Global Soundtrack" />
+	<include_in_gallery_wall_bool name="Include On Gallery Wall" />
+	<pin_to_top_of_splash_bool name="Pin To Top Of Gallery Wall" />
+	<set_cover_image_asset name="Gallery Image&#10;(use a 16:9 aspect ratio for best results)&#10;(must be larger than 800px in either direction to display)" />
+	<set_contact_list name="Contact List&#10;(comma-separated email addresses)" />
+	<set_welcome_message name="Welcome Message" />
+	<ftp_server_path name="FTP Server Path" />
+	<zipfile_directions name="To create categories, you are going to FTP a zip file to a specified location on your server. &lt;br /&gt;&lt;br /&gt;1. Create a zip file with organized folders of images. Those folder names will become your category names. The zip file name should match exactly as it is seen below at the end of the path (ie: a023.zip).&lt;br /&gt;&lt;br /&gt;2. FTP your zip file to the location specified below. The path below (ie: /vend-proofing-data/uploads/XXXX.zip) outlines the location that your new zip file should be uploaded to. &lt;br /&gt;&lt;br /&gt;You will have to create the &quot;uploads&quot; folder if you haven't yet done so and place the zip file into that folder.&lt;br /&gt;&lt;br /&gt;3. Once you FTP your zip file to the proper location, please click the “Verify Zip File” button below. &lt;br /&gt;&lt;br /&gt;4.You can then move your folders up or down in order. However, you can not organize/rename folders and images. If you want to make changes, you will have to re-upload/replace the zip with a modified zip file of the same name." />
+	<zip_verify_warning name="WARNING!" />
+	<zip_verify_warning_accept name="I Understand, Continue With Verification" />
+	<zip_verify_warning_description name="&lt;b&gt;Do not panic -- just read carefully!&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Please proceed with the verification if you are verifying this set for very the first time or have not shared this set with any clients yet.&lt;br /&gt;&lt;br /&gt;If you have already shared this set with a client, please be aware that re-verifying this set is &lt;i&gt;&lt;b&gt;not necessarily a good idea&lt;/b&gt;&lt;/i&gt;. Since we can't be sure that the new zip file's images and image order are exactly the same as before, we must clear existing client sessions/carts/favorites to eliminate any inconsistencies. If any orders have already been placed, the order's file and financial information will remain intact, however the image thumbnails may no longer be correct." />
+	<zip_verify_failure name="Cannot Verify Zip File!" />
+	<zip_verify_failure_description name="We cannot seem to verify the zip file.  Please re-check the instructions, and try again." />
+	<dropbox_folder_location name="Unique Dropbox Folder Location" />
+	<dropbox_sync_directions name="&#x3C;a href=&#x22;https://intothedarkroom.zendesk.com/hc/en-us/articles/208110476-Images-Dropbox-set-digital-downloads-&#x22; target=&#x22;_blank&#x22;&#x3E;&#x3C;u&#x3E;&#x3C;b&#x3E;Full Directions Here&#x3C;/b&#x3E;&#x3C;/u&#x3E;&#x3C;/a&#x3E;&#x3C;br /&#x3E;&#x3C;br /&#x3E;Go to your Dropbox account or drive and create a folder with the folder name given below in your Vend App Folder.&#x3C;br /&#x3E;&#x3C;br /&#x3E;Copy your high resolution images into this folder. Depending on the number of images you have, this could take hours. HINT: If you would like to categorize your images (i.g. reception, ceremony, bridal party, etc), name the folders that you place in the set folders with the category names and add the images to the appropriate folder.&#x3C;br /&#x3E;&#x3C;br /&#x3E;Once the images are uploaded to Dropbox, you will click the &#x22;Sync&#x22; button below.&#x3C;br /&#x3E;&#x3C;br /&#x3E;Once the files are synced, it will show you the date and number of images that are in this set. If you change anything in this Dropbox set folder, you must resync the folder. Once you send out the link to the client is is best not to re-sync anything." />
+	<dropbox_sync_heading name="Dropbox" />
+	<dropbox_verify_warning name="WARNING!" />
+	<dropbox_verify_warning_description name="&lt;b&gt;Do not panic -- just read carefully!&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Please proceed with the sync if you are syncing this set for very the first time or have not shared this set with any clients yet.&lt;br /&gt;&lt;br /&gt;If you have already shared this set with a client and/or if you have existing orders for this set, please be aware that re-syncing this set is &lt;i&gt;&lt;b&gt;not a good idea&lt;/b&gt;&lt;/i&gt;. Since we can&apos;t be sure that all your images are exactly the same as before, we must clear existing client sessions/carts/favorites to eliminate any inconsistencies. If any orders have already been placed, the order&apos;s file and financial information will remain intact, however the image thumbnails may no longer be correct and any digital downloads that have been purchased will no longer be able to be downloaded." />
+	<dropbox_verify_warning_accept name="I Understand, Continue With Dropbox Sync" />
+	<dropbox_now_syncing name="Performing Sync" />
+	<dropbox_now_syncing_description name="Sync in progress.  Please do not close your browser or change views.  Depending on how many images, this process may take quite a few minutes.&#x3C;br /&#x3E;&#x3C;br /&#x3E;&#x3C;b&#x3E;Progress: {PROGRESS}%&#x3C;/b&#x3E;" />
+	<dropbox_verify_failure name="Sync Failed" />
+	<dropbox_setup_failure name="Communication with Dropbox failed.  If you have made changes to your App settings, moved your product, or reset your Setup tab, you need to re-authorize your account.  Please reset your Dropbox Authorization Code." />
+	<php_version_530_required name="PHP version 5.3.0 or greater is required for Dropbox integration.  Please contact your hosting provider to see if they can update your server's PHP version or contact us for more information about hosting Vend to support Dropbox." />
+	<download_reset_success name="Successfully Reset" />
+	<download_reset_success_description name="You have succesfully reset the download limit for order {OID}.  Your client has automatically recieved a notification via e-mail." />
+	<discount_code_description name="Code Text (must be globally unique to avoid name collisions)" />
+	<output_photocart_ready_notification name="New Gallery Ready Notification" />
+	<output_expiration_reminder name="Expiration Reminder" />
+	<output_general_message name="General Message" />
+	<comma_seperated_email_addresses name="Extra Comma Separated Email Addresses" />
+	<your_personal_message name="Add a Personal Message" />
+
+	<!-- Mail Panel -->
+	<mailpanel name="Contact" />
+	<form_unique_slug name="Unique Field Nickname (will not appear on form)" />
+	<form_is_required name="Yes, Make It Required" />
+	<show_in_navigation_bool name="Show In Navigation" />
+	<contact_form_recipients name="Contact Form Recipients&#10;(comma-separated email addresses)" />
+	<mailing_list name="Mailing List Provider" />
+		<mailinglists>
+			<provider name="None - Mailing List Unavailable" value="none" />
+			<provider name="Use MailChimp" value="mailchimp" />
+			<provider name="Use MadMimi" value="madmimi" />
+			<provider name="Use CampaignMonitor" value="campaignmonitor" />
+		</mailinglists>
+	<mailing_list_username name="Mailing List Account Username&#10;(if applicable)" />
+	<mailing_list_account_api_key name="Mailing List Account Api Key" />
+	<mailing_list_subscriber_list_key name="Mailing List Subscriber List Key/ID" />
+	<use_autoresponder_bool name="Use Autoresponder" />
+	<details name="Account Details" />
+	<your_website_url name="Your Website URL (http://...)" />
+	<your_email name="Your Email Address" />
+	<mailer_settings name="Mail Setup" />
+	<mail_provider name="Mail Provider&#x3C;br /&#x3E;&#x3C;br /&#x3E;Learn More about your mail provider options and email deliverability &#x3C;a href=&#x22;https://intothedarkroom.zendesk.com/hc/en-us/articles/208437696&#x22; target=&#x22;_blank&#x22;&#x3E;&#x3C;u&#x3E;here&#x3C;/u&#x3E;&#x3C;/a&#x3E;&#x3C;br /&#x3E;&#x3C;br /&#x3E;&#x3C;a href=&#x22;javascript:classes.helpers.Func.testMail();&#x22;&#x3E;&#x3C;u&#x3E;Test Email&#x3C;/u&#x3E;&#x3C;/a&#x3E;" />
+	<mail_sent_successfully name="Mailer Test Successful!" />
+	<mail_sent_successfully_description name="Your server reports that email has been sucessfully sent.  Deliverability is another matter -- please check your inbox that you have set for order delivery to ensure that you have succesfully recieved the email.  This would also be a great time to whitelist the incoming email." />
+	<mail_failed_to_send name="Mailer Test Failed!" />
+	<mail_failed_to_send_description name="The email test with your current settings has failed.  Email is a complicated thing to setup correctly.  Please modify your settings and try again." />
+		<mail_providers>
+			<provider name="PHP's mail() function" value="mail" />
+			<provider name="SMTP" value="smtp" />
+			<provider name="SendGrid" value="sendgrid" />
+		</mail_providers>
+	<log_all_messages_bool name="Log Messages&#10;(Auto-purges after 90 days)" />
+	<sendgrid_api_key name="SendGrid API Key" />
+	<server_origin_email name="Server Origin Email Address&#10;(domain must match your domain for PHP mail() or must be your real email address for SMTP)" />
+	<smtp_hostname name="SMTP Hostname&#10;(i.e. smtp.mydomain.com)" />
+	<smtp_port_num name="SMTP Port Number" />
+	<smtp_connection_type name="SMTP Security Type" />
+		<smtp_connection_types>
+			<type name="None" value="none" />
+			<type name="SSL" value="ssl" />
+			<type name="TLS" value="tls" />
+		</smtp_connection_types>
+	<smtp_requires_auth_bool name="SMTP Requires Authentication" />
+	<smtp_username name="SMTP Username" />
+	<smtp_password name="SMTP Password" />
+	
+	<!-- Pricing Groups -->
+	<package_editor_title name="Package Title" />
+	<package_editor_image name="Package Image (Note: Auto-fits within the available space)" />
+	<package_editor_price name="Package Price" />
+	<package_editor_shipping name="Package Shipping Cost (flat fee)" />
+	<package_editor_description name="Package Description (Markdown and HTML is OK)" />
+	<product_editor_title name="Product Title" />
+	<product_editor_image name="Package Image (Note: Auto-fits within the available space)" />
+	<product_editor_price name="Product Price" />
+	<product_editor_shipping name="Product Shipping Cost (flat fee)" />
+	<product_editor_description name="Product Description (Markdown and HTML is OK)" />
+	<format_editor_title name="Format Title" />
+	<format_editor_width name="Format Width (used to calculate aspect)" />
+	<format_editor_height name="Format Height (used to calculate aspect)" />
+	<format_editor_price name="Format Price (a fractional number without currency)" />
+	<format_shipping_modifier name="Optional Shipping (either a fractional number without currency or a function of area A/P)" />
+	<paper_editor_title name="Paper Title" />
+	<paper_editor_price name="Paper Price (either a fractional number without currency or a function of area A/P)" />
+	<paper_shipping_modifier name="Optional Shipping (either a fractional number without currency or a function of area A/P)" />
+	<modifier_editor_title name="Modifier Title" />
+	<modifier_editor_price name="Modifier Price (either a fractional number without currency or a function of area A/P)" />
+	<modifier_shipping_modifier name="Optional Shipping (either a fractional number without currency or a function of area A/P)" />
+	<allow_single_downloads_bool name="Allow High Resolution / Original Downloads" />
+	<allow_web_version_bool name="Allow Web Version Downloads" />
+	<allow_download_all_bool name="Allow Ability To Download All" />
+	<single_download_price name="High Resolution / Original Price&#10;(a fractional number without currency)" />
+	<web_version_download_price name="Web Version Price&#10;(a fractional number without currency)" />
+	<single_download_all_price name="Download All High Resolution / Original Price&#10;(does not apply to favorites)&#10;(a fractional number without currency)" />
+	<web_version_download_all_price name="Web Version Download All Price&#10;(does not apply to favorites)&#10;(a fractional number without currency)" />
+	<download_all_flatfee_bool name="Download All Price Is Flat Fee&#10;(does not apply to favorites)" />
+		
+	<!-- Setup -->
+	<setup name="Settings" />
+		<site_name name="Site Name&#10;(keep to 3-4 words)" />
+		<touch_screen_icon_asset name="Touch Icon&#10;(must be 256x256 pixels)" />
+		<website_favicon_asset name="Favicon File (.ICO/.PNG)&lt;br /&gt;&lt;br /&gt;&lt;a href=&quot;http://www.favicon.cc/&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;Create One Now!&lt;/u&gt;&lt;/a&gt;" />
+		<browser_title name="Browser Title" />
+		<meta_tag_description name="Meta Tag Description&#10;(keep to under 250 characters)" />
+		<meta_tag_keywords name="Meta Tag Keywords&#10;(keep to under 250 characters)" />
+		<page_head_tags name="META Tag Code Block&#10;(or any code to be inserted into the HEAD tag)" />
+		<invoice_footer name="Invoice Footer Text" />
+		<google_analytics_user_agent name="Analytics Embed Code&#10;(or just your UA-XXXXX if you are using google analytics)" />
+		<facebook_pixel_id name="Facebook Pixel ID" />
+		<resampling_quality_num name="Resampling Quality&#10;(percentage)" />
+		<resample_use_imagick_bool name="Use Image Magick Library&#10;(if available)" />
+		<resample_sharpen_bool name="Automatically Sharpen Resampled Images" />
+		<show_image_wall_tooltips_bool name="Show Image Wall Tooltips" />
+		<toning_enable_bw_bool name="Allow Black &amp; White Tone" />
+		<toning_enable_sepia_bool name="Allow Sepia Tone" />
+		<local_timezone name="Your Local Timezone" />
+			<timezones>
+				<zone name="(-12:00) Etc/GMT+12" value="-12:00,Etc/GMT+12" />
+				<zone name="(-11:00) Pacific/Pago Pago" value="-11:00,Pacific/Pago_Pago" />
+				<zone name="(-11:00) America/Adak" value="-11:00,America/Adak" />
+				<zone name="(-11:00) Pacific/Apia" value="-11:00,Pacific/Apia" />
+				<zone name="(-10:00) Pacific/Honolulu" value="-10:00,Pacific/Honolulu" />
+				<zone name="(-10:30) Pacific/Marquesas" value="-10:30,Pacific/Marquesas" />
+				<zone name="(-09:00) Pacific/Gambier" value="-09:00,Pacific/Gambier" />
+				<zone name="(-09:00) America/Anchorage" value="-09:00,America/Anchorage" />
+				<zone name="(-08:00) America/Los Angeles" value="-08:00,America/Los_Angeles" />
+				<zone name="(-08:00) Pacific/Pitcairn" value="-08:00,Pacific/Pitcairn" />
+				<zone name="(-07:00) America/Phoenix" value="-07:00,America/Phoenix" />
+				<zone name="(-07:00) America/Denver" value="-07:00,America/Denver" />
+				<zone name="(-06:00) America/Guatemala" value="-06:00,America/Guatemala" />
+				<zone name="(-06:00) America/Chicago" value="-06:00,America/Chicago" />
+				<zone name="(-06:00) Pacific/Easter" value="-06:00,Pacific/Easter" />
+				<zone name="(-05:00) America/Bogota" value="-05:00,America/Bogota" />
+				<zone name="(-05:00) America/New York" value="-05:00,America/New_York" />
+				<zone name="(-04:30) America/Caracas" value="-04:30,America/Caracas" />
+				<zone name="(-04:00) America/Halifax" value="-04:00,America/Halifax" />
+				<zone name="(-04:00) America/Santo Domingo" value="-04:00,America/Santo_Domingo" />
+				<zone name="(-04:00) America/Asuncion" value="-04:00,America/Asuncion" />
+				<zone name="(-03:30) America/St Johns" value="-03:30,America/St_Johns" />
+				<zone name="(-03:00) America/Godthab" value="-03:00,America/Godthab" />
+				<zone name="(-03:00) America/Argentina/Buenos Aires" value="-03:00,America/Argentina/Buenos_Aires" />
+				<zone name="(-03:00) America/Montevideo" value="-03:00,America/Montevideo" />
+				<zone name="(-02:00) America/Noronha" value="-02:00,America/Noronha" />
+				<zone name="(-02:00) Etc/GMT+2" value="-02:00,Etc/GMT+2" />
+				<zone name="(-01:00) Atlantic/Azores" value="-01:00,Atlantic/Azores" />
+				<zone name="(-01:00) Atlantic/Cape Verde" value="-01:00,Atlantic/Cape_Verde" />
+				<zone name="(00:00) Etc/UTC" value="00:00,Etc/UTC" />
+				<zone name="(00:00) Europe/London" value="00:00,Europe/London" />
+				<zone name="(+01:00) Europe/Berlin" value="+01:00,Europe/Berlin" />
+				<zone name="(+01:00) Africa/Lagos" value="+01:00,Africa/Lagos" />
+				<zone name="(+01:00) Africa/Windhoek" value="+01:00,Africa/Windhoek" />
+				<zone name="(+02:00) Asia/Beirut" value="+02:00,Asia/Beirut" />
+				<zone name="(+02:00) Africa/Johannesburg" value="+02:00,Africa/Johannesburg" />
+				<zone name="(+03:00) Europe/Moscow" value="+03:00,Europe/Moscow" />
+				<zone name="(+03:00) Asia/Baghdad" value="+03:00,Asia/Baghdad" />
+				<zone name="(+03:30) Asia/Tehran" value="+03:30,Asia/Tehran" />
+				<zone name="(+04:00) Asia/Dubai" value="+04:00,Asia/Dubai" />
+				<zone name="(+04:00) Asia/Yerevan" value="+04:00,Asia/Yerevan" />
+				<zone name="(+04:30) Asia/Kabul" value="+04:30,Asia/Kabul" />
+				<zone name="(+05:00) Asia/Yekaterinburg" value="+05:00,Asia/Yekaterinburg" />
+				<zone name="(+05:00) Asia/Karachi" value="+05:00,Asia/Karachi" />
+				<zone name="(+05:30) Asia/Kolkata" value="+05:30,Asia/Kolkata" />
+				<zone name="(+05:45) Asia/Kathmandu" value="+05:45,Asia/Kathmandu" />
+				<zone name="(+06:00) Asia/Dhaka" value="+06:00,Asia/Dhaka" />
+				<zone name="(+06:00) Asia/Omsk" value="+06:00,Asia/Omsk" />
+				<zone name="(+06:30) Asia/Rangoon" value="+06:30,Asia/Rangoon" />
+				<zone name="(+07:00) Asia/Krasnoyarsk" value="+07:00,Asia/Krasnoyarsk" />
+				<zone name="(+07:00) Asia/Jakarta" value="+07:00,Asia/Jakarta" />
+				<zone name="(+08:00) Asia/Shanghai" value="+08:00,Asia/Shanghai" />
+				<zone name="(+08:00) Asia/Irkutsk" value="+08:00,Asia/Irkutsk" />
+				<zone name="(+08:45) Australia/Eucla" value="+08:45,Australia/Eucla" />
+				<zone name="(+08:45) Australia/Eucla" value="+08:45,Australia/Eucla" />
+				<zone name="(+09:00) Asia/Yakutsk" value="+09:00,Asia/Yakutsk" />
+				<zone name="(+09:00) Asia/Tokyo" value="+09:00,Asia/Tokyo" />
+				<zone name="(+09:30) Australia/Darwin" value="+09:30,Australia/Darwin" />
+				<zone name="(+09:30) Australia/Adelaide" value="+09:30,Australia/Adelaide" />
+				<zone name="(+10:00) Australia/Brisbane" value="+10:00,Australia/Brisbane" />
+				<zone name="(+10:00) Asia/Vladivostok" value="+10:00,Asia/Vladivostok" />
+				<zone name="(+10:00) Australia/Sydney" value="+10:00,Australia/Sydney" />
+				<zone name="(+10:30) Australia/Lord Howe" value="+10:30,Australia/Lord_Howe" />
+				<zone name="(+11:00) Asia/Kamchatka" value="+11:00,Asia/Kamchatka" />
+				<zone name="(+11:00) Pacific/Noumea" value="+11:00,Pacific/Noumea" />
+				<zone name="(+11:30) Pacific/Norfolk" value="+11:30,Pacific/Norfolk" />
+				<zone name="(+12:00) Pacific/Auckland" value="+12:00,Pacific/Auckland" />
+				<zone name="(+12:00) Pacific/Tarawa" value="+12:00,Pacific/Tarawa" />
+				<zone name="(+12:45) Pacific/Chatham" value="+12:45,Pacific/Chatham" />
+				<zone name="(+13:00) Pacific/Tongatapu" value="+13:00,Pacific/Tongatapu" />
+				<zone name="(+14:00) Pacific/Kiritimati" value="+14:00,Pacific/Kiritimati" />
+			</timezones>
+		<orderview_print_images_bool name="Print Images In Order View" />
+	<watermarking name="Watermarking" />
+		<watermark_bool name="Use Watermark Image" />
+		<watermark_asset name="Watermark Image&#10;(transparent PNG's are best)" />
+		<watermark_x_num name="Watermark X Offset" />
+		<watermark_y_num name="Watermark Y Offset" />
+		<watermark_alpha_num name="Watermark Opacity&#10;(values less than 100 may render incorrectly - YMMV)" />
+		<crosshairs_bool name="Draw Crosshairs" />
+		<crosshairs_color name="Crosshairs Color" />
+		<crosshairs_alpha_num name="Crosshairs Opacity&#10;(values less than 100 may render incorrectly- YMMV)" />
+	
+	<!-- Ordering -->
+		<offline_order_inbox_email name="Order Email Inbox&#10;(If you want your orders delivered to a different location)" />
+		<default_us_state name="Default US State" />
+		<default_ca_province name="Default Canadian Province" />
+		<allow_international_purchases_bool name="Allow International Purchases" />
+		<allow_offline_payment_bool name="Allow Offline Payment" />
+		<allow_offsite_paypal_payments_bool name="Allow Paypal Standard Payments" />
+		<enable_paypal_merchant_account_bool name="Enable Credit Card Payment Gateway" />
+		<force_browser_ssl_bool name="Force Browser SSL&#10;(WARNING -- do not set this to true unless you are CERTAIN your SSL certificate is installed correctly!)" />
+		<purchase_price_includes_tax_bool name="Prices Include Tax/GST/VAT Values" />
+		<calculate_and_display_shipping_bool name="Calculate And Display Shipping" />
+		<calculate_and_display_sales_tax_bool name="Calculate And Display Sales Tax" />
+		<allow_local_pickup_bool name="Allow Local Pickup" />
+		<allow_discount_codes_bool name="Allow Discount Codes" />
+		<shipping_flat_rate_num name="Shipping Flat Rate&#10;(percent of subtotal)" />
+		<shipping_flat_fee_num name="Shipping Flat Fee" />
+		<handling_flat_fee_num name="Handling Flat Fee" />
+		<international_handling_flat_fee_num name="International Handling Flat Fee" />
+		<shipping_taxable_bool name="Shipping Is Taxable" />
+		<handling_taxable_bool name="Handling Is Taxable" />
+		<downloads_taxable_bool name="Downloads Are Taxable" />
+		<cart_minimum_value_num name="Cart Minimum Value" />
+		<cart_minimum_count_num name="Cart Minimum Count" />
+		<payment_gateway name="3rd Party Integrations" />
+			<merchant_gateway name="Active Merchant Gateway" />
+				<payment_gateways>
+					<gateway name="Credit Cards Not Accepted" value="none" />
+					<gateway name="Stripe" value="stripe" />
+					<gateway name="Paypal Website Payments Pro" value="paypal" />
+					<gateway name="Authorize.net" value="authorizedotnet" />
+				</payment_gateways>
+		<paypal_email_address name="Paypal Standard Email Address" />
+		<paypal_merchant_username name="Paypal API Username" />
+		<paypal_merchant_password name="Paypal API Password" />
+		<paypal_merchant_api_key name="Paypal API Signature" />
+		<authorize_net_login name="Authorize.net Login" />
+		<authorize_net_transkey name="Authorize.net Transaction Key" />
+		<stripe_api_key name="Stripe Live Secret API Key" />
+		<stripe_charge_description name="Stripe Payment Title&#10;(optional -- will show up on credit card statements)" />
+		<dropbox_api_key name="Dropbox API Key" />
+		<dropbox_api_secret name="Dropbox API Secret" />
+		<dropbox_authorization_code name="Dropbox Authorization Code&#x3C;br /&#x3E;&#x3C;br /&#x3E;&#x3C;a href=&#x22;javascript:classes.helpers.Func.authDropbox();&#x22;&#x3E;&#x3C;u&#x3E;Create One Now&#x3C;/u&#x3E;&#x3C;/a&#x3E;" />
+		<providence_label name="Province" />
+		<edit_providence_tax name="Edit Province Tax" />
+		<hst_percent name="HST Percent" />
+		<gst_percent name="GST Percent" />
+		<pst_percent name="PST Percent" />
+		
+	<!-- splash -->
+	<splash_page_views>
+		<view name="Gallery Wall" value="wall" />
+		<view name="Gallery ID Login" value="login" />
+	</splash_page_views>
+	<sorting_mechanism name="Gallery Wall Sorting" />
+		<splash_wall_sort>
+			<type name="Pinned, Active, Expired -- Date Created Ascending" value="P,dc,a;S,dc,a;E,dc,a" />
+			<type name="Pinned, Active, Expired -- Date Created Descending" value="P,dc,d;S,dc,d;E,dc,d" />
+			<type name="Pinned, Active, Expired -- Alphabetical Ascending" value="P,ab,a;S,ab,a;E,ab,a" />
+			<type name="Pinned, Active, Expired -- Alphabetical Descending" value="P,ab,d;S,ab,d;E,ab,d" />
+		</splash_wall_sort>
+	<hide_image_counts_bool name="Hide Image Counts" />
+	<auto_hide_expired_sets_bool name="Auto Hide Expired Sets" />
+	
+	<!-- Cron -->
+	<cron name="Automation" />
+		<cron_enabled_bool name="Automation Enabled" />
+		<expiring_notify_bool name="Auto-notify Users Of Expiring Sets" />
+		<expiring_days_before_num name="Number of Days Before Expiration Notification Is Sent" />
+		<dropbox_purge_old_bool name="Auto-delete Dropbox Order Files" />
+		<dropbox_days_after_num name="Delete Dropbox Order Files Older Than X Number of Days" />
+	
+	<!-- Globals -->
+	<musicpanel name="Music" />
+		<enabled_bool name="Enabled" />
+		<valume_num name="Volume" />
+		<loop_bool name="Loop" />
+	
+	<!-- Design -->
+	<color_theme name="Theme Color" />
+	<color_themes>
+		<theme name="Light" value="light" />
+		<theme name="Dark" value="dark" />
+	</color_themes>
+	<splash_logo_asset name="Splash Page Logo" />
+	<splash_logo_margin_num name="Splash Page Logo Margin" />
+	<splash_logo_retina_bool name="Splash Page Logo Image Is Retina&#10;(double the size)" />
+	<invoice_logo_asset name="Invoice Logo at 300 dpi&#10;(300-400 pixels tall works best)" />
+	<font_asset name="Global Font Zip File&lt;br /&gt;&lt;br /&gt;&lt;a href=&quot;https://intothedarkroom.zendesk.com/hc/en-us/articles/209634733&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;Learn How&lt;/u&gt;&lt;/a&gt;&lt;br /&gt;" />
+	<font_style name="Global Font Fallback" />
+		<font_face>
+			<face name="Sans Serif" value="sans" />
+			<face name="Serif" value="serif" />
+		</font_face>
+	<font_size_scale_num name="Font Scale Percentage" />
+	<tile_gutter_width_num name="Tile Gutter Width Num" />
+
+	<!-- Vend Groups -->
+	<us_states>
+		<code name="None Selected" value="--" />
+		<code name="Armed Forces Americas" value="AA" />
+		<code name="Armed Forces" value="AE" />
+		<code name="Armed Forces Pacific" value="AP" />
+		<code name="Alabama" value="AL" />
+		<code name="Alaska" value="AK" />
+		<code name="American Samoa" value="AS" />
+		<code name="Arizona" value="AZ" />
+		<code name="Arkansas" value="AR" />
+		<code name="California" value="CA" />
+		<code name="Colorado" value="CO" />
+		<code name="Connecticut" value="CT" />
+		<code name="Delaware" value="DE" />
+		<code name="District Of Columbia (Washington, D.C.)" value="DC" />
+		<code name="Florida" value="FL" />
+		<code name="Georgia" value="GA" />
+		<code name="Guam" value="GU" />
+		<code name="Hawaii" value="HI" />
+		<code name="Idaho" value="ID" />
+		<code name="Illinois" value="IL" />
+		<code name="Indiana" value="IN" />
+		<code name="Iowa" value="IA" />
+		<code name="Kansas" value="KS" />
+		<code name="Kentucky" value="KY" />
+		<code name="Louisiana" value="LA" />
+		<code name="Maine" value="ME" />
+		<code name="Maryland" value="MD" />
+		<code name="Massachusetts" value="MA" />
+		<code name="Michigan" value="MI" />
+		<code name="Minnesota" value="MN" />
+		<code name="Mississippi" value="MS" />
+		<code name="Missouri" value="MO" />
+		<code name="Montana" value="MT" />
+		<code name="North Carolina" value="NC" />
+		<code name="North Dakota" value="ND" />
+		<code name="Northern Mariana Islands" value="MP" />
+		<code name="Nebraska" value="NE" />
+		<code name="Nevada" value="NV" />
+		<code name="New Hampshire" value="NH" />
+		<code name="New Jersey" value="NJ" />
+		<code name="New Mexico" value="NM" />
+		<code name="New York" value="NY" />
+		<code name="Ohio" value="OH" />
+		<code name="Oklahoma" value="OK" />
+		<code name="Oregon" value="OR" />
+		<code name="Pennsylvania" value="PA" />
+		<code name="Puerto Rico" value="PR" />
+		<code name="Rhode Island" value="RI" />
+		<code name="South Carolina" value="SC" />
+		<code name="South Dakota" value="SD" />
+		<code name="Tennessee" value="TN" />
+		<code name="Texas" value="TX" />
+		<code name="Utah" value="UT" />
+		<code name="Vermont" value="VT" />
+		<code name="Virgin Islands" value="VI" />
+		<code name="Virginia" value="VA" />
+		<code name="Washington" value="WA" />
+		<code name="West Virginia" value="WV" />
+		<code name="Wisconsin" value="WI" />
+		<code name="Wyoming" value="WY" />
+	</us_states>
+	<ca_province>
+		<code name="None Selected" value="--" />
+		<code value="BC" name="British Columbia" />
+		<code value="AB" name="Alberta" />
+		<code value="SK" name="Saskatchewan" />
+		<code value="MB" name="Manitoba" />
+		<code value="ON" name="Ontario" />
+		<code value="QC" name="Quebec" />
+		<code value="PE" name="Prince Edward Island" />
+		<code value="NB" name="New Brunswick" />
+		<code value="NS" name="Nova Scotia" />
+		<code value="NL" name="Newfoundland/Labrador" />
+		<code value="YT" name="Yukon" />
+		<code value="NT" name="Northwest Territories" />
+		<code value="NU" name="Nunavut" />
+	</ca_province>
+	<currency_iso_codes>
+		<code name="Australian Dollars (A $)" value="AUD" />
+		<code name="Brazilian Real" value="BRL" />
+		<code name="Canadian Dollars (C $)" value="CAD" />
+		<code name="Czech Koruna" value="CZK" />
+		<code name="Danish Krone" value="DKK" />
+		<code name="Euros (€)" value="EUR" />
+		<code name="Hong Kong Dollar ($)" value="HKD" />
+		<code name="Hungarian Forint" value="HUF" />
+		<code name="Israeli New Sheqel" value="ILS" />
+		<code name="Japanese Yen (¥)" value="JPY" />
+		<code name="Malaysian Ringgit" value="MYR" />
+		<code name="Mexican Peso" value="MXN" />
+		<code name="Norwegian Krone" value="NOK" />
+		<code name="New Zealand Dollar ($)" value="NZD" />
+		<code name="Philippine Peso" value="PHP" />
+		<code name="Polish Zloty" value="PLN" />
+		<code name="Pounds Sterling (£)" value="GBP" />
+		<code name="Russian Ruble" value="RUB" />
+		<code name="Singapore Dollar ($)" value="SGD" />
+		<code name="Swedish Krona" value="SEK" />
+		<code name="Swiss Franc" value="CHF" />
+		<code name="Taiwan New Dollar" value="TWD" />
+		<code name="Thai Baht" value="THB" />
+		<code name="Turkish Lira" value="TRY" />
+		<code name="U.S. Dollars ($)" value="USD" />
+	</currency_iso_codes>
+	<country_iso_codes>
+		<code name="None Selected" value="--" />
+		<code value="AL" name="Albania" />
+		<code value="DZ" name="Algeria" />
+		<code value="AD" name="Andorra" />
+		<code value="AO" name="Angola" />
+		<code value="AI" name="Anguilla" />
+		<code value="AG" name="Antigua and Barbuda" />
+		<code value="AR" name="Argentina" />
+		<code value="AM" name="Armenia" />
+		<code value="AW" name="Aruba" />
+		<code value="AU" name="Australia" />
+		<code value="AT" name="Austria" />
+		<code value="AZ" name="Azerbaijan Republic" />
+		<code value="BS" name="Bahamas" />
+		<code value="BH" name="Bahrain" />
+		<code value="BB" name="Barbados" />
+		<code value="BE" name="Belgium" />
+		<code value="BZ" name="Belize" />
+		<code value="BJ" name="Benin" />
+		<code value="BM" name="Bermuda" />
+		<code value="BT" name="Bhutan" />
+		<code value="BO" name="Bolivia" />
+		<code value="BA" name="Bosnia and Herzegovina" />
+		<code value="BW" name="Botswana" />
+		<code value="BR" name="Brazil" />
+		<code value="VG" name="British Virgin Islands" />
+		<code value="BN" name="Brunei" />
+		<code value="BG" name="Bulgaria" />
+		<code value="BF" name="Burkina Faso" />
+		<code value="BI" name="Burundi" />
+		<code value="KH" name="Cambodia" />
+		<code value="CA" name="Canada" />
+		<code value="CV" name="Cape Verde" />
+		<code value="KY" name="Cayman Islands" />
+		<code value="TD" name="Chad" />
+		<code value="CL" name="Chile" />
+		<code value="C2" name="China" />
+		<code value="CO" name="Colombia" />
+		<code value="KM" name="Comoros" />
+		<code value="CK" name="Cook Islands" />
+		<code value="CR" name="Costa Rica" />
+		<code value="HR" name="Croatia" />
+		<code value="CY" name="Cyprus" />
+		<code value="CZ" name="Czech Republic" />
+		<code value="CD" name="Democratic Republic of the Congo" />
+		<code value="DK" name="Denmark" />
+		<code value="DJ" name="Djibouti" />
+		<code value="DM" name="Dominica" />
+		<code value="DO" name="Dominican Republic" />
+		<code value="EC" name="Ecuador" />
+		<code value="SV" name="El Salvador" />
+		<code value="ER" name="Eritrea" />
+		<code value="EE" name="Estonia" />
+		<code value="ET" name="Ethiopia" />
+		<code value="FK" name="Falkland Islands" />
+		<code value="FO" name="Faroe Islands" />
+		<code value="FM" name="Federated States of Micronesia" />
+		<code value="FJ" name="Fiji" />
+		<code value="FI" name="Finland" />
+		<code value="FR" name="France" />
+		<code value="GF" name="French Guiana" />
+		<code value="PF" name="French Polynesia" />
+		<code value="GA" name="Gabon Republic" />
+		<code value="GM" name="Gambia" />
+		<code value="DE" name="Germany" />
+		<code value="GI" name="Gibraltar" />
+		<code value="GR" name="Greece" />
+		<code value="GL" name="Greenland" />
+		<code value="GD" name="Grenada" />
+		<code value="GP" name="Guadeloupe" />
+		<code value="GT" name="Guatemala" />
+		<code value="GN" name="Guinea" />
+		<code value="GW" name="Guinea Bissau" />
+		<code value="GY" name="Guyana" />
+		<code value="HN" name="Honduras" />
+		<code value="HK" name="Hong Kong" />
+		<code value="HU" name="Hungary" />
+		<code value="IS" name="Iceland" />
+		<code value="IN" name="India" />
+		<code value="ID" name="Indonesia" />
+		<code value="IE" name="Ireland" />
+		<code value="IL" name="Israel" />
+		<code value="IT" name="Italy" />
+		<code value="JM" name="Jamaica" />
+		<code value="JP" name="Japan" />
+		<code value="JO" name="Jordan" />
+		<code value="KZ" name="Kazakhstan" />
+		<code value="KE" name="Kenya" />
+		<code value="KI" name="Kiribati" />
+		<code value="KW" name="Kuwait" />
+		<code value="KG" name="Kyrgyzstan" />
+		<code value="LA" name="Laos" />
+		<code value="LV" name="Latvia" />
+		<code value="LS" name="Lesotho" />
+		<code value="LI" name="Liechtenstein" />
+		<code value="LT" name="Lithuania" />
+		<code value="LU" name="Luxembourg" />
+		<code value="MG" name="Madagascar" />
+		<code value="MW" name="Malawi" />
+		<code value="MY" name="Malaysia" />
+		<code value="MV" name="Maldives" />
+		<code value="ML" name="Mali" />
+		<code value="MT" name="Malta" />
+		<code value="MH" name="Marshall Islands" />
+		<code value="MQ" name="Martinique" />
+		<code value="MR" name="Mauritania" />
+		<code value="MU" name="Mauritius" />
+		<code value="YT" name="Mayotte" />
+		<code value="MX" name="Mexico" />
+		<code value="MN" name="Mongolia" />
+		<code value="MS" name="Montserrat" />
+		<code value="MA" name="Morocco" />
+		<code value="MZ" name="Mozambique" />
+		<code value="NA" name="Namibia" />
+		<code value="NR" name="Nauru" />
+		<code value="NP" name="Nepal" />
+		<code value="NL" name="Netherlands" />
+		<code value="AN" name="Netherlands Antilles" />
+		<code value="NC" name="New Caledonia" />
+		<code value="NZ" name="New Zealand" />
+		<code value="NI" name="Nicaragua" />
+		<code value="NE" name="Niger" />
+		<code value="NG" name="Nigeria" />
+		<code value="NU" name="Niue" />
+		<code value="NF" name="Norfolk Island" />
+		<code value="NO" name="Norway" />
+		<code value="OM" name="Oman" />
+		<code value="PW" name="Palau" />
+		<code value="PA" name="Panama" />
+		<code value="PG" name="Papua New Guinea" />
+		<code value="PE" name="Peru" />
+		<code value="PH" name="Philippines" />
+		<code value="PN" name="Pitcairn Islands" />
+		<code value="PL" name="Poland" />
+		<code value="PT" name="Portugal" />
+		<code value="QA" name="Qatar" />
+		<code value="CG" name="Republic of the Congo" />
+		<code value="RE" name="Reunion" />
+		<code value="RO" name="Romania" />
+		<code value="RU" name="Russia" />
+		<code value="RW" name="Rwanda" />
+		<code value="VC" name="Saint Vincent and the Grenadines" />
+		<code value="WS" name="Samoa" />
+		<code value="SM" name="San Marino" />
+		<code value="ST" name="São Tomé and Príncipe" />
+		<code value="SA" name="Saudi Arabia" />
+		<code value="SN" name="Senegal" />
+		<code value="SC" name="Seychelles" />
+		<code value="SL" name="Sierra Leone" />
+		<code value="SG" name="Singapore" />
+		<code value="SK" name="Slovakia" />
+		<code value="SI" name="Slovenia" />
+		<code value="SB" name="Solomon Islands" />
+		<code value="SO" name="Somalia" />
+		<code value="ZA" name="South Africa" />
+		<code value="KR" name="South Korea" />
+		<code value="ES" name="Spain" />
+		<code value="LK" name="Sri Lanka" />
+		<code value="SH" name="St. Helena" />
+		<code value="KN" name="St. Kitts and Nevis" />
+		<code value="LC" name="St. Lucia" />
+		<code value="PM" name="St. Pierre and Miquelon" />
+		<code value="SR" name="Suriname" />
+		<code value="SJ" name="Svalbard and Jan Mayen Islands" />
+		<code value="SZ" name="Swaziland" />
+		<code value="SE" name="Sweden" />
+		<code value="CH" name="Switzerland" />
+		<code value="TW" name="Taiwan" />
+		<code value="TJ" name="Tajikistan" />
+		<code value="TZ" name="Tanzania" />
+		<code value="TH" name="Thailand" />
+		<code value="TG" name="Togo" />
+		<code value="TO" name="Tonga" />
+		<code value="TT" name="Trinidad and Tobago" />
+		<code value="TN" name="Tunisia" />
+		<code value="TR" name="Turkey" />
+		<code value="TM" name="Turkmenistan" />
+		<code value="TC" name="Turks and Caicos Islands" />
+		<code value="TV" name="Tuvalu" />
+		<code value="UG" name="Uganda" />
+		<code value="UA" name="Ukraine" />
+		<code value="AE" name="United Arab Emirates" />
+		<code value="GB" name="United Kingdom" />
+		<code value="US" name="United States" />
+		<code value="UY" name="Uruguay" />
+		<code value="VU" name="Vanuatu" />
+		<code value="VA" name="Vatican City State" />
+		<code value="VE" name="Venezuela" />
+		<code value="VN" name="Vietnam" />
+		<code value="WF" name="Wallis and Futuna Islands" />
+		<code value="YE" name="Yemen" />
+		<code value="ZM" name="Zambia" />
+	</country_iso_codes>
+
+	<!-- it *HIGHLY UNLIKELY* You'll ever have to change anything below this line once they are translated -->
+	<!-- it *HIGHLY UNLIKELY* You'll ever have to change anything below this line once they are translated -->
+	<!-- it *HIGHLY UNLIKELY* You'll ever have to change anything below this line once they are translated -->
+	<!-- it *HIGHLY UNLIKELY* You'll ever have to change anything below this line once they are translated -->
+	
+	<tsm_opportunity_description name="Triple Scoop Music is the amazing music licensing service loved by the world's leading photographers and event filmmakers. TSM&#8217;s award-winning song library offers more than 15,000 hand-picked songs that will help you supercharge the emotion and energy of your slideshows, websites and more.&lt;br /&gt;&lt;br /&gt;Simply click &lt;b&gt;Import Music&lt;/b&gt; and we'll preload 5 Triple Scoop Music tracks into your Global Music Library free for you to use with this product.  To learn more about how Triple Scoop Music and Intothedarkroom are working together, please visit &lt;a href=&quot;http://intothedarkroom.com/triple-scoop-music/&quot; target=&quot;_blank&quot;&gt;&lt;u&gt;http://intothedarkroom.com/triple-scoop-music/&lt;/u&gt;&lt;/a&gt; and learn how you can save 10% on all of your music purchases." />
+	<import_tsm_music name="Import Music" />
+	<tsm_opportunity name="Free Music From Triple Scoop Music" />
+	<global_audio_library name="Global Music Library" />
+	<read_eula name="Read The EULA" />
+	<i_agree_to_terms name="I Agree To Terms In The EULA" />
+	<update_product_confirmation name="Update Product?" />
+	<update_product_confirmation_description name="You are about to run an update for this product.  You will see a series of browser refreshes, and it will return you to this admin." />
+	<yes_update name="Yes! Update!" />
+
+	<!-- Content Pages/Childen -->
+	<page_list name="All Pages" />
+	<page_name name="Page Title" />
+	<render_type name="Page Type" />
+	<launch name="Preview" />
+	<album_description name="Portfolios, Galleries" />
+	<infolist_description name="FAQ's, Services, Pricing" />
+	<infolist name="Info List" />
+	<infopage name="Info Page" />
+	<infopage_description name="About, Bio, Philosophy" />
+	<edit_file name="Edit Image" />
+	<file_title name="Image Title" />
+	<file_description name="Image Description" />
+	<autostart_bool name="Auto Start Slideshow" />
+	<show_captions_bool name="Show Image Captions" />
+	<shift_click_to_select_multiple_images name="(Shift-Click To Select Multiple Images)" />
+	<randomize name="Random" />
+	<sort_alphabetically_desc name="Z-A" />
+	<sort_alphabetically_asc name="A-Z" />
+	<select_link_action name="Choose Where This Link Opens" />
+
+	<!-- Soundtrack -->
+	<audio_library name="Track Listing" />
+
+	<!-- Global Text -->
+	<image_asset name="Assigned Image" />
+	<uri_linkage name="Enter URL (http://...)" />
+	<or_enter_url name="Or Enter URL (http://...) Here" />
+	<website_url name="Website URL" />
+
+	<!-- Global Text Lists -->
+	<body_style>
+		<style name="Sans Serif" value="sans" />
+		<style name="Serif" value="serif" />
+	</body_style>
+	<video_player>
+		<skin name="Dark" value="ToobPlayer (Dark)" />
+		<skin name="Glossy" value="ToobPlayer (Glossy)" />
+		<skin name="Gray" value="ToobPlayer (Gray)" />
+		<skin name="Simple 1" value="ToobPlayer (Simple 1)" />
+		<skin name="Simple 2" value="ToobPlayer (Simple 2)" />
+	</video_player>
+	<background_modes>
+		<mode name="Fill Frame" value="fill" />
+		<mode name="Tile" value="xy" />
+		<mode name="Tile Horizontally Only" value="x" />
+		<mode name="Tile Vertically Only" value="y" />
+	</background_modes>
+	<short_months>
+		<month name="Jan" value="0" />
+		<month name="Feb" value="1" />
+		<month name="Mar" value="2" />
+		<month name="Apr" value="3" />
+		<month name="May" value="4" />
+		<month name="Jun" value="5" />
+		<month name="Jul" value="6" />
+		<month name="Aug" value="7" />
+		<month name="Sep" value="8" />
+		<month name="Oct" value="9" />
+		<month name="Nov" value="10" />
+		<month name="Dec" value="11" />
+	</short_months>
+	<uri_target>
+		<target name="Open in the Same Window" value="_self" />
+		<target name="Open in a New Window" value="_blank" />
+	</uri_target>
+
+	<!-- Media Lists & Upload -->
+	<move_up name="↑" />
+	<move_down name="↓" />
+	<asset name="File" />
+	<service_or name="Add a YouTube or Vimeo URL" />
+	<service_enter_the_file_url_here name="Enter the Youtube or Vimeo URL Here" />
+	<service_add_url name="Add Video" />
+	<import_or name="Load From External URL" />
+	<import_enter_the_file_url_here name="Sideload from server (http://...)" />
+	<import_add_url name="Sideload" />
+	<file_exceeds_max_upload_size name="File Exceeds Maximum Upload Size!" />
+	<file_not_uploaded name="File Not Uploaded!" />
+	<http_error name="HTTP Error" />
+	<saving_complete name="Save Progress" />
+	<url_does_not_exist name="URL Does Not Exist" />
+
+	<!-- Dashboard Items -->
+	<launch_site name="Preview Site" />
+	<clear_server_cache name="Delete Temp Files" />
+	<imagick_library_version name="Imagick Version" />
+	<gd_library_version name="GD Library Version" />
+	<curl_library_version name="cURL Library Version" />
+	<server_api name="Server API" />
+	<php_os name="PHP Operating System" />
+	<php_version name="PHP Version" />
+	<temporary_storage name="Temporary Files Storage" />
+	<create_system_backup name="Create System Storage Backup File" />
+	<system_backup_success name="Backup Created Successfully!" />
+	<download_backup name="Download Backup Now!" />
+	<system_backup_success_description name="The backup file has successfully been created.&#10;&#10;Please click the Download Now button to download it to a safe place.  We recommend regularly backing up your data." />
+	<system_backup_failed name="Backup Creation failed!" />
+	<system_backup_failed_description name="The backup has failed.  This is probably due to limitations on your server, added with the possibility that you may have enourmous amounts of data.  Not every server is created equally, and unfortunatley, we are bound by the limitations of your server. Sorry!" />
+	<view_php_info_sheet name="View PHP Info Sheet" />
+
+	<!-- Update Stuff -->
+	<update_available name="Update Available!" />
+	<update_available_description name="There is a update available for your software installation.  The most current version is &lt;b&gt;{CURRENT}&lt;/b&gt; and your installed version is &lt;b&gt;{INSTALLED}&lt;/b&gt;.  We HIGHLY recommend updating your software as soon as possible." />
+	<update_now name="Update Now!" />
+	<update_forget name="Remind Me In 2 Weeks" />
+
+
+	<!-- Login/Password Mechanism -->
+	<logging_out name="Logging Out ..." />
+	<logging_out_description name="Logging you out of this session.  Please wait ..." />
+	<authentication_error name="Authentication Error!" />
+	<authentication_error_description name="It appears you have been logged out of your current session.  Please refresh your browser and login again." />
+	<username_invalid name="Username invalid!" />
+	<password_invalid name="Password invalid!" />
+	<address_supplied_does_not_match_address_on_file name="The address supplied does not match the address on file." />
+	<incorrect_answer_to_secret_question name="Incorrect answer to the secret question." />
+	<new_credentials_delivery_failure name="Failed to deliver your credentials!" />
+	<new_credentials_delivered name="We've emailed you your new credentials.  Please check your email." />
+	<your_new_temporary_credentials_email_body name="You or someone on your behalf has requested new credentials to your product installed here:&#10;{BASEURL}&#10;&#10;We have deleted your previous login credentials, and have created a new temporary login and password.  Please take this moment to login and change them both under the Dashboard.&#10;&#10;Admin Login: {ADMINURL}&#10;Username: {USERNAME}&#10;Password: {PASSWORD}&#10;&#10;Thanks for using intothedarkroom!" />
+	<username_invalid_description name="The username you supplied does not match the username we have on file.  Please check your values and try again." />
+	<password_invalid_description name="The password you supplied does not match the password we have on file.  Please check your values and try again." />
+	<original_password_invalid name="Password invalid!" />
+	<original_password_invalid_description name="The password you supplied does not match the password we have on file.  Please check your values and try again." />
+	<password_changed_successfully name="Password changed successfully!" />
+	<password_changed_successfully_description name="You have successfully changed your password.  Please take this time to either write it down, or commit it to memory in a way that makes sense for you." />
+	<username_changed_successfully name="Username changed successfully!" />
+	<username_changed_successfully_description name="You have successfully changed your username.  Please take this time to either write it down, or commit it to memory in a way that makes sense for you." />
+
+
+	<!-- Setup Initialization Items -->
+	<site_footer_text name="© Copyright &lt;a href='http://intothedarkroom.com' target='_blank'&gt;&lt;u&gt;intothedarkroom.com&lt;/u&gt;&lt;/a&gt;" />
+	<init_title name="Setup Required" />
+	<init_description name="You are seeing this message because you have recently installed this product.  You will need to setup your admin panel, and create some content, as there is no content yet to display.  Please refer to your introduction email for further assistance, or click the link below to visit the resources site." />
+	<initial_setup name="Lets do this!" />
+	<intial_page_description name="If you just installed this product for the first time, you're almost there!&lt;br /&gt;&lt;br /&gt;We just need to do some last minute initialization for you to get started.  This form will create your user account, and initialize the software so you can login and start using it.  Please make sure that the email address is a valid email address, and please make sure your secret question/answer is something you'll remember.&lt;br /&gt;&lt;br /&gt;If you ever forget your login/password, you'll need it to get back in the system.&lt;br /&gt;&lt;br /&gt;If you have recently updated your software, please note:&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;CLEAR YOUR CACHE!!&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;CLEAR YOUR CACHE!!&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;CLEAR YOUR CACHE!!&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Thanks! And enjoy your new product!&lt;br /&gt;" />
+	<you_must_supply_a_valid_email_address name="You must supply a valid Email Address!" />
+	<you_must_supply_a_secret_question name="You must supply a secret question!" />
+	<you_must_supply_the_answer_to_the_secret_question name="You must supply the answer to the secret question!" />
+	<username_must_be_a_minimum_of_6_characters name="Username must be a minimum of 6 characters!" />
+	<password_must_be_a_minimum_of_6_characters name="Password must be a minimum of 6 characters!" />
+	<passwords_do_not_match name="Passwords do not match!" />
+
+
+	<!-- General Dialog Errors -->
+	<yes_delete name="Yes, DELETE" />
+	<yes_revert name="Yes, REVERT" />
+	<unsaved_changes name="Unsaved Changes!" />
+	<unsaved_changes_description name="You have unsaved changes.  Are you sure you want to ignore these changes and continue?" />
+	<delete_set_confirmation name="Delete Confirmation" />
+	<delete_set_confirmation_description name="Are you sure you want to delete this item?  This action will &lt;b&gt;permanently delete&lt;/b&gt; this item and settings associated with it.&#10;&#10;This action &lt;b&gt;can not be un-done&lt;/b&gt;." />
+	<delete_files_confirmation_description name="Are you sure you want to delete these files?&lt;br /&gt;This action &lt;b&gt;can not be un-done&lt;/b&gt;.&lt;br /&gt;" />
+	<revert_confirmation_description name="Are you sure you want to revert these settings?&lt;br /&gt;This action &lt;b&gt;can not be un-done&lt;/b&gt;.&lt;br /&gt;All settings will be &lt;b&gt;reverted to factory settings&lt;/b&gt;, and any changes you have made &lt;b&gt;will be lost forever&lt;/b&gt;." />
+	<cancel_changes_confirmation name="Cancel Changes" />
+	<cancel_changes_confirmation_description name="Are you sure you want to cancel your changes?&lt;br /&gt;This action &lt;b&gt;can not be un-done&lt;/b&gt;.&lt;br /&gt;Any changes you have made will be &lt;b&gt;reverted to the last saved version&lt;/b&gt;." />
+
+	<!-- Public Gateway -->
+	<bulk_mailer_success name="Mailed Successfully!" />
+	<bulk_mailer_partial_success name="Mail Partial Success - Some Addresses Undeliverable" />
+	<bulk_mailer_failure name="Mail Send Failure" />
+	<bulk_mailer_no_recipients name="No Recipients Specified" />
+	<installation_invalid name="Installation Invalid!" />
+	<a_valid_action_parameter_is_required name="A Valid 'Action' Parameter is Required!" />
+	<type_is_a_required_parameter name="'type' is a Required Parameter!" />
+	<xml_data_set_empty name="XML Dataset empty!" />
+	<file_data_set_empty name="File Dataset empty!" />
+	<name_is_a_required_parameter name="'name' is a Required Parameter!" />
+	<set_data_set_empty name="Set Dataset empty!" />
+
+	<!-- URI Setup -->
+	<uri_page_identifier name="set" />
+	<uri_special_identifier name="action" />
+	<uri_contact_identifier name="contact" />
+	<uri_splash_identifier name="home" />
+
+
+</data>

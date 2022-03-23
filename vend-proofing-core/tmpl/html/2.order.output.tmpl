@@ -1,0 +1,561 @@
+<?php
+
+	$contact = $this->getData("contact");
+
+	/* get labguage stuff
+		*/
+	$invoice_order_date_label = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_order_date_label"));
+	$invoice_orderid = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_orderid"));
+	$invoice_setid = 			htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_setid"));
+	$invoice_payment_method = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_method"));
+	$invoice_phone_prefix = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_phone_prefix"));
+	$invoice_email_prefix = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_email_prefix"));
+	$checkout_cart_total = 		htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_total"));
+	$checkout_cart_discount = 	htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_discount"));
+	$checkout_cart_subtotal = 	htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_subtotal"));
+	$checkout_cart_tax = 		htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_tax"));
+	$checkout_cart_shipping = 	htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_shipping"));
+	$checkout_cart_handling = 	htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_handling"));
+	$checkout_cart_final_total = 	htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_final_total"));
+	$sidebar_tone_sepia = 		$data_language->getNodeVal("data.ordering.sidebar_tone_sepia");
+	$sidebar_tone_black_n_white = $data_language->getNodeVal("data.ordering.sidebar_tone_black_and_white");
+	$sidebar_crop_portrait = 	$data_language->getNodeVal("data.ordering.sidebar_crop_portrait");
+	$sidebar_crop_landscape = 	$data_language->getNodeVal("data.ordering.sidebar_crop_landscape");
+	$date_pattern = 			$data_language->getNodeVal("data.checkout.date_pattern");
+	$sidebar_comments = 				htmlspecialchars($data_language->getNodeVal("data.ordering.sidebar_comments"));
+
+	/* page properties
+		*/
+	$set_id = 				$orderobj[1];
+	$set_path = 			SA_DIR_STORAGE . "/" . $set_id . "/";
+	$setid_uri = 			SA_DIR_INDEXPATH . "?/" . $LANG->lookup('uri_page_identifier') . "/" . $set_id . "/";
+	$isZipSet = 			file_exists($set_path."/zipfile.xml")==true;
+	if ($isZipSet) {
+		$fileindex = 		Flatfile::getSetTable("zipfile-fileindex", $set_id);
+	} else {
+		$fileindex = 		Flatfile::getFileTable("image", $set_id);
+	}
+
+	/* order info
+		*/
+	$order_date = 			date($data_language->getNodeVal("data.localization.date_pattern"), $orderobj[2]/1000);
+	$payment_type = 			htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_".$orderobj[3]));
+	$purchaser_name = 		htmlspecialchars($orderobj[7]);
+	$purchaser_address = 		$orderobj[10];
+		$purchaser_address = 		str_replace("<[[BR]]>", "\n", $purchaser_address);
+		$purchaser_address = 		trim($purchaser_address);
+		$purchaser_address = 		htmlspecialchars($purchaser_address);
+		$purchaser_address = 		str_replace("\n", "<br />", $purchaser_address);
+		$purchaser_address = 		str_replace("<br /><br />", "<br />", $purchaser_address);
+	$purchaser_country = 			$orderobj[11];
+	$purchaser_zipcode = 			$orderobj[12];
+	$purchaser_state = 			$orderobj[13];
+	$purchaser_phone_number = 		htmlspecialchars($orderobj[9]);
+	$purchaser_email_address = 	$orderobj[8];
+	$purchaser_email_address_clean = htmlspecialchars($purchaser_email_address);
+	$cart_total = 			$orderobj[15];
+	$cart_discount = 			$orderobj[16];
+	if ($cart_discount>$cart_total) {
+		$cart_discount = 		$cart_total;
+	}
+	$cart_subtotal = 			$cart_total-$cart_discount;
+	$cart_total = 			getFormattedPrice($cart_total, $data_language);
+	$cart_discount = 			getFormattedPrice($cart_discount*-1, $data_language);
+	$cart_subtotal = 			getFormattedPrice($cart_subtotal, $data_language);
+	$cart_tax = 			getFormattedPrice($orderobj[19], $data_language);
+	$cart_shipping = 			getFormattedPrice($orderobj[17], $data_language);
+	$cart_handling = 			getFormattedPrice($orderobj[18], $data_language);
+	$cart_final_total = 		getFormattedPrice($orderobj[14], $data_language);
+
+	$import_title_combined = 	$LANG->lookup("Import Title Combined");
+	$import_title_grouped = 	$LANG->lookup("Import Title Grouped");
+	$import_title_packages_and_alacarte = $LANG->lookup("import_title_packages_and_alacarte");
+	
+	$comments = $orderobj[24];
+		$comments = 			str_replace("<[[BR]]>", "\n", $comments);
+		$comments = 			htmlspecialchars($comments);
+		$comments = 			str_replace("\n", "<br />", $comments);
+
+?>
+<div id="output">
+<div id="output-inner">
+	<div id="invoice-meta">
+		<table id="invoice-table">
+			<tr>
+				<td class="Label"><?php echo $invoice_order_date_label; ?></td>
+				<td class="Value"><?php echo $order_date; ?></td>
+			</tr>
+			<tr>
+				<td class="Label"><?php echo $invoice_orderid; ?></td>
+				<td class="Value"><?php echo $orderid; ?></td>
+			</tr>
+			<tr>
+				<td class="Label"><?php echo $invoice_setid; ?></td>
+				<td class="Value"><a href="<?php echo $setid_uri; ?>" target="_blank"><?php echo $set_id; ?><a/></td>
+			</tr>
+			<tr>
+				<td class="Label"><?php echo $invoice_payment_method; ?></td>
+				<td class="Value"><?php echo $payment_type; ?></td>
+			</tr>
+		</table>
+	</div>
+	<div id="purchaser-data">
+		<h2><?php echo $purchaser_name; ?></h2>
+		<div id="owner-address"><?php echo $purchaser_address; ?><br /><?php echo $purchaser_state; ?> <?php echo $purchaser_zipcode; ?><br /><?php echo $purchaser_country; ?></div>
+		<div id="owner-contact">
+			<?php echo $invoice_phone_prefix; ?> <?php echo $purchaser_phone_number; ?><br />
+			<?php echo $invoice_email_prefix; ?> <a href="mailto:<?php echo $purchaser_email_address; ?>" target="_blank"><?php echo $purchaser_email_address_clean; ?></a>
+		</div>
+	</div>
+	<table id="summary-table">
+		<colgroup></colgroup>
+		<colgroup width="150px"></colgroup>
+		<tr id="cart-total">
+			<td class="Label"><?php echo $checkout_cart_total; ?></td>
+			<td class="Value"><?php echo $cart_total; ?></td>
+		</tr>
+		<tr>
+			<td class="Label"><?php echo $checkout_cart_discount; ?></td>
+			<td class="Value"><?php echo $cart_discount; ?></td>
+		</tr>
+		<tr>
+			<td class="Label"><?php echo $checkout_cart_subtotal; ?></td>
+			<td class="Value"><?php echo $cart_subtotal; ?></td>
+		</tr>
+		<tr>
+			<td class="Label"><?php echo $checkout_cart_shipping; ?></td>
+			<td class="Value"><?php echo $cart_shipping; ?></td>
+		</tr>
+		<tr>
+			<td class="Label"><?php echo $checkout_cart_handling; ?></td>
+			<td class="Value"><?php echo $cart_handling; ?></td>
+		</tr>
+		<tr id="cart-tax">
+			<td class="Label"><?php echo $checkout_cart_tax; ?></td>
+			<td class="Value"><?php echo $cart_tax; ?></td>
+		</tr>
+		<tr id="cart-final-total">
+			<td class="Label Strong"><?php echo $checkout_cart_final_total; ?></td>
+			<td class="Value Strong"><?php echo $cart_final_total; ?></td>
+		</tr>
+	</table>
+<?php if (strlen($comments)>0) { ?>
+	<div id="purchase-comments">
+		<h2><?php echo $sidebar_comments; ?></h2>
+		<?php echo $comments; ?>
+	</div>
+<?php
+	}
+?>
+	<div class="clear"></div>
+		<script type="text/javascript">
+			function filter (obj, tone) {
+				if (tone=="") {
+					obj.style.visibility = "visible";
+					return;
+				}
+				var canvas = document.createElement('canvas');
+				if (!canvas||!canvas.getContext||!canvas.toDataURL) {
+					obj.style.visibility = "visible";
+					return;
+				}
+				var context = canvas.getContext('2d');
+				if (!context||!context.drawImage||!context.putImageData||!context.getImageData) {
+					obj.style.visibility = "visible";
+					return;
+				}
+				var img = new Image();
+				img.src = obj.src;
+				canvas.width = img.width;
+				canvas.height = img.height;
+				context.drawImage(img, 0, 0);
+				var imgdata = context.getImageData(0, 0, canvas.width, canvas.height);
+				var sepia = {
+					r: [0.211836996078431,0.712355450980392,0.0718859843137255],
+					g: [0.198492933333333,0.667482666666667,0.0673577333333333],
+					b: [0.190986898039216,0.642241725490196,0.0648105921568627]
+				}
+				var mono = {
+					r: [0.212671,0.71516,0.072169],
+					g: [0.212671,0.71516,0.072169],
+					b: [0.212671,0.71516,0.072169]
+				}
+				var matrix = tone=="sepia" ? sepia : mono;
+				var pixels = imgdata.data;
+				for (var i = 0, n = pixels.length; i < n; i += 4) {
+					var shift_r = pixels[i] * matrix.r[0] + pixels[i+1] * matrix.r[1] + pixels[i+2] * matrix.r[2];
+					var shift_g = pixels[i] * matrix.g[0] + pixels[i+1] * matrix.g[1] + pixels[i+2] * matrix.g[2];
+					var shift_b = pixels[i] * matrix.b[0] + pixels[i+1] * matrix.b[1] + pixels[i+2] * matrix.b[2];
+					pixels[i] = shift_r;
+					pixels[i+1] = shift_g;
+					pixels[i+2] = shift_b;
+				}
+				context.putImageData(imgdata, 0, 0);
+				obj.onload = null;
+				obj.src = canvas.toDataURL();
+				obj.style.visibility = "visible";
+			}
+		</script>
+<?php if (count($session_combined_lookup)>0) { ?>
+	<div id="order-overview">
+		<h2 class="Label Strong"><?php echo $import_title_packages_and_alacarte; ?></h2>
+<?php
+		function sortCombinedLookup($a, $b) {
+		    return strcmp($a[3], $b[3]);
+		}
+		usort($session_combined_lookup, 'sortCombinedLookup');
+		$i = 0;
+		foreach ($session_combined_lookup as $sessionitem) {
+			$obj_hash = 		$sessionitem[0];
+			$obj_puid = 		$sessionitem[1];
+			$obj_cuid = 		$sessionitem[2];
+			$obj_filename = 		$sessionitem[3];
+			$obj_quantity = 		$sessionitem[4];
+			$obj_tone = 		$sessionitem[5];
+			$obj_format = 		$sessionitem[6];
+			$obj_format_aspect = 	$sessionitem[7];
+			$obj_orientation = 	$sessionitem[10];
+			$obj_orientation_x = 	$sessionitem[11];
+			$obj_orientation_y = 	$sessionitem[12];
+			$obj_paper = 		$sessionitem[13];
+			$obj_modifier = 		$sessionitem[16];
+			$obj_comments = 		isset($sessionitem[21]) ? $sessionitem[21] : "---";
+			// clean up the data
+			$obj_quantity = 			strlen($obj_quantity)==0 ? "0" : $obj_quantity;
+			$obj_filename_clean = 		explode(".", $obj_filename);
+				array_pop($obj_filename_clean);
+				$obj_filename_clean = 		implode(".", $obj_filename_clean);
+				$obj_filename_clean = 		htmlspecialchars($obj_filename_clean);
+			$obj_tone_clean = 		"---";
+			if (strlen($obj_tone)>0) {
+				$obj_tone_clean = 	$obj_tone=="sepia" ? $sidebar_tone_sepia : $sidebar_tone_black_n_white;
+			}
+			$obj_format_clean = 		"---";
+			if (strlen($obj_format)>0) {
+				$obj_format_clean = 	htmlspecialchars($obj_format);
+			}
+			$obj_format_aspect = strlen($obj_format_aspect)==0 ? null : $obj_format_aspect;
+			$obj_orientation_clean = 	"";
+			if (strlen($obj_orientation)>0) {
+				$obj_orientation_clean = $obj_orientation=="p" ? $sidebar_crop_portrait : $sidebar_crop_landscape;
+			}
+			if (strlen($obj_orientation)>0&&$obj_orientation=="l"&&$obj_format_aspect!=null) {
+				$obj_format_aspect = 	1/$obj_format_aspect;
+			}
+			$obj_paper_clean = "---";
+			if (strlen($obj_paper)>0) {
+				$obj_paper_clean = 	htmlspecialchars($obj_paper);
+			}
+			$obj_modifier_clean = "---";
+			if (strlen($obj_modifier)>0) {
+				$obj_modifier_clean = 	htmlspecialchars($obj_modifier);
+			}
+			$obj_comments = 			htmlspecialchars($obj_comments);
+			// setup our graphic
+			$obj_graphic_height = 		200;
+			$obj_graphic_width = 		$obj_format_aspect==null ? 0 : $obj_graphic_height*$obj_format_aspect;
+			$obj_graphic_item = 		$fileindex[$obj_cuid];
+			$obj_graphic_array = 		array("", "", "", "", "", "");
+			$obj_graphic_array[2] = 	$isZipSet ? $obj_graphic_item[3] : $obj_graphic_item[2];
+			$obj_graphic = new Graphic($obj_graphic_array);
+				$obj_graphic->thumbnail($obj_format_aspect!=null, $obj_orientation_x, $obj_orientation_y);
+				$obj_graphic->setClassName("Preview");
+				$obj_graphic->setBasepath($obj_puid);
+				$obj_graphic->setFilename($obj_cuid);
+				$obj_graphic->setExtension("jpg");
+				$obj_graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+				$obj_graphic->setSize($obj_graphic_width, $obj_graphic_height);
+			$obj_graphic_string = $obj_graphic->render();
+			$obj_graphic_string = str_replace("<img src=", '<img style="visibility:hidden" onload="javascript:filter(this, \''.$obj_tone.'\');" src=', $obj_graphic_string);
+			// loop stuff
+			$parity = $i%2==0 ? "Even" : "Odd";
+			$i += 1;
+?>
+		<div class="OrderItem <?php echo $parity; ?>">
+			<?php echo $obj_graphic_string; ?>
+			<h2 class="Label Strong"><?php echo $obj_filename_clean; ?></h2>
+			<div class="OrderItemMeta">
+				<span class="Label">Quantity:</span><span class="Value"><?php echo $obj_quantity; ?></span><br />
+				<span class="Label">Format:</span><span class="Value"><?php echo $obj_format_clean; ?></span><br />
+				<span class="Label">Orientation:</span><span class="Value"><?php echo $obj_orientation_clean; ?></span><br />
+				<span class="Label">Color/Tone:</span><span class="Value"><?php echo $obj_tone_clean; ?></span><br />
+				<span class="Label">Paper:</span><span class="Value"><?php echo $obj_paper_clean; ?></span><br />
+				<span class="Label">Modifier:</span><span class="Value"><?php echo $obj_modifier_clean; ?></span><br />
+				<span class="Label">Comments:</span><span class="Value"><?php echo $obj_comments; ?></span><br />
+			</div>
+			<div class="clear"></div>
+		</div>
+<?php
+		}
+?>
+	</div>
+<?php } // end if (count($session_combined_lookup)>0) {
+	foreach ($session_products as $product) {
+		$product_nickname = 		$product[2];
+		$product_title = 			$product[3];
+		$product_title = 			htmlspecialchars($product_nickname . " (" . $product_title . ")");
+?>
+	<div id="order-overview">
+		<h2 class="Label Strong"><?php echo $product_title; ?></h2>
+<?php
+		$i = 0;
+		foreach ($session_products_lookup[substr($product[0], 0, 32)] as $sessionitem) {
+			$obj_hash = 		$sessionitem[0];
+			$obj_puid = 		$sessionitem[1];
+			$obj_cuid = 		$sessionitem[2];
+			$obj_filename = 		$sessionitem[3];
+			$obj_quantity = 		$sessionitem[4];
+			$obj_tone = 		$sessionitem[5];
+			$obj_format = 		$sessionitem[6];
+			$obj_format_aspect = 	$sessionitem[7];
+			$obj_orientation = 	$sessionitem[10];
+			$obj_orientation_x = 	$sessionitem[11];
+			$obj_orientation_y = 	$sessionitem[12];
+			$obj_paper = 		$sessionitem[13];
+			$obj_modifier = 		$sessionitem[16];
+			$obj_comments = 		isset($sessionitem[21]) ? $sessionitem[21] : "---";
+			// clean up the data
+			$obj_quantity = 			strlen($obj_quantity)==0 ? "0" : $obj_quantity;
+			$obj_filename_clean = 		explode(".", $obj_filename);
+				array_pop($obj_filename_clean);
+				$obj_filename_clean = 		implode(".", $obj_filename_clean);
+				$obj_filename_clean = 		htmlspecialchars($obj_filename_clean);
+			$obj_tone_clean = 		"---";
+			if (strlen($obj_tone)>0) {
+				$obj_tone_clean = 	$obj_tone=="sepia" ? $sidebar_tone_sepia : $sidebar_tone_black_n_white;
+			}
+			$obj_format_clean = 		"---";
+			if (strlen($obj_format)>0) {
+				$obj_format_clean = 	htmlspecialchars($obj_format);
+			}
+			$obj_format_aspect = 		strlen($obj_format_aspect)==0 ? null : $obj_format_aspect;
+			$obj_orientation_clean = 	"";
+			if (strlen($obj_orientation)>0) {
+				$obj_orientation_clean = $obj_orientation=="p" ? $sidebar_crop_portrait : $sidebar_crop_landscape;
+			}
+			if (strlen($obj_orientation)>0&&$obj_orientation=="l"&&$obj_format_aspect!=null) {
+				$obj_format_aspect = 	1/$obj_format_aspect;
+			}
+			$obj_paper_clean = "---";
+			if (strlen($obj_paper)>0) {
+				$obj_paper_clean = 	htmlspecialchars($obj_paper);
+			}
+			$obj_modifier_clean = "---";
+			if (strlen($obj_modifier)>0) {
+				$obj_modifier_clean = 	htmlspecialchars($obj_modifier);
+			}
+			$obj_comments = 			htmlspecialchars($obj_comments);
+			// setup our graphic
+			$obj_graphic_height = 		200;
+			$obj_graphic_width = 		$obj_format_aspect==null ? 0 : $obj_graphic_height*$obj_format_aspect;
+			$obj_graphic_item = 		$fileindex[$obj_cuid];
+			$obj_graphic_array = 		array("", "", "", "", "", "");
+			$obj_graphic_array[2] = 	$isZipSet ? $obj_graphic_item[3] : $obj_graphic_item[2];
+			$obj_graphic = new Graphic($obj_graphic_array);
+				$obj_graphic->thumbnail($obj_format_aspect!=null, $obj_orientation_x, $obj_orientation_y);
+				$obj_graphic->setClassName("Preview");
+				$obj_graphic->setBasepath($obj_puid);
+				$obj_graphic->setFilename($obj_cuid);
+				$obj_graphic->setExtension("jpg");
+				$obj_graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+				$obj_graphic->setSize($obj_graphic_width, $obj_graphic_height);
+			$obj_graphic_string = $obj_graphic->render();
+			$obj_graphic_string = str_replace("<img src=", '<img style="visibility:hidden" onload="javascript:filter(this, \''.$obj_tone.'\');" src=', $obj_graphic_string);
+			// loop stuff
+			$parity = $i%2==0 ? "Even" : "Odd";
+			$i += 1;
+?>
+		<div class="OrderItem <?php echo $parity; ?>">
+			<?php echo $obj_graphic_string; ?>
+			<h2 class="Label Strong"><?php echo $obj_filename_clean; ?></h2>
+			<div class="OrderItemMeta">
+				<span class="Label">Quantity:</span><span class="Value"><?php echo $obj_quantity; ?></span><br />
+				<span class="Label">Format:</span><span class="Value"><?php echo $obj_format_clean; ?></span><br />
+				<span class="Label">Orientation:</span><span class="Value"><?php echo $obj_orientation_clean; ?></span><br />
+				<span class="Label">Color/Tone:</span><span class="Value"><?php echo $obj_tone_clean; ?></span><br />
+				<span class="Label">Paper:</span><span class="Value"><?php echo $obj_paper_clean; ?></span><br />
+				<span class="Label">Modifier:</span><span class="Value"><?php echo $obj_modifier_clean; ?></span><br />
+				<span class="Label">Comments:</span><span class="Value"><?php echo $obj_comments; ?></span><br />
+			</div>
+			<div class="clear"></div>
+		</div>
+<?php
+		}
+?>
+	</div>
+<?php
+	}
+	if (count($session_combined_lookup)>0) {
+?>
+	<div class="order-import">
+		<h2 class="Label Strong"><?php echo $import_title_combined . " - " . $import_title_packages_and_alacarte; ?></h2>
+		<div class="order-import-inner">
+<?php
+		$image_list = array();
+		foreach ($session_combined_lookup as $sessionitem) {
+			$obj_filename = 			$sessionitem[3];
+			$obj_filename_clean = 		explode(".", $obj_filename);
+				array_pop($obj_filename_clean);
+				$obj_filename_clean = 	implode(".", $obj_filename_clean);
+				$obj_filename_clean =	htmlspecialchars($obj_filename_clean);
+			$image_list[] = 			$obj_filename_clean;
+		}
+		$image_list = 				array_unique($image_list);
+		$image_list = 				implode(", ", $image_list);
+?>
+			<div class="ImportItem">
+				<span class="Value"><?php echo $image_list; ?></span>
+			</div>
+		</div>
+	</div>
+	<div class="order-import">
+		<h2 class="Label Strong"><?php echo $import_title_grouped . " - " . $import_title_packages_and_alacarte; ?></h2>
+		<div class="order-import-inner">
+<?php
+		$lookup = array();
+		$keys = array();
+		foreach ($session_combined_lookup as $sessionitem) {
+			$obj_filename = 		$sessionitem[3];
+			$obj_tone = 		$sessionitem[5];
+			$obj_format = 		$sessionitem[6];
+			$obj_paper = 		$sessionitem[13];
+			$obj_modifier = 		$sessionitem[16];
+			$obj_filename_clean = 		explode(".", $obj_filename);
+				array_pop($obj_filename_clean);
+				$obj_filename_clean = 	implode(".", $obj_filename_clean);
+				$obj_filename_clean = 	htmlspecialchars($obj_filename_clean);
+			$obj_tone_clean = "";
+			if (strlen($obj_tone)>0) {
+				$obj_tone_clean =		$obj_tone=="sepia" ? $sidebar_tone_sepia : $sidebar_tone_black_n_white;
+			}
+			$obj_format_clean = "";
+			if (strlen($obj_format)>0) {
+				$obj_format_clean = 	htmlspecialchars($obj_format);
+			}
+			$obj_paper_clean = "";
+			if (strlen($obj_paper)>0) {
+				$obj_paper_clean = 	htmlspecialchars($obj_paper);
+			}
+			$obj_modifier_clean = "";
+			if (strlen($obj_modifier)>0) {
+				$obj_modifier_clean = 	htmlspecialchars($obj_modifier);
+			}
+			$obj_output_hash = 		md5("$obj_tone.$obj_format.$obj_paper.$obj_modifier");
+			if (!isset($lookup[$obj_output_hash])) {
+				$lookup[$obj_output_hash] = array();
+				$group_title = array();
+					$group_title[] = $obj_format_clean;
+					$group_title[] = $obj_tone_clean;
+					$group_title[] = $obj_paper_clean;
+					$group_title[] = $obj_modifier_clean;
+					$group_title = array_filter($group_title);
+				$keys[$obj_output_hash] = implode(" - ", $group_title);
+			}
+			$lookup[$obj_output_hash][] = $obj_filename_clean;
+		}
+		foreach ($lookup as $hash => $grouping) {
+			$group_title = 	$keys[$hash];
+			$grouping = 	array_unique($grouping);
+			$image_list = 	implode(", ", $grouping);
+?>
+			<div class="ImportItem">
+				<div class="Label"><?php echo $group_title; ?></div>
+				<span class="Value"><?php echo $image_list; ?></span>
+			</div>
+<?php
+		}
+?>
+		</div>
+	</div>
+<?php
+	}
+	foreach ($session_products as $product) {
+		$product_nickname = 		$product[2];
+		$product_title = 			$product[3];
+		$product_title = 			htmlspecialchars($product_nickname . " (" . $product_title . ")");
+?>
+	<div class="order-import">
+		<h2 class="Label Strong"><?php echo $import_title_combined . " - " . $product_title; ?></h2>
+		<div class="order-import-inner">
+<?php
+		$image_list = array();
+		foreach ($session_products_lookup[substr($product[0], 0, 32)] as $sessionitem) {
+			$obj_filename = 			$sessionitem[3];
+			$obj_filename_clean = 		explode(".", $obj_filename);
+				array_pop($obj_filename_clean);
+				$obj_filename_clean = 	implode(".", $obj_filename_clean);
+				$obj_filename_clean = 	htmlspecialchars($obj_filename_clean);
+			$image_list[] = 			$obj_filename_clean;
+		}
+		$image_list = 				array_unique($image_list);
+		$image_list = 				implode(", ", $image_list);
+?>
+			<div class="ImportItem">
+				<span class="Value"><?php echo $image_list; ?></span>
+			</div>
+		</div>
+	</div>
+	<div class="order-import">
+		<h2 class="Label Strong"><?php echo $import_title_grouped . " - " . $product_title; ?></h2>
+		<div class="order-import-inner">
+<?php
+		$lookup = array();
+		$keys = array();
+		foreach ($session_products_lookup[substr($product[0], 0, 32)] as $sessionitem) {
+			$obj_filename = 		$sessionitem[3];
+			$obj_tone = 		$sessionitem[5];
+			$obj_format = 		$sessionitem[6];
+			$obj_paper = 		$sessionitem[13];
+			$obj_modifier = 		$sessionitem[16];
+			$obj_filename_clean = 		explode(".", $obj_filename);
+				array_pop($obj_filename_clean);
+				$obj_filename_clean = 	implode(".", $obj_filename_clean);
+				$obj_filename_clean = 	htmlspecialchars($obj_filename_clean);
+			$obj_tone_clean = "";
+			if (strlen($obj_tone)>0) {
+				$obj_tone_clean =		$obj_tone=="sepia" ? $sidebar_tone_sepia : $sidebar_tone_black_n_white;
+			}
+			$obj_format_clean = "";
+			if (strlen($obj_format)>0) {
+				$obj_format_clean = 	htmlspecialchars($obj_format);
+			}
+			$obj_paper_clean = "";
+			if (strlen($obj_paper)>0) {
+				$obj_paper_clean = 	htmlspecialchars($obj_paper);
+			}
+			$obj_modifier_clean = "";
+			if (strlen($obj_modifier)>0) {
+				$obj_modifier_clean = 	htmlspecialchars($obj_modifier);
+			}
+			$obj_output_hash = 		md5("$obj_tone.$obj_format.$obj_paper.$obj_modifier");
+			if (!isset($lookup[$obj_output_hash])) {
+				$lookup[$obj_output_hash] = array();
+				$group_title = array();
+					$group_title[] = $obj_format_clean;
+					$group_title[] = $obj_tone_clean;
+					$group_title[] = $obj_paper_clean;
+					$group_title[] = $obj_modifier_clean;
+					$group_title = array_filter($group_title);
+				$keys[$obj_output_hash] = implode(" - ", $group_title);
+			}
+			$lookup[$obj_output_hash][] = $obj_filename_clean;
+		}
+		foreach ($lookup as $hash => $grouping) {
+			$group_title = 	$keys[$hash];
+			$grouping = 	array_unique($grouping);
+			$image_list = 	implode(", ", $grouping);
+?>
+			<div class="ImportItem">
+				<div class="Label"><?php echo $group_title; ?></div>
+				<span class="Value"><?php echo $image_list; ?></span>
+			</div>
+<?php
+		}
+?>
+		</div>
+	</div>
+<?php
+	}
+?>
+</div>
+</div>

@@ -1,0 +1,80 @@
+<?php
+
+	$orderview_print_images_bool = 	$this->getTypedValue("setup", "settings", "orderview_print_images_bool");
+
+?>
+
+* {
+	color: #000;
+	background: #fff;
+}
+
+#invoice {
+	width: auto;
+	margin: 0 0 0 0;
+	padding: 25px;
+}
+
+#invoice a {
+	text-decoration: none;
+}
+
+#invoice-inner {
+	padding: 25px;
+	position: relative;
+}
+
+#download-process {
+	display: none;
+}
+
+#output {
+	width: auto;
+	margin: 0 0 0 0;
+	padding: 25px;
+}
+
+#output a {
+	text-decoration: none;
+}
+
+#output-inner {
+	padding: 25px;
+	position: relative;
+	border: none;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+
+.OrderItem {
+	page-break-inside: avoid;
+}
+
+.OrderItem .OrderItemMeta {
+	margin: 10px;
+}
+
+.OrderItem .Preview {
+	display: <?php echo $orderview_print_images_bool?"block":"none"; ?>;
+}
+
+.order-import {
+	display: none;
+}
+
+#owner-data,
+#purchaser-data,
+#purchaser-notes,
+.ItemComment,
+#footer-text,
+#purchase-table,
+#purchase-table td,
+#purchase-table td.Column1,
+#purchase-table-head td,
+#summary-table,
+#summary-table .Strong,
+#order-overview,
+.OrderItem {
+	border-color: #000;
+}

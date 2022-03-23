@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<data default="true">
+	<settings>
+		<password private="true" encoded="true"></password>
+		<expires_on_date timezone="" offset=""></expires_on_date>
+		<format_set action="set_list" name="formatset" suid=""></format_set>
+		<paper_set action="set_list" name="paperset" suid=""></paper_set>
+		<modifier_set action="set_list" name="modifierset" suid=""></modifier_set>
+		<package_set action="set_list" name="packageset" suid=""></package_set>
+		<product_set action="set_list" name="productset" suid=""></product_set>
+		<enable_quantity_ui_bool>true</enable_quantity_ui_bool>
+		<enable_color_options_bool>true</enable_color_options_bool>
+		<enable_cropping_tool_bool>true</enable_cropping_tool_bool>
+		<enable_comments_bool>true</enable_comments_bool>
+		<enable_watermarking_bool>true</enable_watermarking_bool>
+		<use_global_soundtrack_bool>false</use_global_soundtrack_bool>
+		<include_in_gallery_wall_bool>true</include_in_gallery_wall_bool>
+		<pin_to_top_of_splash_bool>false</pin_to_top_of_splash_bool>
+		<set_cover_image_asset width="" height=""></set_cover_image_asset>
+		<set_contact_list private="true" lines="5"><![CDATA[]]></set_contact_list>
+		<set_welcome_message markdown="true" toolbar="true" lines="4"><![CDATA[]]></set_welcome_message>
+	</settings>
+</data>

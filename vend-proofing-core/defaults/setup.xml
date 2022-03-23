@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<data default="true">
+	<settings>
+		<site_name></site_name>
+		<touch_screen_icon_asset width="" height=""></touch_screen_icon_asset>
+		<website_favicon_asset extensions="ico,png" width="" height=""></website_favicon_asset>
+		<browser_title tags="PAGE_NAME">{PAGE_NAME}</browser_title>
+		<meta_tag_description lines="3"></meta_tag_description>
+		<meta_tag_keywords lines="3"></meta_tag_keywords>
+		<page_head_tags lines="6"></page_head_tags>
+		<invoice_footer markdown="true" toolbar="true" lines="3"><![CDATA[]]></invoice_footer>
+		<google_analytics_user_agent lines="5"></google_analytics_user_agent>
+		<facebook_pixel_id></facebook_pixel_id>
+		<resampling_quality_num min="60" max="95">90</resampling_quality_num>
+		<resample_use_imagick_bool>false</resample_use_imagick_bool>
+		<resample_sharpen_bool>true</resample_sharpen_bool>
+		<show_image_wall_tooltips_bool>true</show_image_wall_tooltips_bool>
+		<toning_enable_bw_bool>true</toning_enable_bw_bool>
+		<toning_enable_sepia_bool>true</toning_enable_sepia_bool>
+		<local_timezone options="timezones.zone">-05:00,America/New_York</local_timezone>
+		<orderview_print_images_bool>false</orderview_print_images_bool>
+	</settings>
+	<watermarking>
+		<watermark_bool>false</watermark_bool>
+		<watermark_asset width="" height=""></watermark_asset>
+		<watermark_x_num>50</watermark_x_num>
+		<watermark_y_num>50</watermark_y_num>
+		<watermark_alpha_num>50</watermark_alpha_num>
+		<crosshairs_bool>true</crosshairs_bool>
+		<crosshairs_color>0xFFFFFF</crosshairs_color>
+		<crosshairs_alpha_num>100</crosshairs_alpha_num>
+	</watermarking>
+</data>

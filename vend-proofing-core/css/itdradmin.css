@@ -1,0 +1,296 @@
+/* ---- Clear Default Browser Styles ---- */
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre,
+form, fieldset, input, p, blockquote, table, th, td, embed, object {
+outline: none;
+padding: 0;
+margin: 0;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+fieldset, img, abbr {
+border: 0;
+}
+address, caption, cite, code, dfn, em,
+h1, h2, h3, h4, h5, h6, strong, th, var {
+font-weight: normal;
+font-style: normal;
+}
+ul {
+list-style: none;
+}
+caption, th {
+text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+font-size: 1.0em;
+}
+q:before, q:after {
+content: '';
+}
+a, ins {
+text-decoration: none;
+}
+a {
+outline: none;
+}
+
+/* ---- Globals ---- */
+
+* {
+	font-family: sans-serif;
+	margin:0;
+	padding:0
+}
+
+html,body {
+	width:100%;
+	height:100%
+}
+
+object,embed {
+	outline:none
+}
+
+body {
+	background-color:#FFFFFF
+}
+
+#content {
+	width: 550px;
+	margin: 0 auto 0 auto;
+}
+
+#container {
+	width: 100%;
+	height: 100%
+}
+
+#left {
+	float: left;
+	width: 500px;
+	height: 100%;
+	border-right: 1px solid #CCC;
+}
+
+#admin {
+	width: 500px;
+	height: 100%;
+}
+
+#right {
+	margin-left: 501px;
+	height: 100%;
+}
+
+#right iframe {
+	height: 100%;
+}
+
+/* --- PanelBox ---- */
+
+.PanelBox {
+	margin: 25px;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+	-moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+	overflow: hidden;
+}
+
+.PanelBox .Top {
+	background: #333;
+	height: 40px;
+	border-radius-topright: 8px;
+	border-radius-topleft: 8px;
+	-moz-border-radius-topright: 8px;
+	-moz-border-radius-topleft: 8px;
+	-webkit-border-radius-topright: 8px;
+	-webkit-border-radius-topleft: 8px;
+	border-bottom: 1px #dedede solid;
+}
+
+.PanelBox .Body {
+	background: #fff;
+	padding: 15px;
+}
+
+.PanelBox .Foot {
+	background: #f4f4f4;
+	height: 40px;
+	border-radius-bottomright: 8px;
+	border-radius-bottomleft: 8px;
+	-moz-border-radius-bottomright: 8px;
+	-moz-border-radius-bottomleft: 8px;
+	-webkit-border-radius-bottomright: 8px;
+	-webkit-border-radius-bottomleft: 8px;
+	border-top: 1px #dedede solid;
+}
+
+.PanelBox .Top h2 {
+	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+	display: block;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 15px 0 15px;
+}
+
+.PanelBox .Body .Description {
+	font-size: 12px;
+	color: #333;
+	border: 1px #cccccc dotted;
+	background: #f4f4f4;
+	padding: 10px;
+	margin-bottom: 15px;
+}
+
+.PanelBox form {
+	position: relative;
+}
+
+.PanelBox form .formtitle {
+	font-size: 12px;
+	font-weight: bold;
+	color: #666;
+	padding: 3px;
+}
+
+.PanelBox form input {
+	display: block;
+	position: relative;
+	font-size: 12px;
+	color: #333;
+	padding: 4px;
+	margin-bottom: 10px;
+	border: 2px #cccccc solid;
+	width: 458px;
+}
+
+.PanelBox form .InputButton {
+	font-weight: bold;
+	font-size: 14px;
+	border: 2px #cccccc solid;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	padding: 6px 15px 6px 15px;
+	background: #f9f9f9;
+	width: auto;
+	margin-bottom: 0;
+}
+
+.PanelBox .InputButton:hover {
+	cursor: pointer;
+	border: 2px #999999 solid;
+}
+
+.PanelBox form .formerror {
+	margin-top: 10px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #993300;
+	border: 1px #993300 dotted;
+	background: #f9f8e4;
+	padding: 10px;
+}
+
+.PanelBox form .formerror p {
+	margin-bottom: 3px;
+}
+
+.PanelBox .Foot .Description {
+	font-size: 10px;
+	font-weight: bold;
+	color: #999;
+	display: block;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 15px 0 15px;
+}
+
+.PanelBox .Foot .Description a {
+	font-size: 10px;
+	font-weight: bold;
+	color: #999;
+	text-decoration: none;
+}
+
+.PanelBox .Foot .Description a:hover {
+	color: #000;
+	text-decoration: underline;
+}
+
+.PanelBox .Foot .OptionButton {
+	float: left;
+	background: #fbfbfb;
+	color: #666;
+	font-size: 14px;
+	display: block;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 15px 0 15px;
+	border-radius-bottomleft: 8px;
+	-moz-border-radius-bottomleft: 8px;
+	-webkit-border-radius-bottomleft: 8px;
+	border-right: 1px #ccc solid;
+}
+
+.PanelBox .Foot .OptionButton:hover {
+	color: #000;
+}
+
+.PanelBox .WikiText {
+	font-size: 14px;
+	color: #333;
+}
+
+/* --- WikiText --- */
+
+.WikiText p {
+	margin-bottom: 10px;
+}
+
+.WikiText pre {
+	white-space: normal;
+	margin: 0 20px 10px 20px;
+}
+
+.WikiText pre code {
+	font-style: italic;
+}
+
+.WikiText ul {
+	list-style-type: disc;
+	margin-bottom: 10px;
+}
+
+.WikiText li {
+	margin-left: 20px;
+}
+
+.WikiText h2{
+	font-size: 18px;
+	color: #666666;
+	margin-bottom: 10px;
+}
+
+.WikiText a {
+	color: #999999;
+	text-decoration: underline;
+}
+
+.WikiText a:hover {
+	color: #666666;
+}
+
+.WikiText strong {
+	font-weight: bold;
+}
+

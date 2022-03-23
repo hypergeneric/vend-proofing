@@ -1,0 +1,45 @@
+<?php
+
+	$color_theme = 					$this->getTypedValue("design", "design", "color_theme");
+	$splash_logo_asset = 			$this->getTypedValue("design", "design", "splash_logo_asset");
+	$splash_logo_margin_num = 		$this->getTypedValue("design", "design", "splash_logo_margin_num");
+	$splash_logo_retina_bool = 		$this->getTypedValue("design", "design", "splash_logo_retina_bool");
+	$invoice_logo_asset = 			$this->getTypedValue("design", "design", "invoice_logo_asset");
+	$font_style = 					$this->getTypedValue("design", "design", "font_style");
+	$font_asset = 					$this->getTypedValue("design", "design", "font_asset");
+	$font_size_scale_num = 			$this->getTypedValue("design", "design", "font_size_scale_num");
+	$tile_gutter_width_num = 		$this->getTypedValue("design", "design", "tile_gutter_width_num");
+	$highlight_color = 				$this->getTypedValue("design", "design", "highlight_color");
+
+	$font_family = 					$font_style=="sans" ? 'Arial, sans-serif' : '"Times New Roman", Times, serif';
+	$font_family =					$this->unpackFont($font_asset, $font_family);
+	
+	$font_size_scale_num /= 2;
+	$font_size_scale_num += 100;
+	$font_size_scale_num /= 100;
+	
+	$nav_height = 					65;
+	
+	if ($color_theme=="light") {
+		$background_color = 			"#FFF";
+		$foreground_color_light = 		"#999";
+		$foreground_color = 			"#444";
+		$stroke_color = 				"#CCC";
+		$application_background_color = "#FFF";
+		$application_background_alt = 	"#FFF";
+		$form_background_color = 		"#FFF";
+	} else {
+		$background_color = 			"#000";
+		$foreground_color = 			"#999";
+		$foreground_color_light = 		"#444";
+		$stroke_color = 				"#444";
+		$application_background_color = "#000";
+		$application_background_alt = 	"#000";
+		$form_background_color = 		"#000";
+	}
+
+?>
+
+
+
+

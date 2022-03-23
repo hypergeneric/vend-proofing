@@ -1,0 +1,7 @@
+# turn off indexing by default
+Options -indexes
+
+RewriteEngine On
+#RewriteRule ^(?:auth)\b.* - [R=403,L]
+#RewriteRule ^(?:uploads)\b.* - [R=403,L]
+RewriteRule ^(?:storage)\b.* - [R=403,L]

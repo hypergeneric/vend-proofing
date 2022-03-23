@@ -1,0 +1,44 @@
+<?php
+
+	if (!isset($init_title)) {
+		$init_title = $LANG->lookup("Init Title");
+	}
+	if (!isset($init_description)) {
+		$init_description = $LANG->lookup("Init Description");
+	}
+	if (!isset($help_link)) {
+		$help_link = $LANG->lookup("visit_support_site");
+	}
+	if (!isset($help_link_uri)) {
+		$help_link_uri = "https://intothedarkroom.zendesk.com/";
+	}
+
+?>
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<title><?php echo $init_title; ?></title>
+	<meta charset="utf-8">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" href="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/css/admin/<?php echo SA_PRODUCT_VERSION; ?>/">
+</head>
+<body>
+	<div id="admin">
+		<div class="Dialog">
+			<div class="Header"><?php echo $init_title; ?></div>
+			<div class="Content">
+<?php if (isset($error)) { ?>
+				<div class="Error"><?php echo $error; ?></div>
+<?php } ?>
+				<div class="Markdown"><?php echo $init_description; ?></div>
+			</div>
+			<div class="Footer">
+<?php if ($help_link_uri!="") { ?>
+				<a class="Button" href="<?php echo $help_link_uri; ?>"><?php echo $help_link; ?></a>
+<?php } ?>
+			</div>
+		</div>
+	</div>
+</body>

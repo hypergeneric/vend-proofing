@@ -1,0 +1,68 @@
+<?php
+
+	/* ---- Necessary Files ---- */
+	$data = "";
+	$core = array(
+		"modernizr.js",
+		"jquery.js",
+		"extend/jplayer.playlist.min.js",
+		"extend/jquery.base64.min.js",
+		"extend/jquery.browser.min.js",
+		"extend/jquery.ba-hashchange.min.js",
+		"extend/jquery.event.drag-2.2.js",
+		"extend/jquery.jplayer.min.js",
+		"extend/jquery.mousewheel.js",
+		"extend/jquery.touchwipe.min.js",
+		"extend/md5.min.js",
+		"extend/mousewheelStopPropagation.js",
+		"extend/spin.min.js"
+	);
+	
+	/* ---- Add Via readfile() ---- */
+	foreach($core as $filename) {
+		$data .= file_get_contents( SA_DIR_COREPATH . "/js/$filename" );
+		print "\n\n";
+	}
+	
+	file_put_contents( SA_DIR_COREPATH . "/js/vend-core.js", $data );
+	
+	/* ---- Necessary Files ---- */
+	$data = "";
+	$core = array(
+		"vend/helpers/Cookie.js",
+		"vend/helpers/EventDispatcher.js",
+		"vend/helpers/Func.js",
+		"vend/helpers/ResampledImageQueue.js",
+		"vend/Dialog.js",
+		"vend/Overlay.js",
+		"vend/Session.js",
+		"vend/Shell.js",
+		"vend/StageProxy.js",
+		"vend/elements/ContactForm.js",
+		"vend/elements/Controlbar.js",
+		"vend/elements/FormDialog.js",
+		"vend/elements/Graphic.js",
+		"vend/content/Contact.js",
+		"vend/content/Expired.js",
+		"vend/content/Login.js",
+		"vend/content/Splash.js",
+		"vend/content/Display.js",
+		"vend/overlay/Browser.js",
+		"vend/overlay/Cart.js",
+		"vend/overlay/Checkout.js",
+		"vend/overlay/Clickwrap.js",
+		"vend/overlay/Overview.js",
+		"vend/overlay/Package.js",
+		"vend/overlay/Packages.js",
+		"vend/overlay/Sidebar.js"
+	);
+	
+	/* ---- Add Via readfile() ---- */
+	foreach($core as $filename) {
+		$data .= file_get_contents( SA_DIR_COREPATH . "/js/$filename" );
+		print "\n\n";
+	}
+	
+	file_put_contents( SA_DIR_COREPATH . "/js/vend.js", $data );
+
+?>

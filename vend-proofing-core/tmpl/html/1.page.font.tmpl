@@ -1,0 +1,42 @@
+<?php
+
+	$fragments = explode("/", trim($this->query_original, "/"));
+
+	$font_asset = 	array( "source" => SA_DIR_STORAGE."/".$fragments[2]."/".$fragments[3] , "child" => $fragments[3] );
+	$font_family = 	'Arial, sans-serif';
+	
+?>
+<!DOCTYPE html>
+<meta name="viewport" content="user-scalable=0"/>
+<html>
+<head>
+	<style>
+<?php $font_family =	$this->unpackFont($font_asset, $font_family); ?>
+		* {
+			margin: 0;
+			padding: 0;
+			font-family: <?php echo $font_family; ?>;
+			font-size: 48px;
+		}
+		html, body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		input {
+			display: block;
+			width: 100%;
+			height: 100%;
+			border: none;
+			outline: none;
+			resize: none;
+			padding: 10px;
+			box-sizing: border-box;
+			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGklEQVQYlWN49+7df3TMgA0MBYWDzDkUKQQAk1K9Q/gj5hYAAAAASUVORK5CYII=) repeat;
+		}
+	</style>
+</head>
+<body>
+	<input value='The Quick Brown Fox Jumps Over The Lazy Dog' />
+</body>
+</html>

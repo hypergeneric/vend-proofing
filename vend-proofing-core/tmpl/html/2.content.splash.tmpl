@@ -1,0 +1,158 @@
+<?php
+
+	$logo_retina_bool = 			$this->getTypedValue("design", "design", "splash_logo_retina_bool");
+	$splash_logo_asset = 			$this->getTypedValue("design", "design", "splash_logo_asset");
+	$splash_page_view = 			$this->getTypedValue($page_data, "settings", "splash_page_view");
+	$auto_hide_expired_sets_bool = 	$this->getTypedValue($page_data, "settings", "auto_hide_expired_sets_bool");
+	$sorting_mechanism = 			$this->getTypedValue($page_data, "settings", "sorting_mechanism");
+	$description = 					$this->getTypedValue($page_data, "settings", "description");
+	$hide_image_counts_bool = 		$this->getTypedValue($page_data, "settings", "hide_image_counts_bool");
+	$date_pattern = 				$this->getTypedValue("language", "localization", "date_pattern");
+	
+	$splash_logo_asset_asset_tag = 	"\n";
+	if ($splash_logo_asset["source"]!="") {
+		$graphic = new Graphic();
+		$graphic->thumbnail(false);
+		$graphic->setBasepath("asset");
+		$graphic->setFilename($splash_logo_asset["child"]);
+		$graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+		if ($logo_retina_bool) {
+			$graphic->setSize(min(2048, $splash_logo_asset["width"]));
+			$dimensions = $graphic->dimensions();
+			$dimensions[0] = round($dimensions[0]/2);
+			$dimensions[1] = round($dimensions[1]/2);
+		} else {
+			$graphic->setSize(min(1024, $splash_logo_asset["width"]));
+			$dimensions = $graphic->dimensions();
+		}
+		$splash_logo_asset_asset_tag .= "\t\t\t\t" . '<img src="' . Func::getBaseUrl() . "/" . $graphic->source() . '" width="' . $dimensions[0] . '" height="' . $dimensions[1] . '" alt="" />' . "\n";
+	}
+
+	$final_class_name = 			"Splash";
+	$sorting_mechanism = 			explode(";", $sorting_mechanism);
+	$page_array = 					$this->getData("page");
+	
+	if ( $splash_logo_asset_asset_tag!="\n" || $description["value"] != "" ) {
+	
+?>
+		<div class="WelcomeBox">
+			<?php echo $splash_logo_asset_asset_tag; ?>
+			<div class="Inner">
+				<div class="Description Markdown"><?php echo $description["markdown"]; ?>
+				</div><!-- End .Description -->
+			</div>
+		</div>
+<?php
+
+	}
+
+	if ($splash_page_view=="wall") {
+
+		$pages_pinned = 		array();
+		$pages_sets = 			array();
+		$pages_expired = 		array();
+		$page_info_lookup = 	array();
+		$page_data_lookup = 	array();
+		$page_data_array = 		array();
+
+		foreach ($page_array as $page_id => $page_info) {
+			$set_data = 						Flatfile::getXmlArray(strtolower($page_info[2]), $page_id);
+			$include_in_gallery_wall_bool = 	$this->getTypedValue($set_data, "settings", "include_in_gallery_wall_bool");
+			$pin_to_top_of_splash_bool = 		$this->getTypedValue($set_data, "settings", "pin_to_top_of_splash_bool");
+			$expired = 							$this->isPageExpired($page_id, $set_data);
+			$page_info_lookup[$page_id] = 		$page_info;
+			$page_data_lookup[$page_id] = 		$set_data;
+			if ($include_in_gallery_wall_bool==false) continue;
+			if ($expired) {
+				if ($auto_hide_expired_sets_bool) continue;
+				$pages_expired[$page_id] = $page_info[1];
+			} else if ($pin_to_top_of_splash_bool) {
+				$pages_pinned[$page_id] = $page_info[1];
+			} else {
+				$pages_sets[$page_id]  = $page_info[1];
+			}
+		}
+
+		foreach($sorting_mechanism as $group) {
+			$group = explode(",", $group);
+			$group_array;
+			if ($group[0]=="P") {
+				$group_array = $pages_pinned;
+			} else if ($group[0]=="S") {
+				$group_array = $pages_sets;
+			} else if ($group[0]=="E") {
+				$group_array = $pages_expired;
+			}
+			if ($group[1]=="ab") asort($group_array);
+			if ($group[2]=="d") $group_array = array_reverse($group_array, true);
+			foreach($group_array as $key => $value) $page_data_array[] = $key;
+		}
+
+		$set_expired_on = 		$this->getTypedValue("language", "splash", "set_expired_on");
+		$set_expires_on = 		$this->getTypedValue("language", "splash", "set_expires_on");
+		$set_images = 			$this->getTypedValue("language", "splash", "set_images");
+		$expiration_never = 		$this->getTypedValue("language", "splash", "expiration_never");
+		$view_gallery = 			$this->getTypedValue("language", "splash", "view_gallery");
+		$view_gallery_login = 		$this->getTypedValue("language", "splash", "view_gallery_login");
+
+?>
+		<div class="Wall">
+<?php
+		for ($i=0; $i<count($page_data_array); ++$i) {
+			$page_id = 					$page_data_array[$i];
+			$page_info = 				$page_info_lookup[$page_id];
+			$set_data = 				$page_data_lookup[$page_id];
+			$expired = 					isset($pages_expired[$page_id]);
+			$expires_on_date = 			$this->getTypedValue($set_data, "settings", "expires_on_date");
+				$expires_on_date = 		$expires_on_date["value"]>0 ? date($date_pattern["value"], $expires_on_date["value"]/1000) : "0";
+				$expires_on_date = 		htmlspecialchars($expires_on_date);
+			$password = 				$this->getTypedValue($set_data, "settings", "password");
+			$has_password = 				$password["value"]!="";
+			$authenticated = 				$this->isPageAuthenticated($page_id, $set_data);
+			$set_cover_image_asset = 		$this->getTypedValue($set_data, "settings", "set_cover_image_asset");
+			$set_title = 				htmlspecialchars($page_info[1]);
+			$set_count = 				$hide_image_counts_bool ? "" : $set_images["html"] . " " . $page_info[3];
+			$set_expiry = 				$expires_on_date=="0" ? $expiration_never["html"] : $expires_on_date;
+			$set_label_expiry = 			$expired ? $set_expired_on["html"] . " " . $set_expiry : $set_expires_on["html"] . " " . $set_expiry;
+			$set_label_action = 			$has_password==false || $authenticated==true ? $view_gallery["html"] : $view_gallery_login["html"];
+			$set_label_href = 			$has_password==false || $authenticated==true ? "?/" . $LANG->lookup('uri_page_identifier') . "/" . $page_id . "/" : "javascript:void(0);";
+			$child_block_width = 		325;
+			$child_block_height = 		185;
+			$graphic = new Graphic();
+				$graphic->encode(true);
+				$graphic->thumbnail(true);
+				$graphic->setBasepath($page_id);
+				$graphic->setFilename($set_cover_image_asset["child"]);
+				$graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+				$graphic->setSize($child_block_width, $child_block_height);
+?>
+			<div class="WallItem <?php echo $i==0 ? "Even" : "Odd"; ?>" id="item-<?php echo $page_id; ?>">
+				<div class="Inner">
+					<div class="GraphicWrapper">
+						<div class="Graphic">
+							<img width="<?php echo $child_block_width; ?>" height="<?php echo $child_block_height; ?>"
+								src="<?php echo $graphic->sourceBlank(); ?>" 
+								data-src="<?php echo $graphic->source(); ?>" 
+								data-srcset="<?php echo $graphic->sourceSet(2); ?>" 
+							 />
+						</div>
+					</div>
+					<div class="InfoBlock">
+						<h2><?php echo $set_title; ?></h2>
+						<div class="Expiry<?php echo ($expired?" Expired":""); ?>"><?php echo $set_label_expiry ?></div>
+						<div><?php echo $set_count; ?></div>
+						<a class="uiPushButton<?php echo $has_password==true && $authenticated==false ? " Login" : ""; ?><?php echo $expired ? " Disabled" : ""; ?>" href="<?php echo $set_label_href; ?>" data-suid="<?php echo $page_id; ?>"><?php echo $set_label_action ?></a>
+					</div>
+				</div>
+			</div>
+<?php
+		}
+?>
+			<div class="Clear"></div>
+		</div>
+<?php
+	}
+?>
+		<script>
+			classes.content.Splash.setPageView("<?php echo $splash_page_view ?>");
+		</script>

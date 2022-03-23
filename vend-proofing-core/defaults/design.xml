@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<data default="true">
+	<design>
+		<color_theme options="color_themes.theme">light</color_theme>
+		<splash_logo_asset width="" height=""></splash_logo_asset>
+		<splash_logo_margin_num max="20">0</splash_logo_margin_num>
+		<splash_logo_retina_bool>false</splash_logo_retina_bool>
+		<invoice_logo_asset width="" height=""></invoice_logo_asset>
+		<font_asset width="" height="" extensions="zip"></font_asset>
+		<font_style options="font_face.face">sans</font_style>
+		<font_size_scale_num min="-100" max="100">0</font_size_scale_num>
+		<tile_gutter_width_num max="10">5</tile_gutter_width_num>
+		<highlight_color>0x993300</highlight_color>
+	</design>
+</data>

@@ -1,0 +1,239 @@
+<?php
+
+	use Michelf\Markdown;
+
+	$detect = new Mobile_Detect;
+	
+	$data_setup = 				$this->getData("setup");
+	$page_data = 				$this->info("data");
+	$data_contact = 			$this->getData("contact");
+	
+	/* ---- no email, show the init --- */
+	if ($data_contact) {
+		$your_email = $data_contact->getAttrVal("data.details.your_email.href");
+		if (Func::validEmail(trim($your_email))==false) {
+			$error = "Account Email Not Configured Or Invalid";
+			include "1.page.init.tmpl";
+			exit();
+		}
+	} else {
+		$error = "Account Tab Not Configured";
+		include "1.page.init.tmpl";
+		exit();
+	}
+
+	/* ---- Meta Description --- */
+	$meta_tag_description = $data_setup->getNodeVal("data.settings.meta_tag_description");
+	$meta_tag_description = htmlspecialchars($meta_tag_description);
+	$meta_tag_description .= " " . $page_data->getNodeVal("data.settings.description");
+	$meta_tag_description = Markdown::defaultTransform($meta_tag_description);
+	$meta_tag_description = preg_replace('/(?:(?<=\>)|(?<=\/\>))(\s+)(?=\<\/?)/', "", $meta_tag_description);
+	$meta_tag_description = strip_tags($meta_tag_description);
+	$meta_tag_description = str_replace(array("\n", "\r"), " ", $meta_tag_description);
+	$meta_tag_description = str_replace(array(".", "!", "?"), ". ", $meta_tag_description);
+	if (strlen($meta_tag_description)>256) {
+		$meta_tag_description = substr($meta_tag_description, 0, 256);
+		$meta_tag_description = substr($meta_tag_description, 0, strrpos($meta_tag_description, ".")+1);
+	}
+	$meta_tag_description = trim($meta_tag_description);
+
+	/* ---- Meta Keywords --- */
+	$meta_tag_keywords = $this->info("title");
+	$meta_tag_keywords .= " " . $data_setup->getNodeVal("data.settings.meta_tag_keywords");
+	$meta_tag_keywords = strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array('', '-', ''), Func::remove_accent($meta_tag_keywords)));
+	$meta_tag_keywords = explode("-", $meta_tag_keywords);
+	$meta_tag_keywords = array_unique($meta_tag_keywords);
+	$meta_tag_keywords = implode(" ", $meta_tag_keywords);
+	if (strlen($meta_tag_keywords)>256) { // make sure and limit to 256
+		$meta_tag_keywords = substr($meta_tag_keywords, 0, 256);
+		$meta_tag_keywords = substr($meta_tag_keywords, 0, strrpos($meta_tag_keywords, " "));
+	}
+	$meta_tag_keywords = ucwords($meta_tag_keywords);
+	$meta_tag_keywords = trim($meta_tag_keywords);
+
+	/* ---- Authentication / Page Props --- */
+	$isAuthenticated = 				false;
+	$set_cover_image_asset = 		array("source"=>"");
+	if ($this->info("class")=="ZipFile"||$this->info("class")=="UploadSet"||$this->info("class")=="CategorySet"||$this->info("class")=="DropboxSet") {
+		$isAuthenticated = 			$this->isPageAuthenticated($this->info("id"), $this->info("data"));
+		$isExpired = 				$this->isPageExpired($this->info("id"), $this->info("data"));
+		$set_cover_image_asset = 	$this->getTypedValue($page_data, "settings", "set_cover_image_asset");
+	}
+
+	/* ---- Language --- */
+	$language = 					$CONFIG->getNodeVal("setup.language");
+	$language_twitter = 			strtolower($language);
+	$language_plusone = 			$language . "-" . ($language=="en"?"US":strtoupper($language));
+	$language_facebook = 			$language . "_" . ($language=="en"?"US":strtoupper($language));
+
+	/* ----  Setup --- */
+	$browser_title_pattern = 		$this->getTypedValue("setup", "settings", "browser_title");
+	$google_analytics_user_agent = 	$this->getTypedValue("setup", "settings", "google_analytics_user_agent");
+	$google_analytics_anonymize_bool = 	$this->getTypedValue("setup", "settings", "google_analytics_anonymize_bool");
+	$site_name = 					$this->getTypedValue("setup", "settings", "site_name");
+	$footer = 						$this->getTypedValue("setup", "settings", "footer");
+	$page_head_tags = 				$this->getTypedValue("setup", "settings", "page_head_tags");
+
+	/* ---- Resampler Settings --- */
+	$resampling_quality_num = 		$this->getTypedValue("setup", "settings", "resampling_quality_num");
+	$resample_use_imagick_bool = 	$this->getTypedValue("setup", "settings", "resample_use_imagick_bool");
+	$resample_sharpen_bool = 		$this->getTypedValue("setup", "settings", "resample_sharpen_bool");
+	$watermark_bool = 				$this->getTypedValue("setup", "watermarking", "watermark_bool");
+	$watermark_asset = 				$this->getTypedValue("setup", "watermarking", "watermark_asset");
+		$watermark_asset = 				$watermark_asset["child"];
+	$watermark_x_num = 				$this->getTypedValue("setup", "watermarking", "watermark_x_num");
+	$watermark_y_num = 				$this->getTypedValue("setup", "watermarking", "watermark_y_num");
+	$watermark_alpha_num = 			$this->getTypedValue("setup", "watermarking", "watermark_alpha_num");
+	$crosshairs_bool = 				$this->getTypedValue("setup", "watermarking", "crosshairs_bool");
+	$crosshairs_color = 			$this->getTypedValue("setup", "watermarking", "crosshairs_color");
+		$crosshairs_color = 			$crosshairs_color["value"];
+	$crosshairs_alpha_num = 		$this->getTypedValue("setup", "watermarking", "crosshairs_alpha_num");
+
+	/* ---- Touch Icons --- */
+	$touch_screen_icon_asset = 		$this->getTypedValue("setup", "settings", "touch_screen_icon_asset");
+	$apple_touch_icon_default_tag = "";
+	$apple_touch_icon_72x72_tag = 	"";
+	$apple_touch_icon_114x114_tag = "";
+		if ($touch_screen_icon_asset["source"]!="") {
+			$graphic = new Graphic(array());
+			$graphic->thumbnail(true);
+			$graphic->setBasepath("asset");
+			$graphic->setExtension("png");
+			$graphic->setFilename($touch_screen_icon_asset["child"]);
+			$graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+			$graphic->setSize(57, 57);
+			$apple_touch_icon_default_tag .= '<link rel="apple-touch-icon-precomposed" href="' . $graphic->source() . '">' . "\n";
+			$graphic->setSize(72, 72);
+			$apple_touch_icon_72x72_tag .= '<link rel="apple-touch-icon-precomposed" sizes="72x72" href="' . $graphic->source() . '">' . "\n";
+			$graphic->setSize(114, 114);
+			$apple_touch_icon_114x114_tag .= '<link rel="apple-touch-icon-precomposed" sizes="114x114" href="' . $graphic->source() . '">' . "\n";
+		}
+
+	/* ---- Facebook --- */
+	$facebook_image_tag = 			"\n";
+	$facebook_pixel_tag = 			"\n";
+		if ($set_cover_image_asset["source"]!="") {
+			$graphic = new Graphic(array());
+			$graphic->thumbnail(false);
+			$graphic->setBasepath($this->info("id"));
+			$graphic->setFilename($set_cover_image_asset["child"]);
+			$graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+			$graphic->setSize(null, 200);
+			$facebook_image_tag = '<meta property="og:image" content="' . Func::getBaseUrl() . "/" . $graphic->source() . '" />' . "\n";
+		}
+	$facebook_pixel_id = 			$this->getTypedValue("setup", "settings", "facebook_pixel_id");
+		if ($facebook_pixel_id["value"]!="") {
+			$facebook_pixel_tag .= "<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '$facebook_pixel_id');</script><noscript><img height='1' width='1' style='display:none' src='https://www.facebook.com/tr?id=$facebook_pixel_id&ev=PageView&noscript=1' /></noscript>\n";
+		}
+		
+	/* ---- Analytics --- */
+	$page_tracking_script = $google_analytics_user_agent["value"];
+		if (strtolower(substr($page_tracking_script, 0, 7))!="<script") {
+			$ga_user_agent = Func::stripGoogleUA($page_tracking_script);
+			if (strtolower(substr($ga_user_agent, 0, 3))=="ua-") {
+				$page_tracking_script = "<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', '$ga_user_agent', 'auto');</script>";
+			}
+		}
+
+	/* ---- Favicon --- */
+	$website_favicon_asset = 		$this->getTypedValue("setup", "settings", "website_favicon_asset");
+	$website_favicon_tag = 			"";
+		if ($website_favicon_asset["source"]!="") {
+			$website_favicon_tag .= '<link rel="shortcut icon" href="' . $website_favicon_asset["path"] . '" />' . "\n";
+		}
+
+	/* ----  Page Properties --- */
+	$use_clean_urls =				false;
+	$browser_title = 				htmlspecialchars(str_replace("{PAGE_NAME}", $this->info("title"), $browser_title_pattern["value"]));
+	$website_sitemap_uri =			$use_clean_urls ? Func::getBaseUrl() . "/" . "sitemap.xml?v=" . SA_PRODUCT_VERSION : Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/xml/sitemap/" . SA_PRODUCT_VERSION . "/";
+	$meta_tag_description =			htmlspecialchars($meta_tag_description);
+	$meta_tag_keywords =			htmlspecialchars($meta_tag_keywords);
+	$final_class_name =				"";
+
+?>
+<!doctype html>
+<html class="no-js" lang="<?php echo $language; ?>">
+<head>
+	<title><?php echo $browser_title; ?></title>
+	<meta charset="utf-8">
+	<meta name="description" content="<?php echo $meta_tag_description; ?>">
+	<meta name="keywords" content="<?php echo $meta_tag_keywords; ?>">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0,initial-scale=1,minimum-scale=1">
+	<!-- Icons, favicons, facebook, etc. -->
+	<?php echo $website_favicon_tag; ?>
+	<?php echo $apple_touch_icon_114x114_tag; ?>
+	<?php echo $apple_touch_icon_72x72_tag; ?>
+	<?php echo $apple_touch_icon_default_tag; ?>
+	<?php echo $facebook_image_tag; ?>
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="<?php echo htmlspecialchars($this->info("title")); ?>" />
+	<meta property="og:locale" content="<?php echo $language_facebook; ?>" />
+	<?php echo $page_head_tags["value"]; ?>
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_INDEXPATH; ?>?/css/global/<?php echo SA_PRODUCT_VERSION; ?>/" media="all" />
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/js/extend/jquery-ui/jquery-ui.min.css" media="all" />
+	<!-- sitemap -->
+	<link rel="sitemap" type="application/xml" href="<?php echo $website_sitemap_uri; ?>" />
+	<!-- Javascript -->
+	<script type="text/javascript" src="<?php echo SA_DIR_INDEXPATH; ?>?/js/global/<?php echo SA_PRODUCT_VERSION; ?>/"></script>
+	<script type="text/javascript" src="<?php echo SA_DIR_COREPATH; ?>/js/extend/jquery-ui/jquery-ui.min.js"></script>
+</head>
+<body>
+	<div id="body-inner">
+		<div id="container" class="<?php echo $this->info("class"); ?>" data-suid="<?php echo $this->info("id"); ?>">
+<?php
+	include "2.content." . ($this->flag_is_special ? $this->flag_special_type : strtolower($this->info("class"))) . ".tmpl";
+?>
+		</div>
+		<div id="form-dialog-container">
+			<div id="form-dialog-screen"></div>
+			<div id="form-dialog-background"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="" /></div>
+			<div id="form-dialog">
+				<div id="form-dialog-inner">
+					<div id="form-dialog-description"></div>
+					<div id="form-dialog-content">
+						<form onsubmit="return false;">
+							<input id="form-dialog-field" class="uiField" placeholder="" type="text" name="suid" value="" autocomplete="off" />
+							<button id="form-dialog-submit" class="uiPushButton" type="button"></button>
+							<button id="form-dialog-cancel" class="uiPushButton" type="button"></button>
+						</form>
+						<div id="form-dialog-response">
+							<div id="form-dialog-error"></div>
+							<button id="form-dialog-confirm" class="uiPushButton" type="button"></button>
+							<button id="form-dialog-cancel2" class="uiPushButton" type="button"></button>
+						</div>
+					</div>
+					<div id="form-dialog-footer"></div>
+					<div id="form-dialog-screen2"></div>
+				</div>
+			</div>
+		</div>
+		<div id="tooltip"></div>
+	</div>
+	<div id="body-error">
+		<div id="body-error-inner">
+			<div id="body-fail-icon"></div>
+			<h2 id="body-fail-title"></h2>
+			<div id="body-fail-description" class="Description"></div>
+		</div>
+	</div>
+	<script>
+		classes.helpers.Func.setDocumentTitlePattern("<?php echo $browser_title_pattern["value"]; ?>");
+		classes.Shell.initialize({ 
+			device: { 
+				touch: <?php echo $detect->isMobile() || $detect->isTablet() ? "true" : "false"; ?>, 
+				phone: <?php echo $detect->isMobile() && !$detect->isTablet() ? "true" : "false"; ?>, 
+				tablet: <?php echo $detect->isTablet() ? "true" : "false"; ?>, 
+				ios:  <?php echo $detect->isiOS() ? "true" : "false"; ?>, 
+				android: <?php echo $detect->isAndroidOS() ? "true" : "false"; ?>, 
+				ie: <?php echo $detect->isIE() ? "true" : "false"; ?> 
+			}, 
+			init: "<?php echo $final_class_name; ?>" }
+		);
+	</script>
+	<!-- Page Tracking Code Start -->
+<?php echo $page_tracking_script; ?>
+	<!-- Page Tracking Code End -->
+</body>
+</html>

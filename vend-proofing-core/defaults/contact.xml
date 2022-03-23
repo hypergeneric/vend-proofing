@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<data default="true">
+	<settings>
+		<show_in_navigation_bool>true</show_in_navigation_bool>
+		<title></title>
+		<image_asset width="" height=""></image_asset>
+		<description markdown="true" toolbar="true" lines="6"><![CDATA[]]></description>
+		<contact_form_recipients lines="5"></contact_form_recipients>
+		<mailing_list options="mailinglists.provider">none</mailing_list>
+		<mailing_list_username></mailing_list_username>
+		<mailing_list_account_api_key></mailing_list_account_api_key>
+		<mailing_list_subscriber_list_key></mailing_list_subscriber_list_key>
+		<use_autoresponder_bool>false</use_autoresponder_bool>
+	</settings>
+	<details>
+		<your_website_url href=""></your_website_url>
+		<your_phone_number></your_phone_number>
+		<your_physical_address lines="5"><![CDATA[]]></your_physical_address>
+		<your_email href=""></your_email>
+	</details>
+	<mailer_settings>
+		<mail_provider options="mail_providers.provider">mail</mail_provider>
+		<log_all_messages_bool>true</log_all_messages_bool>
+		<sendgrid_api_key private="true" encoded="true"></sendgrid_api_key>
+		<server_origin_email href=""></server_origin_email>
+		<smtp_hostname></smtp_hostname>
+		<smtp_port_num min="0" max="65536">25</smtp_port_num>
+		<smtp_connection_type options="smtp_connection_types.type">none</smtp_connection_type>
+		<smtp_requires_auth_bool>false</smtp_requires_auth_bool>
+		<smtp_username private="true"></smtp_username>
+		<smtp_password private="true" encoded="true"></smtp_password>
+	</mailer_settings>
+</data>

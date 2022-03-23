@@ -1,0 +1,4 @@
+name: vend-proofing
+recipe: lamp
+config:
+  php: '5.6'

@@ -1,0 +1,278 @@
+<?php
+
+	use Michelf\Markdown;
+
+	$inited = 							@file_exists(SA_DIR_AUTH);
+	$hub = 								$CONFIG->getNodeVal("setup.hub")=="true";
+
+	if ( $inited || $hub ) {
+
+		if ($hub) {
+			$auth = new Auth();
+			$auth->check();
+		}
+		
+		$data_contact = 				Flatfile::getXmlArray("contact", null, true);
+		$show_setup = 					false;
+		if ($data_contact) {
+			$your_email = 				$data_contact->getAttrVal("data.details.your_email.href");
+			if (Func::validEmail(trim($your_email))==false) {
+				$error = 				"Contact Email Not Configured Or Invalid";
+				$show_setup = 			true;
+			}
+		} else {
+			$error = 					"Contact Tab Not Configured";
+			$show_setup = 				true;
+		}
+		
+		if ( !$show_setup ) {
+
+			$page_title = 				$CONFIG->getNodeVal("setup.product_title");
+			$need_flash_title = 		$LANG->lookup("Flash and Javascript Required");
+			$need_flash_description = 	$LANG->lookup("Flash and Javascript Required Description");
+			$need_flash_download = 		$LANG->lookup("Download Flash");
+			$help_title = 				$LANG->lookup("Help Documentation");
+			$help_description = 		Markdown::defaultTransform(@file_get_contents(SA_DIR_COREPATH."/lang/".$CONFIG->getNodeVal("setup.language").".wiki.txt"));
+			$help_link = 				$LANG->lookup("Visit Support Site");
+
+?>
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<title><?php echo $page_title; ?></title>
+	<meta charset="utf-8">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" href="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/css/admin/<?php echo SA_PRODUCT_VERSION; ?>/">
+	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/admin/js/extend/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/admin/js/extend/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+	<div id="container"></div>
+	<script src="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/js/admin/<?php echo SA_PRODUCT_VERSION; ?>/"></script>
+	<script type="text/javascript">
+		classes.Admin.initialize();
+	</script>
+</body>
+</html>
+<?php
+
+		} else {
+			
+			$page_title = 					"Your Account Details";
+			$page_description = 			"For Vend to function correctly, we need a valid email address so that Vend can communicate with you and your users.  This will information will be publically visible on invoices and outgoing emails.";
+			$your_website_name_label = 		"Your Website Name";
+			$your_website_url_label = 		"Your Website URL (should start with http:// or https://)";
+			$your_phone_number_label = 		"Your Phone Number";
+			$your_physical_address_label = 	"Your Physical Address";
+			$your_name_label = 				"Your Name Address (required)";
+			$your_email_label = 			"Your Email Address (required)";
+			$submit_title = 				$LANG->lookup("Save");
+			
+			/* this might be a submit call, lets pull any post vars in
+			*/
+			$form_error = 					"";
+			$form_errors = 					array();
+			$your_website_name = 			isset($_POST["your_website_name"]) ? $_POST["your_website_name"] : "";
+			$your_website_url = 			isset($_POST["your_website_url"]) ? strtolower($_POST["your_website_url"]) : "";
+			$your_phone_number = 			isset($_POST["your_phone_number"]) ? $_POST["your_phone_number"] : "";
+			$your_physical_address = 		isset($_POST["your_physical_address"]) ? $_POST["your_physical_address"] : "";
+			$your_name = 					isset($_POST["your_name"]) ? $_POST["your_name"] : "";
+			$your_email = 					isset($_POST["your_email"]) ? strtolower($_POST["your_email"]) : "";
+			$submit = 						isset($_POST["submit"]) ? $_POST["submit"] : "";
+			
+			/* if it's a submit, search for errors
+				*/
+			if (strlen($submit)) {
+				if (strlen($your_name)==0) {
+					$form_errors[] = 		$LANG->lookup("You must supply an Email Name");
+				}
+				if (strlen($your_email)==0) {
+					$form_errors[] = 		$LANG->lookup("You must supply a valid Email Address");
+				} else {
+					if (Func::validEmail(trim($your_email))==false) {
+						$form_errors[] =	$LANG->lookup("You must supply a valid Email Address");
+					}
+				}
+				if (count($form_errors)==0) {
+					/* save to contact xml
+						*/
+					$data_contact = Flatfile::getXmlArray("contact");
+					$data_contact->editNode("data", null, "default=false");
+					$data_contact->editNode("data.details.your_website_url", $your_website_name, "href=$your_website_url");
+					$data_contact->editNode("data.details.your_phone_number", $your_phone_number);
+					$data_contact->editNode("data.details.your_physical_address", $your_physical_address);
+					$data_contact->editNode("data.details.your_email", $your_name, "href=$your_email");
+					$data_contact->save( SA_DIR_STORAGE . "/contact.xml" );
+					/* redirect to the new admin
+						*/
+					$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/admin/";
+					header("Location: $path");
+					exit;
+				}
+			}
+			/* consolidate any errors
+				*/
+			foreach ($form_errors as $str) $form_error .= "<p>$str</p>";
+			
+			
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title><?php echo $page_title; ?></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/itdradmin.css?v=<?php echo SA_PRODUCT_VERSION; ?>" media="all" />
+	</head>
+	<body>
+		<div id="container">
+			<div id="content">
+				<div class="PanelBox">
+					<div class="Top">
+						<h2 title="<?php echo $page_title; ?>"><?php echo $page_title; ?></h2>
+					</div>
+					<div class="Body">
+						<div class="Description"><?php echo $page_description; ?></div>
+							<form action="?/admin/" method="post">
+							<div class="formtitle"><?php echo $your_website_name_label; ?></div>
+							<input type="text" name="your_website_name" value="<?php echo $your_website_name; ?>" />
+							<div class="formtitle"><?php echo $your_website_url_label; ?></div>
+							<input type="text" name="your_website_url" value="<?php echo $your_website_url; ?>" />
+							<div class="formtitle"><?php echo $your_phone_number_label; ?></div>
+							<input type="text" name="your_phone_number" value="<?php echo $your_phone_number; ?>" />
+							<div class="formtitle"><?php echo $your_physical_address_label; ?></div>
+							<textarea name="your_physical_address" value="<?php echo $your_physical_address; ?>"></textarea>
+							<div class="formtitle"><?php echo $your_name_label; ?></div>
+							<input type="text" name="your_name" value="<?php echo $your_name; ?>" />
+							<div class="formtitle"><?php echo $your_email_label; ?></div>
+							<input type="text" name="your_email" value="<?php echo $your_email; ?>" />
+							<input class="InputButton" type="submit" name="submit" value="<?php echo $submit_title; ?>" />
+							<?php if ($form_error!="") { ?><div class="formerror"><?php echo $form_error; ?></div><?php } ?>
+						</form>
+					</div>
+					<div class="Foot">
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<?php
+		}
+
+	} else {
+
+		/* get all the text stuff
+			*/
+		$page_title = 					$LANG->lookup("Initial Setup");
+		$page_description = 			$LANG->lookup("Intial Page Description");
+		$page_footer = 					$LANG->lookup("Intial Page Footer");
+		$email_address_label = 			$LANG->lookup("Your Primary Email Address");
+		$secret_question_label = 		$LANG->lookup("Your Secret Question");
+		$secret_question_answer_label = $LANG->lookup("Secret Question Answer");
+		$username_label = 				$LANG->lookup("Choose a Username");
+		$password_label = 				$LANG->lookup("Choose a Password");
+		$password_again_label = 		$LANG->lookup("Verify Password");
+		$submit_title = 				$LANG->lookup("Initialize");
+		
+		/* this might be a submit call, lets pull any post vars in
+			*/
+		$form_error = 					"";
+		$form_errors = 					array();
+		$email_address = 				isset($_POST["email_address"]) ? strtolower($_POST["email_address"]) : "";
+		$secret_question = 				isset($_POST["secret_question"]) ? $_POST["secret_question"] : "";
+		$secret_question_answer = 		isset($_POST["secret_question_answer"]) ? strtolower($_POST["secret_question_answer"]) : "";
+		$submit = 						isset($_POST["submit"]) ? $_POST["submit"] : "";
+		$username = 					isset($_POST["username"]) ? $_POST["username"] : "";
+		$password = 					isset($_POST["password"]) ? $_POST["password"] : "";
+		$password_again = 				isset($_POST["password_again"]) ? $_POST["password_again"] : "";
+		
+		/* if it's a submit, search for errors
+			*/
+		if (strlen($submit)) {
+			if (strlen($email_address)==0) 				$form_errors[] = $LANG->lookup("You must supply a valid Email Address");
+			if (strlen($secret_question)==0) 			$form_errors[] = $LANG->lookup("You must supply a secret question");
+			if (strlen($secret_question_answer)==0) 	$form_errors[] = $LANG->lookup("You must supply the answer to the secret question");
+			if (strlen($username)<6) 					$form_errors[] = $LANG->lookup("Username must be a minimum of 6 characters");
+			if (strlen($password)<6) 					$form_errors[] = $LANG->lookup("Password must be a minimum of 6 characters");
+			if ($password!=$password_again) 			$form_errors[] = $LANG->lookup("Passwords do not match");
+			/* if there are no errors, we should be good to go, create the account info
+				and then redirect to yourself to start her up!
+				auto exits and redirects
+				*/
+			if (count($form_errors)==0) {
+				$gateway = new Gateway();
+				$gateway->createUser($username, $password, $email_address, $secret_question, $secret_question_answer);
+				/* redirect to the new admin
+					*/
+				$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/admin/";
+				header("Location: $path");
+				exit;
+			}
+		}
+		/* consolidate any errors
+			*/
+		foreach ($form_errors as $str) $form_error .= "<p>$str</p>";
+
+?>
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<title><?php echo $page_title; ?></title>
+	<meta charset="utf-8">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" href="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/css/admin/<?php echo SA_PRODUCT_VERSION; ?>/">
+</head>
+<body>
+	<div id="admin">
+		<div class="Dialog">
+			<div class="Header"><?php echo $page_title; ?></div>
+			<div class="Content">
+				<div class="Markdown"><?php echo $page_description; ?></div>
+				<form action="?/admin/" method="post">
+					<div class="DialogForm">
+						<div class="Group Input">
+							<label><?php echo $email_address_label; ?></label>
+							<input name="email_address" type="input" value="<?php echo $email_address; ?>" required />
+						</div>
+						<div class="Group Input">
+							<label><?php echo $secret_question_label; ?></label>
+							<input name="secret_question" type="input" value="<?php echo $secret_question; ?>" required />
+						</div>
+						<div class="Group Input">
+							<label><?php echo $secret_question_answer_label; ?></label>
+							<input name="secret_question_answer" type="input" value="<?php echo $secret_question_answer; ?>" required />
+						</div>
+						<div class="Group Input">
+							<label><?php echo $username_label; ?></label>
+							<input name="username" type="input" value="<?php echo $username; ?>" required />
+						</div>
+						<div class="Group Input">
+							<label><?php echo $password_label; ?></label>
+							<input name="password" type="password" value="" required />
+						</div>
+						<div class="Group Input">
+							<label><?php echo $password_again_label; ?></label>
+							<input name="password_again" type="password" value="" required />
+						</div>
+						<div class="Submit">
+							<input type="submit" name="submit" value="<?php echo $submit_title; ?>" />
+						</div>
+						<div class="Clear"></div>
+						<div style="visibility:<?php echo $form_error!=""?"visible":"hidden"; ?>;" class="Response"><?php echo $form_error; ?></div>
+					</div>
+				</form>
+			</div>
+			<div class="Footer">
+			</div>
+		</div>
+	</div>
+</body>
+<?php
+
+	}
+
+?>

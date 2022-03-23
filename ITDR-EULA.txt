@@ -1,0 +1,202 @@
+IntoTheDarkRoom™ Terms of Use
+-----------------------------
+
+<u>Effective Date: December 31, 2015</u>
+-----------------------------------
+Welcome to **IntoTheDarkRoom™. IMPORTANT—READ CAREFULLY**: These Terms of Use (***"Agreement"***) create a legal contract between you and Theta Interactive, Inc., the company that operates the IntoTheDarkRoom website (***"Site"***), provides online use of website templates and other tools for photography professionals (***"Online Service"***), and allows photography professionals to load website templates and other tools (***"Software"***").  The terms ***"we,"*** ***"our,"*** ***"us,"*** and ***"ITDR"*** refer to Theta Interactive, Inc.  The terms ***"you"***, ***"your"***, and ***"Company"*** refer to the company identified during this Site registration process.  This Site and any mobile software applications we make available for download on mobile devices (***"Mobile Devices"***) for use with the Site (***"Mobile Apps"***) are collectively called the ***"ITDR Platform"***.
+
+**BY CLICKING THE "<u>I'VE READ AND ACCEPT THE TERMS AS DESCRIBED</u>" BUTTON BELOW, YOU HEREBY AGREE TO BE BOUND BY THE TERMS OF THIS AGREEMENT - WHICH INCLUDES OUR [PRIVACY POLICY][privacy-policy] - INCLUDING WITHOUT LIMITATION ALL WARRANTY DISCLAIMERS, LIMITATIONS OF LIABILITY, AND TERMINATION PROVISIONS THAT APPEAR BELOW**. BY CLICKING THE "<u>I'VE READ AND ACCEPT THE TERMS AS DESCRIBED</u>" BUTTON BELOW, YOU CONFIRM THAT YOU HAVE ACCESS TO THE INTERNET AND THE ABILITY TO MAKE HARD COPIES OF THIS AGREEMENT. YOU AGREE THAT THE ELECTRONIC RECORD IN OUR SYSTEM WILL BE THE CONTROLLING COPY OF THE AGREEMENT.
+
+<u>CHANGES TO OUR AGREEMENT</u>
+-------------------------------
+We will notify you of material changes to this Agreement by posting a notice on the Site or sending you an electronic communication to the email address in your account profile on the Site.
+
+**If you continue to use the ITDR Platform after changes to the Agreement, you have agreed to the changes.**
+
+<u>ACCESS</u>
+-------------
+**This ITDR Platform is intended for access only by United States residents.  Potential users in any other jurisdiction whose laws or regulations would void this Agreement in whole or in any essential part, or which makes accessing the ITDR Platform illegal, are unauthorized to use the ITDR Platform, and do so entirely at their own risk.**
+
+1. <u>ADDITIONAL DEFINITIONS</u>
+--------------------------------
+* (a) The term "**Abnormal Use**" means any use of the ITDR Platform or Software in disregard of (i) any known adverse consequences or (ii) warning message.
+* (b) The term "**Affiliate**" means any entity that is controlled by either party.
+* (c) The term **"Content"** of the Software or the ITDR Platform includes text, graphics, logos, icons, images, audio or video content, and digital or printable downloads, as well as the design, selection, and arrangement of this content.
+* (d) The term "**Documentation**" means any user and/or systems manual(s), or help files, for the ITDR Platform or Software that ITDR may make available, including all replacements, updates, additions and changes to such written materials which may be made available by ITDR from time to time.
+* (e) The term "**Software**" includes any of the following products include slideshows, photo carts, proofing systems, websites, blogs, plugins and/or any other software that may be loaded from the ITDR Platform, (ii) any combination of such products and Alpha, Beta, trial, pre-release, free, pay and premium versions, and (iii) all modifications, improvements, replacements, enhancements, additions, corrections, upgrades, customizations and other changes to such products from time to time made by ITDR or its licensors and delivered to you.
+* (f) The term "**Online Service**" means online access and use of the ITDR Platform, and storage of your images and data on our servers or the servers of our vendors.
+* (g) The term "**Your Personal Information**" means any of your own personal information you decide to input into the Site.
+
+2. <u>LOADABLE SOFTWARE LICENSE RIGHTS AND OBLIGATIONS</u>
+----------------------------------------------------------
+* (a) ITDR hereby grants you a non-exclusive, non-transferable license to load onto one server one copy of each application of the Software for which you have paid, and to use that Software in accordance with the terms of this Agreement.  **You will be required to pay for the License before you have any rights under this section.  You understand and hereby acknowledge that the fees for this software license that are set forth on the Site and in your shopping cart are final and nonrefundable - [link to our policies page][privacy-policy].**
+* (b) When using the Software, you will NOT:
+    * (i) except as specifically permitted by the Documentation, permit any third party to use the Software or the Documentation; 
+    * (ii) except as specifically permitted by the Documentation, copy, market, disclose, distribute, export, translate, reverse engineer, transmit, merge, modify, transfer, adapt, loan, rent, lease, assign, share, redistribute, or permit access to all or part of the Software or Content, or modify, adapt, or create derivative works from the Software or Content, or remove proprietary notices.
+    * (v) use the Software or Documentation to create any computer software program or user documentation that is substantially similar to the Software or Documentation; or
+    * (vi) use the Software for an Abnormal Use; or
+    * (v) use the ITDR Platform or Online Service to violate the law.
+* (c) You may modify the Documentation to the extent necessary to reflect more closely your operations.  ITDR shall retain all rights in any modified Documentation.
+
+3. <u>ONLINE SERVICE RIGHTS AND OBLIGATIONS</u>
+-----------------------------------------------
+* (a) ITDR hereby grants you a non-exclusive, non-transferable license to access and use those portions of the Online Service for which you have paid, and as are described on the Site and in any applicable Documentation, and to use that ITDR Platform and the Online Service in accordance with the terms of this Agreement.  You will be required to pay for such rights before you may access or use the Online Service.  **You understand and hereby acknowledge that the fees for this software license that are set forth on the Site and in your shopping cart are final and nonrefundable - [link to our policies page][privacy-policy].**
+* (b) Your User Account
+     * (i) You can register for an account by providing your name, your Company name, and other information that may be requested on the Site.  You will be emailed a username and password to access the Site. To create a profile you can add information into your account, but you do not have to add any personal information.  If you add personal information into your profile, the personal information stays there until you change or remove it.  All information that you provide us in registering for an account is subject to the ITDR Privacy Policy - [link to our policies page][privacy-policy].  
+     * (ii) You promise that Your Personal Information entered into the Site is correct and applies only to you.  You can only find your account information, profile, and personal information using the password you create.  
+     * (iii) After completing the registration process and upon acceptance by ITDR, you will be provided with a unique user ID and password to access the Site (the "**Key**").  Thereafter, the Company can request additional Key(s) as you may require for all of your employees, agents or authorized representatives that the Company solely determines are required to access the Site ("***Authorized Users***").We will never ask you for your password in a phone call or in an e-mail unless you call or e-mail us first and need help.  
+     * (iv) Remember to sign out of your account by clicking on LOGOUT to close your browser window when you finish each session on the Site.  Using the LOGOUT button prevents others from seeing Your Personal Information if you share a computer with someone else, or use a computer in a library or other public place.
+     * (v) **YOU ARE RESPONSIBLE TO KEEP YOUR KEYS SECRET.  IMMEDIATELY TELL US IF THERE IS A PROBLEM WITH YOUR ACCOUNT. YOU ARE RESPONSIBLE FOR ALL ACTIVITIES IN YOUR ACCOUNT OR RELATED TO USE OF YOUR KEYS.**
+     * (vi) We can suspend or close your Online Service account on our Site or otherwise cease providing the Online Service or Site in whole or in part at any time and for any or no reason.  
+     * (vii) **ITDR assumes no liability or responsibility for any content or material of any kind that is posted by you or any third party on any area of the ITDR Platform or the Online Service**. ITDR is merely a publisher of any such content and is acting solely as an Internet Service Provider as such term is defined in the Digital Millennium Copyright Act.  You may be permitted to upload content to the ITDR Platform for the Company's internal business purposes ("***User Generated Content***"), as long as you comply with the terms of this Agreement, applicable laws and regulations, and any ITDR [policies posted in the Site page][privacy-policy] or provided upon Software installation. We do not claim ownership of any User Generated Content, however, if you post User Generated Content you hereby grant ITDR and our affiliates a royalty-free, worldwide, non-exclusive and sublicensable license to use this User Generated Content to meet our obligations under this Agreement. 
+* (c) When using the ITDR Platform, you will NOT:
+     * (i) except as specifically permitted by the Documentation, copy, market, disclose, distribute, export, translate, reverse engineer, transmit, merge, modify, transfer, adapt, loan, rent, lease, assign, share, redistribute, host, hyper-link to, frame, port, store, or permit access to all or part of the ITDR Platform, the Online Service, or any content by any person other than Authorized Users. You may not modify, adapt, or create derivative works from the ITDR Platform, the Online Service, or any related content, or remove proprietary notices.
+     * (ii) send automated queries or unsolicited bulk email, instant messages, or text messages (e.g. spam) through the ITDR Platform or when using the Online Service, or harvest information about any users for the purpose of sending, or to facilitate the sending, of unsolicited bulk communications;
+     * (iii) post or submit information containing viruses, or any computer programs that result or may result in the damage, interference with or interception or expropriation of the ITDR Platform, the Online Service, its Content, or any system, software, hardware, data or other information;
+     * (iv) collect any other information that is not yours, which is contained on or available through the ITDR Platform or when using the Online Service, including without limitation, accessing, retrieving, indexing, data mining, scraping, crawling, or using similar data gathering and extraction tools, or redirecting, or compiling a collection of listings or data from the ITDR Platform or Online Service, for purposes of constructing or populating a searchable database;
+     * (v) use any robot, spider or other automatic device or manual process to monitor or copy ITDR Platform pages or any Content contained on or available through the ITDR Platform or when using the Online Service;
+     * (vi) use computers or handheld devices to access the ITDR Platform that have been "rooted", "jail-broken", "hacked" or altered in such a way as to allow the installation of altered, manipulated, pre-released or "cracked" versions of the computer or device operating system software or other installable applications;
+     * (vii) use the information on the ITDR Platform or in the Online Service to create and sell a similar service or similar information; or 
+     * (viii) use the ITDR Platform or the Online Service for an Abnormal Use.
+* (d) You must adhere to all applicable local, state and federal laws and regulations in accessing and using the ITDR Platform and the Online Service, including but not limited to those laws and regulations regarding restrictions on (i) court ordered publication bans; (ii) publishing, printing, distributing, possessing, selling, advocating, promoting or exposing, obscene or threatening material, child pornography, or hate propaganda; (iii) the use of third party trademarks or trade names, or any work which is protected by copyright, trade secret, patent or other intellectual property laws, including software; and (iv) defamation, libel, harm to reputation, invasion of privacy, unfair competition and other situations which could generate liability.
+* (e) ITDR and its vendors retain the right, but are not obligated, to store and monitor any activity and content on any system operated by ITDR or its vendors, including without limitation the ITDR Platform, the Online Service, and content, and the right to disclose such activity and content to third parties, including without limitation law enforcement officers.
+* (f) We are not responsible or liable for any content or other materials on third party websites that are linked from the ITDR Platform. Use of third party websites is subject to each website's separate terms of use and privacy policies, with which you should ensure you become familiar.  Any dealings that you have with third party websites found on ITDR Platform are between you and the third party, and you acknowledge and agree that we are not liable for any loss or claim you may have against any third party.
+* (g) Security
+     * (i) We will manage information and data security with reasonable efforts to restrict unauthorized access, and in material compliance with applicable privacy laws.
+     * (ii) We will ensure that data on the ITDR Platform is backed up as often as reasonably necessary.  In addition, we will ensure that industry standard measures are in place to enable continuation of the ITDR Platform in the event of unexpected disruptive events.  **However, you are responsible for making sure all your files, data, communications, and other information is properly backed up so you have access to it in the event of loss, corruption, or cessation of the ITDR Platform.  We do not export data during your use of the ITDR Platform or Online Service or provide any data to you when your account is closed**.
+
+4. <u>MOBILE APPS</u>
+---------------------
+* (a) ITDR herby grants you and your Authorized Users a worldwide, non-exclusive, non-transferable, revocable license to use the Mobile Apps solely for the Company's internal business purposes, subject to the terms of this Agreement and any terms required to download the Mobile Apps.  **We make no claim that the Mobile Apps are appropriate or available for use in locations outside the United States. You must comply with local laws if you choose to access the Mobile Apps from a location outside the U.S.**
+* (b) We reserve the right to amend or withdraw the Mobile Apps, or charge for the Mobile Apps.  ITDR does not provide any support or maintenance for the Mobile Apps.
+* (c) You and your Authorized Users must provide the equipment and wireless connections necessary to access the Mobile Apps, at your own expense. You acknowledge that the terms of agreement with your Company's and each of your Authorized Users' respective mobile network providers ("***Mobile Provider***") will continue to apply when using the Mobile Apps. As a result, the Company and its Authorized Users may be charged by the Mobile Providers for access to network connection services for the duration of the connection while accessing the Mobile Apps, for data downloading, email, text messages, and for roaming and other Mobile Provider or third party charges as may arise. **YOU ACCEPT RESPONSIBILITY FOR ANY SUCH CHARGES**.
+* (d) When your Authorized Users access Mobile Apps on their Mobile Devices, we may obtain information from their Mobile Providers about the type of Mobile Devices they are using. We may use this information to notify them on features and products that be available to them on their Mobile Devices via the Mobile Apps.  Certain features of the Mobile Apps may require our collection of the phone number of Authorized Users' Mobile Devices. We may associate that phone number to the mobile device identification information, however we will not use that number for telemarketing.  In addition, some Mobile Providers in the U.S. are required to operate a system that will pinpoint the physical location of Mobile Devices that use their service.  Depending on the Mobile Provider, we may automatically receive this information. In the future, if we begin to offer services that use pinpointing technology, we will ensure that we have each Authorized User's consent (an opt-in) before using the information. We may use and store this information to provide enhanced location-based services as well as to serve location-targeted advertising.
+* (e) You will NOT, nor allow your Authorized Users or any third parties on your behalf to:
+     * (i) make and distribute copies of the Mobile Apps;
+     * (iii) install, use or permit the Mobile Apps to exist on more than one Mobile Device at a time, or on any other Mobile Device or computer, other than by means of separate downloads of the Mobile Apps by your Authorized Users, each of which is subject to a separate license; 
+     * (iv) distribute or link the Mobile Apps to multiple Mobile Devices or other services; or 
+     * (v) make the Mobile Apps available over a network or other environment permitting access or use by multiple Mobile Devices or users at the same time.
+* (f) You acknowledge the Mobile Apps are provided over the internet and mobile networks and so the quality and availability of the Mobile Apps may be affected by factors outside our control.  **We do not guarantee that the Mobile Apps will be compatible or interoperable with your Authorized Users' Mobile Providers' service plans, or with any particular Mobile Devices or other piece of hardware, software, equipment or device installed on or used in connection with your Authorized Users' Mobile Devices.  We are not responsible for unavailability of the Mobile Apps, or any difficulty or inability to download or access content, compatibility or interoperability issues, or any communication system failure which may result in the Mobile Apps being unavailable**. 
+* (g) We may offer functionality in the Mobile Apps in which your Authorized Users may store their log-in credentials on their Mobile Devices, so that they can be automatically logged in each time they access the Mobile Apps. Please note that if someone else obtains access to an Authorized User's Mobile Device (e.g., through theft), the automatic log-in feature will enable that person to have access to your Authorized User's Mobile Apps account. Therefore, in the event an Authorized User's Mobile Device is lost or stolen, it is their responsibility to contact their wireless carrier immediately to prevent the unauthorized use of the Mobile Apps. **YOU ACCEPT RESPONSIBILITY FOR ANY ITDR DAMAGES RESULTING FROM SUCH UNAUTHORIZED ACCESS TO THE MOBILE APPS**.
+
+
+5. <u>TERM AND TERMINATION</u>
+------------------------------
+* (a) The effective date of the Software license is the date of your full payment for use of the Software, and its term is perpetual, unless terminated as provided in this Agreement.  You may terminate the Software license at any time by destroying all copies of the Software and Documentation.  ITDR may terminate the Software license upon thirty (30) days' written notice to you, if you fail to comply with this Agreement and if your failure is not corrected within the said 30-day period.  Upon termination of the Software license for any reason, you must stop using the Software and Documentation and return or destroy all copies of the Software and Documentation.  Within 30 days after the termination of the Software license, a corporate officer of your Company must execute a statement certifying that the Company has fully complied with the terms of this section, and acknowledging that all rights to use the Software and Documentation have been terminated and that any further use of the Software or Documentation is unauthorized and would be in violation of ITDR's rights.
+* (b) The effective date of the your right to access and use the Online Service is the date of your full or subscription payment for use, and your right to continue use continues until you cease payment for the Online Service, unless terminated as provided in this Agreement.  Your may terminate this Agreement with respect to your access and use of the Online Service by ceasing to access or use the Online Service.
+* (c) Termination of the Software license or use of the Online Service will not relieve you of your obligations to pay any amounts then due to ITDR and will not entitle you to a refund of any amounts paid under this Agreement.
+
+6. <u>INTELLECTUAL PROPERTY RIGHTS AND CONFIDENTIALITY</u>
+----------------------------------------------------------
+Copyright 2001 - 2013 Theta Interactive, Inc.  All rights reserved.
+
+All copyrightable text, audio, video, graphics, charts, photographs, icons, and the design, selection, and arrangement of content in any medium on the ITDR Platform and in the Software and Documentation are copyrighted by ITDR, unless otherwise noted.  The distinctive and original layout and presentation of the Site, Mobile Apps, and Software also constitute protectable trade dress under applicable federal law.  In addition, many proprietary names and marks belonging to ITDR appear throughout the ITDR Platform, the Software, and the Documentation.  The Site may also contain references to third-party marks, and copies of third-party copyrighted materials, which are the property of their respective owners.  Any unauthorized use of any trade dress, marks, or any other intellectual property belonging to ITDR or any third party is strictly prohibited, and will be prosecuted to the fullest extent of the law.
+
+If you give us any feedback or data, such as ideas, comments, suggestions or questions relating in any way to the Software, the ITDR Platform, or the Documentation, such information shall be deemed to be non-confidential and we are free to reproduce, use, disclose and distribute the information to others without limitation. Further, we are free to use any ideas, concepts, know-how or techniques contained in such information for any purpose whatsoever, including but not limited to developing, manufacturing and marketing products incorporating such ideas, concepts, know-how or techniques.
+
+
+7. <u>PAYMENT</u>
+-----------------
+You must submit the necessary credit card information before you may load any Software or register for the Online Services. If the card information that you submit is incorrect or invalid, your payment or order will not be processed. Payment is subject to the approval of the financial institution issuing the card. Neither ITDR nor its third party payment processor has any responsibility or liability if the financial institution refuses to accept or honor your card for any reason.  ITDR works with a third party payment processor to help ensure the security of your credit card data as further set forth in our [Privacy Policy][privacy-policy].  
+
+8. <u>WE GIVE YOU NO GUARANTY</u>
+---------------------------------
+* (A) THERE IS NO WARRANTY OF ANY KIND, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF TITLE, MERCHANTABILITY, NON-INFRINGEMENT, OR FITNESS FOR A PARTICULAR PURPOSE.  NO ADDITIONAL STATEMENTS OUTSIDE THE TERMS OF THIS AGREEMENT- INCLUDING, WITHOUT LIMITATION, STATEMENTS REGARDING CAPACITY, SUITABILITY FOR USE OR PERFORMANCE - WHETHER MADE BY EMPLOYEES OF ITDR OR OTHERWISE, WILL BE DEEMED TO BE A WARRANTY BY ITDR FOR ANY PURPOSE, OR GIVE RISE TO ANY LIABILITY OF ITDR WHATSOEVER.  
+* (B) YOU ACKNOWLEDGE AND AGREE (1) THAT YOUR USE OF THE ITDR PLATFORM, THE ONLINE SERVICE, AND THE SOFTWARE IS AT YOUR OWN DISCRETION AND RISK, (2) THAT USE OF ANY CONTENT, MATERIAL, INFORMATION OR DATA LOADED OR OTHERWISE OBTAINED THROUGH THE USE OF THE ITDR PLATFORM, THE ONLINE SERVICE, OR THE SOFTWARE IS AT YOUR OWN DISCRETION AND RISK, AND (3) THAT YOU ARE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR COMPUTER SYSTEM OR LOSS OF DATA THAT RESULTS FROM THE LOADING OF SUCH CONTENT, MATERIAL, INFORMATION OR DATA, AND FOR ANY OTHER FORM OF DAMAGE THAT MAY BE INCURRED.  ITDR DOES NOT WARRANT OR GUARANTEE THAT FILES OR OTHER MATERIALS AND INFORMATION STORED VIA THE ONLINE SERVICE OR AVAILABLE THROUGH THE ITDR PLATFORM OR THE SOFTWARE WILL BE FREE OF INFECTIONS, VIRUSES, WORMS, TROJAN HORSES OR OTHER CODE THAT COULD BE HARMFUL TO YOUR COMPUTER SYSTEM.  
+* (C) **WE DO NOT WARRANT THAT THE ITDR PLATFORM, THE ONLINE SERVICE, OR THE SOFTWARE WILL BE UNINTERRUPTED OR ERROR FREE, AND DO NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF THE ITDR PLATFORM, THE ONLINE SERVICE, OR THE SOFTWARE, OR ANY OTHER PRODUCTS OR SERVICES AVAILABLE ON THE ITDR PLATFORM, IN TERMS OF THEIR CORRECTNESS, USEFULNESS, ACCURACY, RELIABILITY, OR OTHERWISE**. 
+* (D) **WE HAVE NO RESPONSIBILITY FOR THE TIMELINESS, DELETION, MISDELIVERY OR FAILURE TO STORE ANY FILES, DATA, OR COMMUNICATION, AND ARE NOT RESPONSBILE IN ANY WAY FOR ANY FILES, DATA, OR COMMUNICATIONS PROVIDED, RECEIVED, ACCESSED, PROCESSED, UPLOADED OR DOWNLOADED ON, THROUGH, TO OR FROM THE ITDR PLATFORM, ONLINE SERVICE, OR SOFTWARE**.
+* (e) ITDR is not a party to, nor is ITDR involved in, any transactions or other arrangements entered into by you and any customer, vendor, government agency, or any other third party, and ITDR is not liable for any dispute that arises between you or any of the foregoing.
+
+9. <u>WE ARE NOT LIABLE TO YOU IN ANY WAY</u>
+---------------------------------------------
+* (a) **IN NO EVENT SHALL ITDR OR ANY OF ITS OFFICERS, REPRESENTATIVES, DIRECTORS, EMPLOYEES, CONSULTANTS OR AGENTS BE LIABLE FOR ANY INDIRECT, PUNITIVE, SPECIAL, INCIDENTAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER (INCLUDING WITHOUT LIMITATION, DAMAGES FOR LOSS OF USE, DATA, INFORMATION, PROFITS OR BUSINESS INTERRUPTION) RELATED TO (I) THE USE OR PERFORMANCE OF THE ITDR PLATFORM, THE ONLINE SERVICE, THE SOFTWARE, THE DOCUMENTATION, OR ANY LINKED WEBSITE, (II) ANY CONTENT, MATERIAL, INFORMATION, ADVICE, DATA, PRODUCTS, OR SERVICES OBTAINED THROUGH THE ITDR PLATFORM, THE ONLINE SERVICE, THE SOFTWARE, THE DOCUMENTATION, OR ANY LINKED WEBSITE, OR (III) OTHERWISE RELATED TO YOUR USE, INABILITY TO USE, DECISION MADE OR ACTION TAKEN BY YOU IN RELIANCE ON ANY INFORMATION, ADVICE OR MATERIALS PROVIDED ON THE ITDR PLATFORM, THE ONLINE SERVICE, THE SOFTWARE, THE DOCUMENTATION, OR ANY LINKED WEBSITE, WHETHER SUCH DAMAGES ARE BASED IN TORT, CONTRACT, NEGLIGENCE, STRICT LIABILITY OR OTHERWISE, AND EVEN IF ITDR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES**.  
+* (b) **IN ANY EVENT, THE MAXIMUM TOTAL LIABILITY OF ITDR, ITS OFFICERS, VENDORS, SUPPLIERS OR AFFILIATES, AND THEIR RESPECTIVE DIRECTORS, OFFICERS, EMPLOYEES AND AGENTS, FOR ANY CLAIM WHATSOEVER RELATING IN ANY WAY TO THIS AGREEMENT, INCLUDING CLAIMS FOR BREACH OF CONTRACT, TORT (INCLUDING, NEGLIGENCE OR STRICT LIABILITY) OR OTHERWISE, AND YOUR SOLE REMEDY, SHALL BE AN AWARD FOR DIRECT, PROVABLE DAMAGES NOT TO EXCEED ONE THOUSAND DOLLARS ($1000.00)**.
+* (c) *Some states do not allow the exclusion or limitation of incidental or consequential damages, so some of the above exclusions or limitations may not apply to you*.
+
+10. <u>YOUR INDEMNIFICATION OF US</u>
+-------------------------------------
+You agree to indemnify, defend and hold harmless ITDR, its officers, representatives, directors, employees, consultants and agents from any and all losses, expenses, third-party claims, liabilities, damages and costs (including without limitation attorneys' fees) arising from or related to (a) your use of the ITDR Platform, the Online Service, the Software, or the Documentation, (b) your use of any Content, material, information, advice or data loaded or otherwise obtained from the ITDR Platform, the Online Service, the Software, or the Documentation, or (c) your violation of this Agreement.
+
+11. <u>NOTICES</u>
+-------------------------------------
+* (a) Any notice, demand or other communication (in this Section, a "***notice***") required or permitted to be given or made under this Agreement must be in writing and will be sufficiently given, made and deemed received if:
+     * (i) Delivered by e-mail to your current e-mail address reflected in your Site registration or to ITDR at (mailto:support@intothedarkroom.com) during normal business hours on a "***Business Day***", meaning any day except Saturday, Sunday or a statutory holiday, and left with a receptionist or other responsible employee of the relevant party at the applicable address set forth below;
+     * (ii) Sent by courier or prepaid registered mail to the address set forth below; or
+     * (iii) Sent by facsimile transmission confirmed during normal business hours on a Business Day.
+* (b) ITDR's address for purposes of providing notice is as follows: Theta Interactive, Inc. 2800 S. Rural Road, Suite 104, Tempe,
+Arizona, 85282
+
+12. <u>DISPUTE RESOLUTION</u>
+-----------------------------
+The Agreement is made under and shall be governed by and construed in accordance with the laws of the State Arizona, Maricopa County, without reference to its choice of law provisions.  The United Nations Convention on Contracts for the International Sale of Goods shall not apply to this Agreement.  You (i) agree and we that you may bring a cause of action relating in whole or in part to this Agreement only in either a state or a federal court located within Maricopa County, Arizona, (ii) agree that you may not initiate any such cause of action against ITDR in a court located in any state other than Arizona, and (iii) specifically waive any right you may otherwise have to initiate any such cause of action against ITDR in a court located in any state other than Arizona.  You further agrees that you are subject to personal jurisdiction in the state of Arizona with respect to any cause of action that relates in whole or in part to this Agreement, specifically including any such cause of action that ITDR may bring against you.  Notwithstanding the foregoing, ITDR may, in its sole discretion, bring an action against you in any other jurisdiction in which proper jurisdiction over you may otherwise be obtained.  The prevailing party in any such action(s) is entitled to recover their reasonable attorneys' fees and additional legal costs.  
+
+13. <u>COMMUNICATIONS BETWEEN YOU AND ITDR</u>
+----------------------------------------------
+You can contact us through the Site or send us an e-mail.  Unless you tell us otherwise or the law requires otherwise, you agree to receive all communications from us by e-mail or by our posting notices to your account - if you decide to create one. You agree that you are able to print the communications for your records.  You agree that all communications that we send to you electronically satisfy any legal requirement that a communication be in writing.  
+You may choose to get legal notices in paper form through the mail if you tell us you do not want legal notices sent by us electronically.  If you choose to paper form, legal notices will be sent to you in paper form by postal mail or as otherwise permitted or required by law.  All other communications not required by law to be in paper form will be sent electronically.  To tell us you do not want legal notices sent electronically, please send a [written request to ITDR][contact-page].
+
+14. <u>YOUR REPRESENTATIONS</u>
+-------------------------------
+You represent, warrant and covenant that: (i) your registration on the Site and the related information is true, accurate and complete in all material respects; (ii) you (including the person clicking "**I Agree**") have the authority to enter into this Agreement on behalf of the Company (if applicable); (iii) your Company is has and will maintain all licenses relating toits business as required under the appropriate local, state and/or federal laws and regulations; (iv) your Company will and is able to comply with the [ITDR Privacy Policy][privacy-policy]; and (v) your Company is and will remain in compliance with all applicable Privacy Laws.
+
+15. <u>REFUNDS</u>
+-------------------------------
+If you are a hosted member, your trial period allowed you time to test our products before your credit card was billed. If you are self hosted, we have already delivered the files to you. Therefore, we can not offer refunds. 
+
+16. <u>MEMBERSHIP PRICING</u>
+-------------------------------
+Monthly & Annual Membership fees: The currently monthly membership fee ranges from $29-$59/mo (billed once per month). The annual membership plan ranges from $57- $147/quarterly (billed quarterly). This fee provides you with storage space and monthly bandwidth that range from 250MB to 10GB. This fee is collected after any free trial period. 
+
+Additional Bandwidth and Storage usage fees: Your monthly membership comes with a specific amount of storage and bandwidth. If you need or use additional storage, the account will automatically increase your amount in increments of 1GB. If your account were to use more then the allotted amount, your account will be charged $5 per GB per month for the additional bandwidth and $5 per GB per month for additional storage space. These fees will be charged to your account on a monthly basis – even if you chose a 6 month or 12 month billing cycle. 
+
+Billing Cycle: Your first billing date will be at the point of membership creation or the day following any free trial period. Future billing dates will occur on the same day of the next appropriate month/quarter/year based on the chosen billing cycle (or closest to the same day in the case of the last day of the month). 
+
+Failure to pay: If you fail to pay your membership or usage fees, you are subject to cancellation or late fees starting at $10 per month. Upon cancellation, your installations and data will be deleted permanently. We reserve the right to suspend or cancel your account at anytime. 
+
+Domain names: Intothedarkroom will provide an account domain name that can be used to install products (example: something.intothedarkroom.com). In addition, each plan allows you a different amount of free domain names that range from 0-5 that will be included in your membership fee. Each additional domain name that is added to your account will cost an additional $10/mo per domain. 
+
+Trial period: If you are provided a trial period, you will not be billed until the trial period has ended. To avoid any charges, you must cancel your account before the trial period ends. 
+
+Cancellation: Cancellation must take place before your next billing cycle. We will not refund or prorate any prepaid amounts. You may receive a final bill for any additional usage charges from the prior month. You are responsible for all fees associated with the account. 
+
+Hibernation: Hibernating your account will cost $10/mo plus $1.50 per GB of space that your account is using. By hibernating your account, you are extending any prepaid cycle. Your prepaid billing cycle will resume once you take your account out of hibernation. 
+
+Free account: If you have received a free account, it comes with limited space, bandwidth and options. It is to be used a means of testing the services and can be terminated by Intothedarkroom at any time for any reason. Some promotional codes can only be activated from a free account. 
+
+17. <u>SELF INSTALLATION PRICING</u>
+-------------------------------
+If you are going to host the products on your own server and are not going to become a member, you will have to pay a one time purchase price for each product instead of the monthly membership fee. Those prices are currently $300 for each website, $300 for each blog, $300 for each blogsite, $100 for each slideshow, $550 for each Vend photo cart, $50 for each Bloom mini event site.
+
+
+
+18. <u>USE OF TRIPLE SCOOP MUSIC</u>
+--------------------------------
+
+The following text governs your use of Triple Scoop Music songs included within your ITDR account (“Song Package”). You must agree to these terms in order to use songs from Triple Scoop Music.
+
+Slideshows create, with music embedded from Song Package, may be distributed by you, the subscriber (“Subscriber”, “User”, “You”) to other individuals for personal, non-commercial use only. (for example: a photographer may create a slideshow for a wedding or portrait client and provide copies of the slideshow to that client and client’s family for personal use).
+
+Slideshows created by a Subscriber with music from Triple Scoop Music Package may be displayed or distributed by subscriber to promote the subscriber’s self-owned photography business, both online and at public events. (for example: a photographer may create ITDR slideshows for promoting their self-owned business on their website or blog, or on social media).
+
+Slideshows created within the ITDR service by a subscriber, containing music from Song Package, when and used in accordance with the specific uses approved herein, are granted a royalty-free, fully-paid license to display and distribute these slideshows on the internet and on social media networks, websites and blogs.
+
+This license does not allow slideshows or videos with TSM songs to be created and distributed or re-sold by subscribers in any type of business-to-bu sin ess “B2B” context . (for example: Under this license, a photographer may not create slideshows for a business client, corporate client or for advertising or promotion of any 3rd party business client or a commercial product).
+
+This license does not allow TSM songs to be used with any type of Feature film, TV projects, Commercial advertising or commercial product use. This restriction includes, but is not limited to: commercial TV, Cable, Satellite or broadcast advertising of any type.
+
+Any additional music uses and applications not specifically granted herein are outside the scope of this Agreement.
+
+If you would like to use Triple Scoop Music songs for any type of B2B or 3rd party business project or for any use not covered under this license, please visit www.TripleScoopMusic.com to purchase a license to match
+your project type, or email music@triplescoopmusic.com to request information.
+
+
+
+<u>E-CONTRACT</u>
+---------------------
+Each party agrees that the execution of this Agreement using electronic signatures via the clip wrap function below will have the same force and effect as delivery of original signatures and that each party may use such electronic signatures as evidence of the execution and delivery of the Agreement by the parties to the same extent that an original signature could be used.  
+
+You are agreeing on behalf yourself, if an individual, or on behalf of the Company you work for, to be bound by this Agreement by executing it in electronic form. Once you click "***I Agree***," the Agreement transmitted to and maintained in ITDR's computer storage and other records, will constitute the unique and identifiable authoritative copy of this Agreement, and will not be modified for any reason. You should also print a copy of this Agreement before clicking "***I Agree***," and you represent that you have the software and hardware to allow you to do so.
+
+[privacy-policy]: http://intothedarkroom.com/terms-of-service/
+[eula-current]: https://intothedarkroom.com/installer/assets/docs/eula/en.txt
+[contact-page]: http://intothedarkroom.com/contact-us/

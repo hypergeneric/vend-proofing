@@ -1,0 +1,595 @@
+<?php
+
+	$contact = $this->getData("contact");
+
+	$invoice_title = 				htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_title"));
+	$invoice_order_date_label = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_order_date_label"));
+	$invoice_orderid = 				htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_orderid"));
+	$invoice_setid = 				htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_setid"));
+	$invoice_payment_method = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_method"));
+	$invoice_phone_prefix = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_phone_prefix"));
+	$invoice_email_prefix = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_email_prefix"));
+	$invoice_web_prefix = 			htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_web_prefix"));
+	$invoice_item_label = 			htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_item_label"));
+	$invoice_quantity_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_quantity_label"));
+	$invoice_unit_price_label = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_unit_price_label"));
+	$invoice_unit_total_label = 	htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_unit_total_label"));
+	$checkout_cart_total = 			htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_total"));
+	$checkout_cart_discount = 		htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_discount"));
+	$checkout_cart_subtotal = 		htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_subtotal"));
+	$checkout_cart_tax = 			htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_tax"));
+	$checkout_cart_shipping = 		htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_shipping"));
+	$checkout_cart_handling = 		htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_handling"));
+	$checkout_cart_final_total = 	htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_cart_final_total"));
+	$invoice_purchaser_notes = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_purchaser_notes"));
+	$payment_type = 				htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_".$orderobj[3]));
+	$sidebar_comments = 			htmlspecialchars($data_language->getNodeVal("data.ordering.sidebar_comments"));
+	$date_pattern = 				$data_language->getNodeVal("data.localization.date_pattern");
+	
+	$download_start = 				htmlspecialchars($data_language->getNodeVal("data.invoice.download_start"));
+	$download_start_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_start_label"));
+	$download_show = 				htmlspecialchars($data_language->getNodeVal("data.invoice.download_show"));
+	$download_show_label = 			htmlspecialchars($data_language->getNodeVal("data.invoice.download_show_label"));
+	$download_continue_processing = htmlspecialchars($data_language->getNodeVal("data.invoice.download_continue_processing"));
+	$download_continue_processing_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_continue_processing_label"));
+	$download_processing = 			htmlspecialchars($data_language->getNodeVal("data.invoice.download_processing"));
+	$download_processing_label = 	htmlspecialchars($data_language->getNodeVal("data.invoice.download_processing_label"));
+	$download_reset = 				htmlspecialchars($data_language->getNodeVal("data.invoice.download_reset"));
+	$download_reset_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_reset_label"));
+	$download_reset_reply = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_reset_reply"));
+	$download_notify = 				htmlspecialchars($data_language->getNodeVal("data.invoice.download_notify"));
+	$download_notify_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_notify_label"));
+	$download_notify_reply = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_notify_reply"));
+	$download_reply_sent = 			htmlspecialchars($data_language->getNodeVal("data.invoice.download_reply_sent"));
+	$download_link_format = 		htmlspecialchars($data_language->getNodeVal("data.invoice.download_link_format"));
+	$invoice_download_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_download_label"));
+	$invoice_quality_label = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_quality_label"));
+	$invoice_high_resolution = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_high_resolution"));
+	$invoice_low_resolution = 		htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_low_resolution"));
+
+	$owner_name = 				$contact->getNodeVal("data.details.your_email");
+		if (strlen(trim($owner_name))==0) $owner_name = $contact->getAttrVal("data.details.your_email.href");
+		$owner_name = 				htmlspecialchars($owner_name);
+	$owner_address = 				$contact->getNodeVal("data.details.your_physical_address");
+		if (strlen(trim($owner_address))==0) $owner_address = "";
+		$owner_address = 				htmlspecialchars($owner_address);
+		$owner_address = 				str_replace("\n", "<br />", $owner_address);
+	$owner_phone_number = 				$contact->getNodeVal("data.details.your_phone_number");
+		if (strlen(trim($owner_phone_number))==0) $owner_phone_number = "N/A";
+		$owner_phone_number = 				htmlspecialchars($owner_phone_number);
+	$owner_email_address = 			$contact->getAttrVal("data.details.your_email.href");
+	$owner_email_address_clean = 		htmlspecialchars($contact->getAttrVal("data.details.your_email.href"));
+	$owner_website_uri = 			$contact->getAttrVal("data.details.your_website_url.href");	
+		if (strlen(trim($owner_website_uri))==0) $owner_website_uri = "javascript:void(0);";
+	$owner_website_name = 			$contact->getNodeVal("data.details.your_website_url");
+		if (strlen(trim($owner_website_name))==0) $owner_website_name = "N/A";
+
+
+	$invoice_footer = 			$this->getTypedValue("setup", "settings", "invoice_footer");
+	$invoice_logo_asset = 			$this->getTypedValue("design", "design", "invoice_logo_asset");
+
+
+	$setid = 					$orderobj[1];
+	$order_date = 				date($date_pattern, $orderobj[2]/1000);
+	$setid_uri = 				SA_DIR_INDEXPATH . "?/" . $LANG->lookup('uri_page_identifier') . "/" . $setid . "/";
+	$purchaser_name = 			htmlspecialchars($orderobj[7]);
+	$purchaser_address = 			$orderobj[10];
+		$purchaser_address = 			str_replace("<[[BR]]>", "\n", $purchaser_address);
+		$purchaser_address = 			trim($purchaser_address);
+		$purchaser_address = 			htmlspecialchars($purchaser_address);
+		$purchaser_address = 			str_replace("\n", "<br />", $purchaser_address);
+		$purchaser_address = 			str_replace("<br /><br />", "<br />", $purchaser_address);
+	$purchaser_country = 			$orderobj[11];
+	$purchaser_zipcode = 			$orderobj[12];
+	$purchaser_state = 			$orderobj[13];
+	$purchaser_phone_number = 		htmlspecialchars($orderobj[9]);
+	$purchaser_email_address = 		$orderobj[8];
+	$purchaser_email_address_clean = 	htmlspecialchars($purchaser_email_address);
+	$taxrate = 					explode(",", $orderobj[20]);
+	$purchase_price_includes_tax_bool = $orderobj[21]=="true";
+	$shipping_taxable_bool = 		$orderobj[22]=="true";
+	$handling_taxable_bool = 		$orderobj[23]=="true";
+	$cart_total = 				$orderobj[15];
+	if ($purchase_price_includes_tax_bool) {
+		$cart_total = 				addSalesTax($cart_total, $taxrate);
+	}
+	$cart_discount = 				$orderobj[16];
+	if ($purchase_price_includes_tax_bool) {
+		$cart_discount = 			addSalesTax($cart_discount, $taxrate);
+	}
+	if ($cart_discount>$cart_total) {
+		$cart_discount = 			$cart_total;
+	}
+	$cart_subtotal = 				$cart_total-$cart_discount;
+	$cart_total = 				getFormattedPrice($cart_total, $data_language);
+	$cart_discount = 				getFormattedPrice($cart_discount*-1, $data_language);
+	$cart_subtotal = 				getFormattedPrice($cart_subtotal, $data_language);
+	$cart_tax = 				getFormattedPrice($orderobj[19], $data_language);
+	$cart_shipping = 				$orderobj[17];
+	if ($purchase_price_includes_tax_bool&&$shipping_taxable_bool) {
+		$cart_shipping = 			addSalesTax($cart_shipping, $taxrate);
+	}
+	$cart_shipping = 				getFormattedPrice($cart_shipping, $data_language);
+	$cart_handling = 				$orderobj[18];
+	if ($purchase_price_includes_tax_bool&&$handling_taxable_bool) {
+		$cart_handling = 			addSalesTax($cart_handling, $taxrate);
+	}
+	$cart_handling = 				getFormattedPrice($cart_handling, $data_language);
+	$cart_final_total = 			getFormattedPrice($orderobj[14], $data_language);
+
+	$show_notes = 				false;
+	foreach ($session_combined_lookup as $sessionitem) {
+		$obj_comments = 			isset($sessionitem[21]) ? $sessionitem[21] : "";
+		if (strlen($obj_comments)>0) {
+			$show_notes = 		true;
+			break;
+		}
+	}
+	$comments = $orderobj[24];
+		$comments = 			str_replace("<[[BR]]>", "\n", $comments);
+		$comments = 			htmlspecialchars($comments);
+		$comments = 			str_replace("\n", "<br />", $comments);
+
+	$footnote_lookup = array();
+	
+	$downloads_only = count($session_downloads)>0 && count($session_alacarte)==0 && count($session_packages)==0 && count($session_products)==0;
+
+?>
+			<div id="invoice">
+				<div id="invoice-inner">
+<?php if ($invoice_logo_asset["source"]!="") {
+		$graphic = new Graphic(array());
+		$graphic->setClassName("Logo");
+		$graphic->setBasepath("asset");
+		$graphic->setFilename($invoice_logo_asset["child"]);
+		$graphic->resample(true, $resampling_quality_num);
+		$graphic->setSize($invoice_logo_asset["width"], $invoice_logo_asset["width"]);
+		$graphic->output();
+	}
+?>
+					<div id="invoice-meta">
+						<h1><?php echo $invoice_title; ?></h1>
+						<table id="invoice-table">
+							<tr>
+								<td class="Label"><?php echo $invoice_order_date_label; ?></td>
+								<td class="Value"><?php echo $order_date; ?></td>
+							</tr>
+							<tr>
+								<td class="Label"><?php echo $invoice_orderid; ?></td>
+								<td class="Value"><?php echo $orderid; ?></td>
+							</tr>
+							<tr>
+								<td class="Label"><?php echo $invoice_setid; ?></td>
+								<td class="Value"><a href="<?php echo $setid_uri; ?>" target="_blank"><?php echo $setid; ?><a/></td>
+							</tr>
+							<tr>
+								<td class="Label"><?php echo $invoice_payment_method; ?></td>
+								<td class="Value"><?php echo $payment_type; ?></td>
+							</tr>
+						</table>
+					</div>
+					<div class="clear"></div>
+					<div id="owner-data">
+						<h2><?php echo $owner_name; ?></h2>
+						<div id="owner-address"><?php echo $owner_address; ?></div>
+						<div id="owner-contact">
+							<?php echo $invoice_phone_prefix; ?> <?php echo $owner_phone_number; ?><br />
+							<?php echo $invoice_email_prefix; ?> <a href="mailto:<?php echo $owner_email_address; ?>" target="_blank"><?php echo $owner_email_address_clean; ?></a><br />
+							<?php echo $invoice_web_prefix; ?> <a href="<?php echo $owner_website_uri; ?>" target="_blank"><?php echo $owner_website_name; ?></a>
+						</div>
+					</div>
+					<div id="purchaser-data">
+						<h2><?php echo $purchaser_name; ?></h2>
+						<div id="owner-address"><?php echo $purchaser_address; ?><br /><?php echo $purchaser_state; ?> <?php echo $purchaser_zipcode; ?><br /><?php echo $purchaser_country; ?></div>
+						<div id="owner-contact">
+							<?php echo $invoice_phone_prefix; ?> <?php echo $purchaser_phone_number; ?><br />
+							<?php echo $invoice_email_prefix; ?> <a href="mailto:<?php echo $purchaser_email_address; ?>" target="_blank"><?php echo $purchaser_email_address_clean; ?></a>
+						</div>
+					</div>
+<?php
+	$packages_all = array_merge($session_packages, $session_products);
+	$packages_lookup_all = array_merge($session_packages_lookup, $session_products_lookup);
+	foreach ($packages_all as $package) {
+		$package_nickname = 		$package[2];
+		$package_title = 			$package[3];
+		$package_title = 			htmlspecialchars($package_nickname . " (" . $package_title . ")");
+		$package_subtotal = 		$package[5];
+		if ($purchase_price_includes_tax_bool) {
+			$package_subtotal = 	addSalesTax($package_subtotal, $taxrate);
+		}
+		$package_subtotal = 		getFormattedPrice($package_subtotal, $data_language);
+?>
+					<table class="PurchaseTable">
+						<colgroup class="Column0"></colgroup>
+						<colgroup class="Column1" width="100px"></colgroup>
+						<colgroup class="Column2" width="100px"></colgroup>
+						<colgroup class="Column3" width="100px"></colgroup>
+						<tr class="PurchaseTableHead">
+							<td class="Column0"><?php echo $package_title; ?></td>
+							<td class="Column1"><?php echo $invoice_quantity_label; ?></td>
+							<td class="Column2"><?php echo $invoice_unit_price_label; ?></td>
+							<td class="Column3"><?php echo $package_subtotal; ?></td>
+						</tr>
+<?php
+		$i = 0;
+		foreach ($packages_lookup_all[substr($package[0], 0, 32)] as $sessionitem) {
+			$obj_hash = 		$sessionitem[0];
+			$obj_filename = 		$sessionitem[3];
+				$obj_filename = 		explode(".", $obj_filename);
+								array_pop($obj_filename);
+				$obj_filename = 		implode(".", $obj_filename);
+				$obj_filename = 		htmlspecialchars($obj_filename);
+			$obj_quantity = 		$sessionitem[4];
+			$obj_price = 		$sessionitem[8] + $sessionitem[14] + $sessionitem[17];
+			if ($purchase_price_includes_tax_bool) {
+				$obj_price = 	addSalesTax($obj_price, $taxrate);
+			}
+			$obj_subtotal = 		getFormattedPrice($obj_quantity*$obj_price, $data_language);
+			$obj_price = 		getFormattedPrice($obj_price, $data_language);
+			$obj_meta = array();
+				if (strlen($sessionitem[6])>0) $obj_meta[] = $sessionitem[6];
+				if (strlen($sessionitem[5])>0) $obj_meta[] = $sessionitem[5]=="sepia" ? $data_language->getNodeVal("data.ordering.sidebar_tone_sepia") : $data_language->getNodeVal("data.ordering.sidebar_tone_black_and_white");
+				if (strlen($sessionitem[10])>0) $obj_meta[] = $sessionitem[10]=="p" ? $data_language->getNodeVal("data.ordering.sidebar_crop_portrait") : $data_language->getNodeVal("data.ordering.sidebar_crop_landscape");
+				if (strlen($sessionitem[13])>0) $obj_meta[] = $sessionitem[13];
+				if (strlen($sessionitem[16])>0) $obj_meta[] = $sessionitem[16];
+				$obj_meta = 	htmlspecialchars(implode(", ", $obj_meta));
+			$obj_comments = 		isset($sessionitem[21]) ? $sessionitem[21] : "";
+				$obj_comments = 		htmlspecialchars($obj_comments);
+			if (strlen($obj_comments)>0) {
+				$footnote_lookup[] = $obj_hash;
+				$fn = count($footnote_lookup);
+				$obj_comments = 	'<sup><a href="#item-' . $fn . '">[' . $fn. ']</a></sup>';
+			}
+			$parity = 			$i%2==0 ? "Even" : "Odd";
+			$i += 			1;
+?>
+						<tr class="PurchaseTableLineItem <?php echo $parity; ?>">
+							<td class="Column0"><?php echo $obj_filename . $obj_comments; ?></td>
+							<td class="Column1"><?php echo $obj_quantity; ?></td>
+							<td class="Column2"><?php echo $obj_price; ?></td>
+							<td class="Column3"><?php echo $obj_subtotal; ?></td>
+						</tr>
+						<tr class="PurchaseTableSubItem <?php echo $parity; ?>" id="purchase-table-subitem">
+							<td class="Column0"><?php echo $obj_meta; ?></td>
+							<td class="Column1">&nbsp;</td>
+							<td class="Column2">&nbsp;</td>
+							<td class="Column3">&nbsp;</td>
+						</tr>
+<?php
+		}
+?>
+					</table>
+<?php
+	}
+?>
+<?php if (count($session_alacarte)>0) { ?>
+					<table class="PurchaseTable">
+						<colgroup class="Column0"></colgroup>
+						<colgroup class="Column1" width="100px"></colgroup>
+						<colgroup class="Column2" width="100px"></colgroup>
+						<colgroup class="Column3" width="100px"></colgroup>
+						<tr class="PurchaseTableHead">
+							<td class="Column0"><?php echo $invoice_item_label; ?></td>
+							<td class="Column1"><?php echo $invoice_quantity_label; ?></td>
+							<td class="Column2"><?php echo $invoice_unit_price_label; ?></td>
+							<td class="Column3"><?php echo $invoice_unit_total_label; ?></td>
+						</tr>
+<?php
+		$i = 0;
+		foreach ($session_alacarte as $sessionitem) {
+			$obj_hash = 		$sessionitem[0];
+			$obj_filename = 		$sessionitem[3];
+				$obj_filename = 		explode(".", $obj_filename);
+								array_pop($obj_filename);
+				$obj_filename = 		implode(".", $obj_filename);
+				$obj_filename = 		htmlspecialchars($obj_filename);
+			$obj_quantity = 		$sessionitem[4];
+			$obj_price = 		$sessionitem[8] + $sessionitem[14] + $sessionitem[17];
+			if ($purchase_price_includes_tax_bool) {
+				$obj_price = 	addSalesTax($obj_price, $taxrate);
+			}
+			$obj_subtotal = 		getFormattedPrice($obj_quantity*$obj_price, $data_language);
+			$obj_price = 		getFormattedPrice($obj_price, $data_language);
+			$obj_meta = array();
+				if (strlen($sessionitem[6])>0) $obj_meta[] = $sessionitem[6];
+				if (strlen($sessionitem[5])>0) $obj_meta[] = $sessionitem[5]=="sepia" ? $data_language->getNodeVal("data.ordering.sidebar_tone_sepia") : $data_language->getNodeVal("data.ordering.sidebar_tone_black_and_white");
+				if (strlen($sessionitem[10])>0) $obj_meta[] = $sessionitem[10]=="p" ? $data_language->getNodeVal("data.ordering.sidebar_crop_portrait") : $data_language->getNodeVal("data.ordering.sidebar_crop_landscape");
+				if (strlen($sessionitem[13])>0) $obj_meta[] = $sessionitem[13];
+				if (strlen($sessionitem[16])>0) $obj_meta[] = $sessionitem[16];
+				$obj_meta = 	htmlspecialchars(implode(", ", $obj_meta));
+			$obj_comments = 		isset($sessionitem[21]) ? $sessionitem[21] : "";
+				$obj_comments = 		htmlspecialchars($obj_comments);
+			if (strlen($obj_comments)>0) {
+				$footnote_lookup[] = $obj_hash;
+				$fn = count($footnote_lookup);
+				$obj_comments = 	'<sup><a href="#item-' . $fn . '">[' . $fn. ']</a></sup>';
+			}
+			$parity = 			$i%2==0 ? "Even" : "Odd";
+			$i += 			1;
+?>
+						<tr class="PurchaseTableLineItem <?php echo $parity; ?>">
+							<td class="Column0"><?php echo $obj_filename . $obj_comments; ?></td>
+							<td class="Column1"><?php echo $obj_quantity; ?></td>
+							<td class="Column2"><?php echo $obj_price; ?></td>
+							<td class="Column3"><?php echo $obj_subtotal; ?></td>
+						</tr>
+						<tr class="PurchaseTableSubItem <?php echo $parity; ?>">
+							<td class="Column0"><?php echo $obj_meta; ?></td>
+							<td class="Column1">&nbsp;</td>
+							<td class="Column2">&nbsp;</td>
+							<td class="Column3">&nbsp;</td>
+						</tr>
+<?php
+		}
+?>
+					</table>
+<?php
+	}
+?>
+<?php 
+
+	if (count($session_downloads)>0) { 
+
+		$button_text;
+		$button_action;
+		$span_text;
+		$dropboxer = new Dropboxer();
+		list($success, $data, $error) = $dropboxer->connect();
+		if ($success) {
+			list($success, $data, $erro) = $dropboxer->getOrderInfo($orderid);
+			if ($success) {
+				if ( $data[0]<3 ) { // can still download
+					if ( $data[1]==0 ) {
+						$button_text = $download_start;
+						$button_action = "start";
+						$span_text = $download_start_label;
+					} else if ( $data[1]==1 ) {
+						$button_text = $download_show;
+						$button_action = "download";
+						$span_text = $download_show_label;
+					} else {
+						$button_text = $download_continue_processing;
+						$button_action = "next";
+						$span_text = $download_continue_processing_label;
+					}
+				} else {
+					$button_text = $download_reset;
+					$button_action = "reset";
+					$span_text = $download_reset_label;
+				}
+			} else {
+				$button_text = $download_notify;
+				$button_action = "notify";
+				$span_text = $download_notify_label;
+			}
+		} else {
+			$button_text = $download_notify;
+			$button_action = "notify";
+			$span_text = $download_notify_label;
+		}			
+?>
+					<div id="download-process">
+						<button id="download-button" data-action="<?php echo $button_action; ?>"><?php echo $button_text; ?></button>
+						<span id="download-text"><?php echo $span_text; ?></span>
+					</div>
+					<script>
+						function update () {
+							var button = $("#download-button");
+							var action = button.data("action");
+							var text = $("#download-text");
+							button.off();
+							button.click(function () {
+								button.attr("disabled", "disabled");
+								$.get( "?/order/<?php echo $orderid; ?>/process/" + action + "/", function (str) {
+									if (str=="-1") {
+										button.data("action", "notify");
+										button.removeAttr("disabled");
+										button.html("<?php echo $download_notify; ?>");
+										text.html("<?php echo $download_notify_label; ?>");
+									}
+									if (action=="start") {
+										var progress = 0;
+										var label = "<?php echo $download_processing_label; ?>";
+										button.data("action", "next");
+										button.html("<?php echo $download_processing; ?>");
+										text.html(label.split("{PERCENT}").join(progress));
+										button.removeAttr("disabled");
+										button.click();
+									} else if (action=="next") {
+										if (str=="1") {
+											button.data("action", "download");
+											button.html("<?php echo $download_show; ?>");
+											text.html("<?php echo $download_show_label; ?>");
+											button.removeAttr("disabled");
+										} else {
+											var progress = parseFloat(str);
+											progress = Math.round(progress*100);
+											var label = "<?php echo $download_processing_label; ?>";
+											button.data("action", "next");
+											button.html("<?php echo $download_processing; ?>");
+											text.html(label.split("{PERCENT}").join(progress));
+											button.removeAttr("disabled");
+											button.click();
+										}
+									} else if (action=="download") {
+										if (str.length>0) {
+											var urls = str.split(",");
+											var markup = "";
+											for (var i=0; i<urls.length; ++i) {
+												var label = "<?php echo $download_link_format; ?>";
+												label = label.split("{COUNT}").join(i+1).split("{TOTAL}").join(urls.length);
+												markup += '<a href="' + urls[i] + '" target="_blank">' + label + '</a>';
+											}
+											text.html(markup);
+										} else {
+											button.data("action", "reset");
+											button.html("<?php echo $download_reset; ?>");
+											text.html("<?php echo $download_reset_label; ?>");
+											button.removeAttr("disabled");
+										}
+									} else if (action=="reset") {
+										button.data("action", "reset");
+										button.html("<?php echo $download_reply_sent; ?>");
+										text.html("<?php echo $download_reset_reply; ?>");
+									} else if (action=="notify") {
+										button.data("action", "notify");
+										button.html("<?php echo $download_reply_sent; ?>");
+										text.html("<?php echo $download_notify_reply; ?>");
+									}
+									update();
+								}, "text");
+							});
+						}
+						update();
+					</script>
+					<table class="PurchaseTable">
+						<colgroup class="Column0"></colgroup>
+						<colgroup class="Column1" width="100px"></colgroup>
+						<colgroup class="Column2" width="100px"></colgroup>
+						<colgroup class="Column3" width="100px"></colgroup>
+						<tr class="PurchaseTableHead">
+							<td class="Column0"><?php echo $invoice_download_label; ?></td>
+							<td class="Column1"><?php echo $invoice_quantity_label; ?></td>
+							<td class="Column2"><?php echo $invoice_quality_label; ?></td>
+							<td class="Column3"><?php echo $invoice_unit_total_label; ?></td>
+						</tr>
+<?php
+		$i = 0;
+		foreach ($session_downloads as $sessionitem) {
+			$obj_hash = 		$sessionitem[0];
+			$obj_filename = 		$sessionitem[3];
+				$obj_filename = 		explode(".", $obj_filename);
+								array_pop($obj_filename);
+				$obj_filename = 		implode(".", $obj_filename);
+				$obj_filename = 		htmlspecialchars($obj_filename);
+			$obj_quantity = 		1;
+			$obj_price = 			$sessionitem[6];
+			if ($purchase_price_includes_tax_bool) {
+				$obj_price = 	addSalesTax($obj_price, $taxrate);
+			}
+			$obj_price = 		getFormattedPrice($obj_price, $data_language);
+			$obj_quality = 		$sessionitem[5];
+			$quality_label = $obj_quality=="high" ? $invoice_high_resolution : $invoice_low_resolution ;
+			$parity = 			$i%2==0 ? "Even" : "Odd";
+			$i += 			1;
+?>
+						<tr class="DownloadTableLineItem <?php echo $parity; ?>">
+							<td class="Column0"><?php echo $obj_filename; ?></td>
+							<td class="Column1"><?php echo $obj_quantity; ?></td>
+							<td class="Column2"><?php echo $quality_label; ?></td>
+							<td class="Column3"><?php echo $obj_price; ?></td>
+						</tr>
+<?php
+		}
+?>
+					</table>
+<?php
+	}
+?>
+					<table id="summary-table">
+						<colgroup></colgroup>
+						<colgroup width="150px"></colgroup>
+						<tr id="cart-total">
+							<td class="Label"><?php echo $checkout_cart_total; ?></td>
+							<td class="Value"><?php echo $cart_total; ?></td>
+						</tr>
+						<tr>
+							<td class="Label"><?php echo $checkout_cart_discount; ?></td>
+							<td class="Value"><?php echo $cart_discount; ?></td>
+						</tr>
+						<tr>
+							<td class="Label"><?php echo $checkout_cart_subtotal; ?></td>
+							<td class="Value"><?php echo $cart_subtotal; ?></td>
+						</tr>
+<?php 
+	if ($downloads_only==false) {
+?>
+						<tr>
+							<td class="Label"><?php echo $checkout_cart_shipping; ?></td>
+							<td class="Value"><?php echo $cart_shipping; ?></td>
+						</tr>
+						<tr>
+							<td class="Label"><?php echo $checkout_cart_handling; ?></td>
+							<td class="Value"><?php echo $cart_handling; ?></td>
+						</tr>
+<?php
+	}
+	if ($purchase_price_includes_tax_bool==false) {
+?>
+						<tr id="cart-tax">
+							<td class="Label"><?php echo $checkout_cart_tax; ?></td>
+							<td class="Value"><?php echo $cart_tax; ?></td>
+						</tr>
+<?php
+	}
+?>
+						<tr id="cart-spacer">
+							<td class="Label"></td>
+							<td class="Value"></td>
+						</tr>
+						<tr id="cart-final-total">
+							<td class="Label Strong"><?php echo $checkout_cart_final_total; ?></td>
+							<td class="Value Strong"><?php echo $cart_final_total; ?></td>
+						</tr>
+					</table>
+					<div class="clear"></div>
+<?php if ($show_notes || strlen($comments)>0) { ?>
+					<div id="purchaser-notes">
+<?php if (strlen($comments)>0) { ?>
+						<h2><?php echo $sidebar_comments; ?></h2>
+						<div class="ItemComment">
+							<?php echo $comments; ?>
+						</div>
+						<br />
+<?php
+		}
+		if ($show_notes) {
+?>
+						<h2><?php echo $invoice_purchaser_notes; ?></h2>
+<?php
+			for ($i=0; $i<count($footnote_lookup); ++$i) {
+				$sessionitem = 		$sessionobj[$footnote_lookup[$i]];
+				$obj_hash = 		$sessionitem[0];
+				$obj_filename = 		$sessionitem[3];
+					$obj_filename = 		explode(".", $obj_filename);
+									array_pop($obj_filename);
+					$obj_filename = 		implode(".", $obj_filename);
+					$obj_filename = 		htmlspecialchars($obj_filename);
+				$obj_comments = 		isset($sessionitem[21]) ? $sessionitem[21] : "";
+					$obj_comments = 		htmlspecialchars($obj_comments);
+				$obj_footnote_number = '<sup>[' . ($i+1). ']</sup>';
+				$fn += 1;
+?>
+						<div class="ItemComment" id="item-<?php echo ($i+1); ?>">
+							<?php echo $obj_footnote_number; ?> <strong><?php echo $obj_filename; ?></strong><br />
+							<?php echo $obj_comments; ?>
+						</div>
+<?php
+			}
+		}
+?>
+					</div>
+<?php
+	}
+	if ($invoice_footer["value"]!="") {
+?>
+					<div id="footer-text">
+						<?php echo $invoice_footer["markdown"]; ?>
+					</div>
+<?php
+	}
+?>
+				</div>
+			</div>
+			<script type="text/javascript">
+				// <![CDATA[
+					$('.PurchaseTable sup a').click(function () {
+						var anchor = $(this).attr("href");
+						$("#purchaser-notes .ItemComment").css("background-color", "#ffffff");
+						$("#purchaser-notes .ItemComment").css("border-color", "#cccccc");
+						$("#purchaser-notes " + anchor).css("background-color", "#f1f1f1");
+						$("#purchaser-notes " + anchor).css("border-color", "#666666");
+					});
+				// ]]>
+			</script>
+			

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<data default="true">
+	<settings>
+		<allow_single_downloads_bool>false</allow_single_downloads_bool>
+		<allow_web_version_bool>false</allow_web_version_bool>
+		<allow_download_all_bool>false</allow_download_all_bool>
+		<download_all_flatfee_bool>false</download_all_flatfee_bool>
+		<single_download_price restrict="0-9.">0</single_download_price>
+		<web_version_download_price restrict="0-9.">0</web_version_download_price>
+		<single_download_all_price restrict="0-9.">0</single_download_all_price>
+		<web_version_download_all_price restrict="0-9.">0</web_version_download_all_price>
+	</settings>
+</data>

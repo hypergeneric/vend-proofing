@@ -1,0 +1,29 @@
+<?php
+
+	use Michelf\Markdown;
+
+	$eula = Filesystem::getFileData("ITDR-EULA.txt");
+	$eula = Markdown::defaultTransform($eula);
+
+?>
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<title>End User License Agreement</title>
+	<meta charset="utf-8">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" href="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/css/admin/<?php echo SA_PRODUCT_VERSION; ?>/">
+</head>
+<body>
+	<div id="admin">
+		<div class="Dialog">
+			<div class="Header">End User License Agreement</div>
+			<div class="Content">
+				<div class="Markdown"><?php echo $eula; ?></div>
+			</div>
+			<div class="Footer"></div>
+		</div>
+	</div>
+</body>

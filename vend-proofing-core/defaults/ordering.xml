@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<data default="true">
+	<ordering>
+		<offline_order_inbox_email href=""></offline_order_inbox_email>
+		<default_country options="country_iso_codes.code">US</default_country>
+		<default_us_state options="us_states.code">--</default_us_state>
+		<default_ca_province options="ca_province.code">--</default_ca_province>
+		<default_currency options="currency_iso_codes.code">USD</default_currency>
+		<allow_international_purchases_bool>false</allow_international_purchases_bool>
+		<allow_offline_payment_bool>true</allow_offline_payment_bool>
+		<allow_offsite_paypal_payments_bool>false</allow_offsite_paypal_payments_bool>
+		<enable_paypal_merchant_account_bool>false</enable_paypal_merchant_account_bool>
+		<force_browser_ssl_bool>false</force_browser_ssl_bool>
+		<purchase_price_includes_tax_bool>false</purchase_price_includes_tax_bool>
+		<calculate_and_display_shipping_bool>true</calculate_and_display_shipping_bool>
+		<calculate_and_display_sales_tax_bool>true</calculate_and_display_sales_tax_bool>
+		<allow_local_pickup_bool>true</allow_local_pickup_bool>
+		<allow_discount_codes_bool>true</allow_discount_codes_bool>
+		<shipping_flat_rate_num>0</shipping_flat_rate_num>
+		<shipping_flat_fee_num increment=".01" max="9999">0</shipping_flat_fee_num>
+		<handling_flat_fee_num increment=".01" max="9999">0</handling_flat_fee_num>
+		<international_handling_flat_fee_num increment=".01" max="9999">0</international_handling_flat_fee_num>
+		<shipping_taxable_bool>false</shipping_taxable_bool>
+		<handling_taxable_bool>false</handling_taxable_bool>
+		<downloads_taxable_bool>false</downloads_taxable_bool>
+		<cart_minimum_value_num increment=".01" max="9999">0</cart_minimum_value_num>
+		<cart_minimum_count_num increment="1" max="9999">0</cart_minimum_count_num>
+	</ordering>
+	<payment_gateway>
+		<merchant_gateway options="payment_gateways.gateway">none</merchant_gateway>
+		<paypal_email_address encoded="true"></paypal_email_address>
+		<paypal_merchant_username private="true" encoded="true"></paypal_merchant_username>
+		<paypal_merchant_password private="true" encoded="true"></paypal_merchant_password>
+		<paypal_merchant_api_key private="true" encoded="true"></paypal_merchant_api_key>
+		<authorize_net_login private="true" encoded="true"></authorize_net_login>
+		<authorize_net_transkey private="true" encoded="true"></authorize_net_transkey>
+		<stripe_api_key private="true" encoded="true"></stripe_api_key>
+		<stripe_charge_description></stripe_charge_description>
+		<dropbox_api_key private="true" encoded="true"></dropbox_api_key>
+		<dropbox_api_secret private="true" encoded="true"></dropbox_api_secret>
+		<dropbox_authorization_code private="true" encoded="true"></dropbox_authorization_code>
+		<dropbox_token access="h" private="true" hash=""></dropbox_token>
+	</payment_gateway>
+</data>

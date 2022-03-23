@@ -1,0 +1,362 @@
+<?php
+
+	session_start();
+
+	function toFixed($number, $round=2) {
+	    $tempd = $number*pow(10,$round);
+	    $tempd1 = round($tempd);
+	    $number = $tempd1/pow(10,$round);
+	    $number = number_format($number, $round, ".", "");
+	    return $number;
+	}
+
+	function addSalesTax($taxable_amount, $taxes) {
+		if (count($taxes)==1) {
+			$tax_value = $taxable_amount*($taxes[0]/100);
+			return $taxable_amount + $tax_value;
+		} else if (count($taxes)==4) {
+			$hst_value = $taxable_amount*($taxes[0]/100);
+			$gst_value = $taxable_amount*($taxes[1]/100);
+				if ($taxes[3]=="true") $taxable_amount += $gst_value;
+			$pst_value = $taxable_amount*($taxes[2]/100);
+			return $taxable_amount + $hst_value + $gst_value + $pst_value;
+		}
+	}
+
+	function getFormattedPrice ($value, $setup) {
+		$isNegative = $value<0;
+		$value = abs($value);
+		$digitsAfterDecimal = $setup->getNodeVal("data.localization.currency_digits_after_decimal_num");
+		$displayLeadingZeros = $setup->getNodeVal("data.localization.currency_display_leading_zeros_bool")=="true";
+		$leadingZeroDigits = $setup->getNodeVal("data.localization.currency_leading_zero_digits_num");
+		$digitsPerGroup = $setup->getNodeVal("data.localization.currency_digits_per_group_num");
+		$groupingSymbol = $setup->getNodeVal("data.localization.currency_grouping_symbol");
+		$decimalSymbol = $setup->getNodeVal("data.localization.currency_decimal_symbol");
+		$negativePattern = $setup->getNodeVal("data.localization.currency_negative_pattern");
+		$currencyPattern = $setup->getNodeVal("data.localization.currency_currency_pattern");
+		$vstr = toFixed($value, $digitsAfterDecimal);
+		$sides = explode(".", $vstr);
+		$digits;
+		$length;
+		$digits = str_split($sides[0]);
+		if ($displayLeadingZeros) {
+			$length = $leadingZeroDigits-count($digits);
+			if ($length>0) for ($i=0; $i<$length; ++$i) array_unshift($digits, "0");
+		}
+		$groups = array();
+		$chunk = array_splice($digits, -3);
+		$chunk = array_reverse($chunk);
+		$chunk = implode("", $chunk);
+		$groups[] = $chunk;
+		$length = $digitsPerGroup;
+		$chunk = "";
+		$empty = count($digits)==0;
+		while (!$empty) {
+			if (count($digits)<$length) $length = count($digits);
+			for ($i=0; $i<$length; ++$i) if ($i>=0) $chunk .= array_pop($digits);
+			if (strlen($chunk)==$length) {
+				$groups[] = $chunk;
+				$chunk = "";
+			}
+			$empty = count($digits)==0;
+		}
+		$groups = implode($groupingSymbol, $groups);
+		$groups = str_split($groups);
+		$groups = array_reverse($groups);
+		$sides[0] = implode("", $groups);
+		$result = implode($decimalSymbol, $sides);
+		if ($isNegative) $result = str_replace("#", $result, $negativePattern);
+		$result = str_replace("#", $result, $currencyPattern);
+		return $result;
+	}
+	
+	/* --- Settings --- */
+	$data_language = 					$this->getData("language");
+	$language = 						$CONFIG->getNodeVal("setup.language");
+	$browser_title_pattern = 			$this->getTypedValue("setup", "settings", "browser_title");
+	$google_analytics_user_agent = 		$this->getTypedValue("setup", "settings", "google_analytics_user_agent");
+	$page_title = 						$this->getTypedValue("language", "invoice", "invoice_please_login");
+	$browser_title = 					htmlspecialchars(str_replace("{PAGE_NAME}", $page_title["html"], $browser_title_pattern["value"]));
+	
+	/* ---- Resampler Settings --- */
+	$resampling_quality_num = 			$this->getTypedValue("setup", "settings", "resampling_quality_num");
+	$resample_use_imagick_bool = 		$this->getTypedValue("setup", "settings", "resample_use_imagick_bool");
+	$resample_sharpen_bool = 			$this->getTypedValue("setup", "settings", "resample_sharpen_bool");
+	
+	/* --- set the local timezone --- */
+	$local_timezone = 					$this->getTypedValue("setup", "settings", "local_timezone");
+	$local_timezone =					explode(",", $local_timezone);
+	$local_timezone =					$local_timezone[1];
+	if (function_exists("date_default_timezone_set")==false) @putenv("TZ=$local_timezone");
+	else @date_default_timezone_set($local_timezone);
+	
+	/* ---- Page Variables --- */
+	$views = 			array("invoice", "output", "process");
+	$post = 			array_map("stripslashes", $_POST);
+	$email_address = 	isset($post["email_address"]) ? $post["email_address"] : "";
+	$oid = 				isset($post["oid"]) ? $post["oid"] : "";
+	$orderid = 			$this->info("id");
+	$view = 			$this->info("hash");
+	$fragments = 		$this->info("fragments");
+	$email_hash = 		array_shift($fragments);
+	$form_errors = 		array();
+	$sessionobj = 		array();
+	$orderobj = 		array();
+	
+	/* ---- If we're processing dropbox files, there is no need for the overhead below, do it now --- */
+	if ( $view=="process" ) {
+		$action = $email_hash;
+		if ($action=="start") {
+			$dropboxer = new Dropboxer();
+			list($success, $data, $error) = $dropboxer->connect();
+			if ($success) {
+				list($success, $filedata, $error) = $dropboxer->getImageData($orderid);
+				if ($success) {
+					print "1";
+					exit;
+				}
+			}
+		} else if ($action=="next") {
+			$dropboxer = new Dropboxer();
+			list($success, $data, $error) = $dropboxer->connect();
+			if ($success) {
+				list($success, $progress, $error) = $dropboxer->copyOrderChunk($orderid);
+				if ($success) {
+					print $progress;
+					exit;
+				}
+			}
+		} else if ($action=="download") {
+			$dropboxer = new Dropboxer();
+			list($success, $data, $error) = $dropboxer->connect();
+			if ($success) {
+				list($success, $urls, $error) = $dropboxer->getShareLinks($orderid);
+				if ($success) {
+					print $urls;
+					exit;
+				}
+			}
+		} else if ( $action=="reset" || $action=="notify" ) {
+			$checkhash = array_shift($fragments);
+			$order = new Order();
+			$orderobj = $order->getOrderById($orderid);
+			$contact = Flatfile::getXmlArray("contact", null, true);
+			$ordering = $this->getData("ordering");
+			$post = array (
+				"ORDER_ID" => $orderid,
+				"PURCHASER_NAME" => $orderobj[7],
+				"PURCHASER_EMAIL" => $orderobj[8],
+				"PURCHASER_PHONE" => $orderobj[9],
+				"OWNER_NAME" => $contact->getNodeVal("data.details.your_email"),
+				"OWNER_EMAIL" => $contact->getAttrVal("data.details.your_email.href")
+			);
+			$inbox_email = $post["OWNER_EMAIL"];
+			$inbox_name = $post["OWNER_NAME"];
+			if ( $ordering!=false ) {
+				$inbox_email = $ordering->getAttrVal("data.ordering.offline_order_inbox_email.href");
+				$inbox_name = $ordering->getNodeVal("data.ordering.offline_order_inbox_email");
+				if ( $inbox_email==null ) {
+					$inbox_email = $post["OWNER_EMAIL"];
+					$inbox_name = $post["OWNER_NAME"];
+				}
+			}
+			$pre = array (
+				"RESET_URL" => Func::getBaseUrl() . "/?/order/$orderid/process/reset/" . md5($orderid) . "/",
+				"INVOICE_URL" => Func::getBaseUrl() . "/?/order/$orderid/invoice/" . md5($post["PURCHASER_EMAIL"]) . "/"
+			);
+			if ($action=="notify") {
+				$email = new Email();
+				$email->setSender($post["PURCHASER_EMAIL"], $post["PURCHASER_NAME"]);
+				$email->setRecipient($inbox_email, $inbox_name);
+				$email->setSubjectTemplate("data.contact.dropbox_reset_notify_subject");
+				$email->setBodyTemplate("data.contact.dropbox_reset_notify_body");
+				$email->addPreTags($pre);
+				$email->addPostTags($post);
+				$email->send();
+				print "1";
+				exit;
+			}
+			if ($checkhash==md5($orderid)) {
+				$dropboxer = new Dropboxer();
+				list($success, $data, $error) = $dropboxer->connect();
+				if ($success) {
+					list($success, $str, $error) = $dropboxer->resetDownloadCount($orderid);
+					if ($success) {
+						$email = new Email();
+						$email->setSender($post["OWNER_EMAIL"], $post["OWNER_NAME"]);
+						$email->setRecipient($post["PURCHASER_EMAIL"], $post["PURCHASER_NAME"]);
+						$email->setSubjectTemplate("data.contact.dropbox_reset_approved_subject");
+						$email->setBodyTemplate("data.contact.dropbox_reset_approved_body");
+						$email->addPreTags($pre);
+						$email->addPostTags($post);
+						$email->send();
+						unset($error);
+						$init_title = $LANG->lookup("download_reset_success");
+						$init_description = str_replace("{OID}", $orderid, $LANG->lookup("download_reset_success_description"));
+						$help_link_uri = "";
+						include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+						exit;
+					}
+				} else {
+					$error = $LANG->lookup($data) . " - " . $error;
+					$help_link_uri = "https://intothedarkroom.zendesk.com/hc/en-us/articles/209636333";
+					include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+				}
+			} else {
+				$email = new Email();
+				$email->setSender($post["PURCHASER_EMAIL"], $post["PURCHASER_NAME"]);
+				$email->setRecipient($inbox_email, $inbox_name);
+				$email->setSubjectTemplate("data.contact.dropbox_reset_request_subject");
+				$email->setBodyTemplate("data.contact.dropbox_reset_request_body");
+				$email->addPreTags($pre);
+				$email->addPostTags($post);
+				$email->send();
+				print "1";
+				exit;
+			}
+		}
+		print "-1";
+		exit;
+	}
+	
+	// if the email is being passed in via POST, use that hash
+	if (strlen($email_address)>0) {
+		$email_hash = md5($email_address);
+	}
+	
+	// the orderid is being passed in via the login script, redirect
+	if (strlen($oid)>0) {
+		if (strlen($view)==0||in_array($view, $views)==false) $view = "invoice";
+		header("Location: " . Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/order/" . $oid . "/" . $view . "/" . $email_hash . "/");
+		exit();
+	}
+
+	if (strlen($orderid)==0) {
+		$view = "login";
+	} else {
+		// ok, first check to see if it's in the global order table
+		$sessionobj;
+		$order = new Order();
+		$orderobj = $order->getOrderById($orderid);
+		if ($orderobj!=null) {
+			$sessionobj = $order->getOrderSession($orderid, $orderobj[2]);
+			if (strlen($view)==0||in_array($view, $views)==false) {
+				$view = "invoice";
+				header("Location: " . Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/order/" . $orderid . "/" . $view . "/" . $email_hash . "/");
+				exit();
+			}
+			if ($email_hash!=md5($orderobj[8])) {
+				if (strlen($email_hash)>0) $form_errors[] = "invoice_email_not_matching";
+				$view = "login";
+			}
+		} else { // no order exists
+			$sessionobj = array();
+			$form_errors[] = "invoice_order_inexistent";
+			$view = "login";
+		}
+	}
+	
+	// save order objects for dropbox processing so that we don't need to chew up the file system
+	$_SESSION["order_object"] = $orderobj;
+	$_SESSION["session_object"] = $sessionobj;
+	
+	/* parse the session file into respective parts
+		*/
+	$session_alacarte = array();
+	$session_downloads = array();
+	$session_combined_lookup = array();
+	$session_packages = array();
+	$session_packages_lookup = array();
+	$session_products = array();
+	$session_products_lookup = array();
+
+	foreach ($sessionobj as $hash => $sessionitem) {
+		if (substr($hash, -2)=="-p") { // package or product
+			if ($sessionitem[1]=="package") {
+				$session_packages[] = $sessionitem;
+				$session_packages_lookup[substr($hash, 0, 32)] = array();
+			} else {
+				$session_products[] = $sessionitem;
+				$session_products_lookup[substr($hash, 0, 32)] = array();
+			}
+		}
+	}
+	foreach ($sessionobj as $hash => $sessionitem) {
+		if (substr($hash, -2)=="-f") continue; // filter out any favorites
+		if (substr($hash, -2)=="-p") continue; // filter out any packages
+		if (substr($hash, -2)=="-d") { // download
+			$session_downloads[] = $sessionitem;
+		} else if (strstr($hash, ":")===false) { // alacarte
+			$session_alacarte[] = $sessionitem;
+			if (isset($session_combined_lookup[$hash])) $session_combined_lookup[$hash][4] += $sessionitem[4];
+			else $session_combined_lookup[$hash] = $sessionitem;
+		} else {
+			$phash = substr($hash, -32);
+			if (isset($session_packages_lookup[$phash])) {
+				$session_packages_lookup[$phash][] = $sessionitem;
+				// aggregate package items into the combined lookup
+				$sessionitem[0] = substr($hash, 0, 32);
+				$hash = $sessionitem[0];
+				if (isset($session_combined_lookup[$hash])) $session_combined_lookup[$hash][4] += $sessionitem[4];
+				else $session_combined_lookup[$hash] = $sessionitem;
+				$sessionitem[0] = "$hash:$phash";
+			} else {
+				$session_products_lookup[$phash][] = $sessionitem;
+			}
+		}
+	}
+	
+	/* ---- Favicon --- */
+	$website_favicon_asset = 		$this->getTypedValue("setup", "settings", "website_favicon_asset");
+	$website_favicon_tag = 			"";
+		if ($website_favicon_asset["source"]!="") {
+			$website_favicon_tag .= '<link rel="shortcut icon" href="' . $website_favicon_asset["path"] . '" />' . "\n";
+		}
+
+	/* ---- Tracking ---- */
+	$page_tracking_script = 		$google_analytics_user_agent["value"];
+		if (strtolower(substr($page_tracking_script, 0, 7))!="<script") {
+			$ga_user_agent = 		Func::stripGoogleUA($page_tracking_script);
+			if (strtolower(substr($ga_user_agent, 0, 3))=="ua-") {
+				$page_tracking_script = "
+	<script>
+		var _gaq=[['_setAccount','$ga_user_agent'],['_trackPageview']];
+		(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+		g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+		s.parentNode.insertBefore(g,s)}(document,'script'));
+	</script>" . "\n";
+			}
+		}
+
+	/* ----  Page Properties --- */
+	
+
+?>
+<!doctype html>
+<html class="no-js" lang="<?php echo $language; ?>">
+<head>
+	<title><?php echo $browser_title; ?></title>
+	<meta charset="utf-8">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0,initial-scale=1,minimum-scale=1">
+	<!-- Icons, favicons, facebook, etc. -->
+	<?php echo $website_favicon_tag; ?>
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_INDEXPATH; ?>?/css/invoice/" media="all" />
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_INDEXPATH; ?>?/css/invoice-print/" media="print" />
+	<!-- Javascript -->
+	<script type="text/javascript" src="<?php echo SA_DIR_COREPATH; ?>/js/jquery.js"></script>
+</head>
+<body>
+	<div id="container">
+		<div id="inner">
+<?php
+	include "2.order." . $view . ".tmpl";
+?>
+		</div>
+	</div>
+	<!-- Page Tracking Code Start -->
+<?php echo $page_tracking_script; ?>
+	<!-- Page Tracking Code End -->
+</body>
+</html>

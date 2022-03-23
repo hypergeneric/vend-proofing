@@ -1,0 +1,2425 @@
+
+/* ---- Global Stuff ---- */
+
+::-webkit-scrollbar {
+  width: 13px;
+  height: 13px;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+::-webkit-scrollbar-thumb {
+  background: <?php echo $foreground_color; ?>;
+  border: 2px solid <?php echo $application_background_color; ?>;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: <?php echo $foreground_color; ?>;
+}
+::-webkit-scrollbar-thumb:active {
+  background: <?php echo $foreground_color; ?>;
+}
+::-webkit-scrollbar-track {
+  background: <?php echo $application_background_color; ?>;
+  border: 2px solid <?php echo $application_background_color; ?>;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-track:hover {
+  background: <?php echo $application_background_color; ?>
+}
+::-webkit-scrollbar-track:active {
+  background: <?php echo $application_background_color; ?>
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html, body { 
+	scrollbar-3dlight-color: <?php echo $application_background_color; ?>; 
+	scrollbar-arrow-color: <?php echo $foreground_color; ?>; 
+	scrollbar-base-color: <?php echo $application_background_color; ?>; 
+	scrollbar-darkshadow-color: <?php echo $application_background_color; ?>; 
+	scrollbar-face-color: <?php echo $foreground_color; ?>; 
+	scrollbar-highlight-color: <?php echo $foreground_color; ?>; 
+	scrollbar-shadow-color: <?php echo $foreground_color; ?>; 
+	scrollbar-track-color: <?php echo $application_background_color; ?>; 
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
+
+* {
+	font-family: <?php echo $font_family; ?>;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+
+img {
+	-webkit-touch-callout:none;
+	-webkit-user-select:none;
+	-khtml-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+
+html {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+html, body {
+	background-color: <?php echo $background_color; ?>;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	width: 100%;
+}
+
+.Clear ,
+.clear {
+	clear: both;
+}
+
+#start-screen {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background-color: <?php echo $background_color; ?>;
+}
+
+/* ---- Error ---- */
+
+#body-error {
+	position: absolute;
+	background: #fff;
+	width: 100%;
+	height: 100%;
+}
+#body-error-inner {
+	padding: 25px;
+	position: relative;
+	background: #fff;
+}
+#body-fail-icon {
+	margin: 0 auto 0 auto;
+	width: 115px;
+	height: 115px;
+	background-repeat: no-repeat;
+	background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-error-sprite.png&effect=overlay&color=444444"; ?>');
+	background-position: 0 115px;
+}
+#body-fail-icon.browser {
+	background-position: -0px 0;
+}
+#body-fail-icon.orientation {
+	background-position: -115px 0;
+}
+#body-fail-title {
+	text-align: center;
+	max-width: 500px;
+	margin: 25px auto 25px auto;
+	color: #444;
+}
+#body-fail-description {
+	text-align: center;
+	max-width: 500px;
+	margin: 0 auto 0 auto;
+	color: #444;
+}
+
+
+
+
+/* ---- Container ---- */
+
+#title {
+	display: none;
+}
+
+#container {
+	position: relative;
+	z-index: 2;
+}
+
+#tooltip {
+	display: none;
+	position: absolute;
+	padding: 10px;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, .2);
+	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, .2);
+	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, .2);
+	color: <?php echo $foreground_color; ?>;
+	font-size: <?php echo 14*$font_size_scale_num; ?>px;
+	border: 1px solid <?php echo $stroke_color; ?>;
+	background: <?php echo $application_background_color; ?>;
+}
+
+
+
+/* ---- Markdown Text ---- */
+
+p {
+	margin-bottom: 15px;
+}
+.Description pre {
+	white-space: normal;
+	margin: 0 20px 15px 20px;
+}
+.Description pre code {
+	font-style: italic;
+}
+.Description ul {
+	list-style-type: disc;
+	margin-bottom: 15px;
+	padding-left: 20px;
+}
+.Description li {
+	margin-left: 0px;
+}
+.Title,
+h2{
+	font-size: <?php echo 18*$font_size_scale_num; ?>px;
+	color: <?php echo $foreground_color; ?>;
+	margin-bottom: 15px;
+}
+h3 {
+	font-size: <?php echo 12*$font_size_scale_num; ?>px;
+	color: <?php echo $foreground_color; ?>;
+}
+.Description {
+	font-size: <?php echo 12*$font_size_scale_num; ?>px;
+	color: <?php echo $foreground_color; ?>;
+}
+.Description a {
+	font-size: <?php echo 12*$font_size_scale_num; ?>px;
+	color: <?php echo $foreground_color; ?>;
+	text-decoration: underline;
+}
+.Description a:hover {
+	color: <?php echo $foreground_color; ?>;
+}
+.Description pre {
+}
+.Description h2 {
+	font-size: <?php echo 16*$font_size_scale_num; ?>px;
+	color: <?php echo $foreground_color; ?>;
+}
+.Description strong {
+	font-weight: bold;
+}
+
+
+
+/* ---- UI Objects ---- */
+
+.uiField {
+	-webkit-appearance:none;
+	border-radius: 0;
+	background: <?php echo $form_background_color; ?>;
+	border: 1px solid <?php echo $stroke_color; ?>;
+	position: relative;
+	margin: 0 0 10px 0;
+	padding: 10px;
+	font-size: <?php echo 18*$font_size_scale_num; ?>px;
+	font-family: <?php echo $font_family; ?>;
+	color: <?php echo $foreground_color; ?>;
+	width: 100%;
+	box-sizing: border-box;
+}
+.uiField:focus {
+	outline: none;
+}
+.uiField:valid {
+}
+.uiField:hover {
+}
+.uiField:invalid {
+	background: <?php echo $form_background_color; ?>;
+	border: 1px solid <?php echo $highlight_color["css"]; ?>;
+}
+.uiField.Highlight {
+	border: 1px solid <?php echo $highlight_color["css"]; ?>;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    <?php echo $foreground_color_light; ?> !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    <?php echo $foreground_color_light; ?> !important;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    <?php echo $foreground_color_light; ?> !important;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    <?php echo $foreground_color_light; ?> !important;
+}
+:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
+  color:    <?php echo $foreground_color_light; ?> !important;
+}
+
+.uiPushButton {
+	-moz-outline-style: none;
+	outline: none;
+	text-decoration: none;
+	-webkit-appearance:none;
+	display: inline-block;
+	padding: 10px 20px;
+	font-size: <?php echo 14*$font_size_scale_num; ?>px;
+	font-family: <?php echo $font_family; ?>;
+	color: <?php echo $foreground_color; ?>;
+	background: <?php echo $form_background_color; ?>;
+	border: 1px solid <?php echo $stroke_color; ?>;
+	margin-right: 7px;
+	opacity: .75;
+	cursor: pointer;
+}
+.uiPushButton:hover {
+	opacity: 1;
+}
+.uiPushButton:focus,
+.uiPushButton:visited,
+.uiPushButton:active {
+	-moz-outline-style: none;
+	outline: none;
+	color: <?php echo $foreground_color; ?>;
+	opacity: .75;
+}
+.uiPushButton:disabled,
+.uiPushButton.Disabled {
+	color: <?php echo $foreground_color; ?>;
+	opacity: .25;
+	cursor: default;
+}
+
+
+
+
+/* ---- Form Dialog ---- */
+
+#form-dialog-container {
+	display: none;
+	position: fixed;
+	z-index: 3;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+	#form-dialog-screen {
+		position: absolute;
+		z-index: 2;
+		top: 0;
+		left: 0;
+		background-color: <?php echo $background_color; ?>;
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#form-dialog-background {
+		display: none;
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+		#form-dialog-background img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	#form-dialog {
+		color: <?php echo $foreground_color; ?>;
+		position: absolute;
+		z-index: 3;
+		max-width: 480px;
+		width: 100%;
+		border: 1px <?php echo $stroke_color; ?> solid;
+		background-color: <?php echo $application_background_color; ?>;
+		box-sizing: border-box;
+	}
+		#form-dialog-inner {
+			margin: 20px;
+		}
+		#form-dialog-description {
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			margin-bottom: 20px;
+			color: <?php echo $foreground_color; ?>;
+		}
+			#form-dialog-container h2 {
+				font-size: <?php echo 30*$font_size_scale_num; ?>px;
+			}
+		#form-dialog-content {
+			position: relative;
+		}
+		#form-dialog-footer {
+			font-size: <?php echo 12*$font_size_scale_num; ?>px;
+			margin-top: 20px;
+			color: <?php echo $foreground_color; ?>;
+		}
+			#form-dialog-footer a {
+				color: <?php echo $foreground_color; ?>;
+			}
+			#form-dialog-footer a:hover {
+				color: <?php echo $highlight_color["css"]; ?>;
+			}
+			#form-dialog-content form,
+			#form-dialog-response {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+			}
+				#form-dialog-error {
+					color: <?php echo $foreground_color; ?>;
+					font-size: <?php echo 18*$font_size_scale_num; ?>px;
+					padding: 0 0 11px 0;
+				}
+			#form-dialog-screen2 {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+			
+#form-dialog-container.Inline {
+	margin: 30px auto;
+	position: relative;
+	width: auto;
+	height: auto;
+}
+	#form-dialog-container.Inline #form-dialog-screen {
+		display: none;
+	}
+	#form-dialog-container.Inline #form-dialog {
+		margin: 0 auto;
+		position: relative;
+	}
+	
+	#form-dialog-container.BgImage #form-dialog-screen {
+		background-color: #000;
+	}
+	#form-dialog-container.BgImage #form-dialog {
+		border: none;
+		background-color: transparent;
+		color: #fff;
+		text-align: center;
+	}
+			#form-dialog-container.BgImage #form-dialog-screen2 {
+				background-color: transparent;
+			}
+		#form-dialog-container.BgImage h2 {
+			color: #fff;
+		}
+		#form-dialog-container.BgImage #form-dialog-description ,
+		#form-dialog-container.BgImage #form-dialog-footer {
+			color: #fff;
+		}
+		#form-dialog-container.BgImage .uiField {
+			background: transparent;
+			color: #fff;
+		}
+		#form-dialog-container.BgImage .uiPushButton {
+			background: transparent;
+			color: #fff;
+		}
+	
+@media screen and (max-width: 500px){
+	#form-dialog {
+		width: 90%;
+	}
+		#form-dialog-container h2 {
+			font-size: <?php echo 22*$font_size_scale_num; ?>px !important;
+		}
+}
+
+
+
+
+/* ---- Dialog ---- */
+
+#dialog-container {
+	display: none;
+	position: fixed;
+	z-index: 6;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+	#dialog-screen {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: <?php echo $background_color; ?>;
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#dialog {
+		color: <?php echo $foreground_color; ?>;
+		position: absolute;
+		z-index: 2;
+		width: 480px;
+		border: 1px <?php echo $stroke_color; ?> solid;
+		background-color: <?php echo $application_background_color; ?>;
+		box-sizing: border-box;
+	}
+		#dialog-inner {
+			margin: 20px;
+		}
+		#dialog-description {
+			clear: both;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			margin-bottom: 20px;
+			color: <?php echo $foreground_color; ?>;
+		}
+		#dialog-noremind {
+			margin-left: 5px;
+		}
+		#dialog-noremind-wrap {
+			display: inline-block;
+			margin-top: 15px;
+		}
+@media screen and (max-width: 500px){
+	#dialog {
+		width: 90%;
+	}
+		#dialog h2 {
+			font-size: <?php echo 22*$font_size_scale_num; ?>px !important; 
+		}
+}
+
+
+
+
+/* ---- Control Bar ---- */
+
+#controlbar {
+	height: <?php echo $nav_height; ?>px;
+	width: 100%;
+	background: <?php echo $application_background_color; ?>;
+	border-bottom: 1px <?php echo $stroke_color; ?> solid;
+	position: fixed;
+	z-index: 4;
+}
+	#controlbar-left {
+		position: relative;
+		float: left;
+	}
+	#controlbar-left span {
+		padding: 0 20px 0 20px;
+		height: <?php echo $nav_height; ?>px;
+		line-height: <?php echo $nav_height; ?>px;
+		font-weight: bold;
+		font-size: <?php echo 14*$font_size_scale_num; ?>px;
+	}
+	#controlbar-inner {
+		display: none;
+		position: absolute;
+		float: left;
+	}
+	#controlbar-right {
+		position: relative;
+		float: right;
+	}
+	#controlbar.Compact #controlbar-left {
+		display: none;
+	}
+	#controlbar.Compact #controlbar-inner {
+		left: 0px !important;
+	}
+	#controlbar a {
+		outline: none;
+	}
+	#controlbar .Icon {
+		background-repeat: no-repeat;
+		background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+		background-size: 500px 40px;
+	}
+	#controlbar .Graphic {
+		float: left;
+	}
+	#icon-mail {
+		cursor: pointer;
+		float: left;
+		width: 40px;
+		height: <?php echo $nav_height; ?>px;
+		opacity: .75;
+		background-position: -240px 50%;
+	}
+	.no-touch #icon-mail:hover {
+		opacity: 1;
+	}
+	#icon-music {
+		cursor: pointer;
+		float: left;
+		width: 40px;
+		height: <?php echo $nav_height; ?>px;
+		background-position: -200px 50%;
+		opacity: .75;
+	}
+	#icon-music.Paused {
+		background-position: -160px 50%;
+	}
+	.no-touch #icon-music:hover {
+		opacity: 1;
+	}
+	#jp-player,
+	#jp-container {
+		display: none;
+	}
+	#controlbar-view {
+		float: left;
+	}
+	.SuperNavSelect {
+		-webkit-appearance: none;
+		-webkit-box-shadow: none;
+		-webkit-border-radius: 0;
+		-moz-appearance: none;
+		appearance: none;
+		text-align: center;
+		float: left;
+		height: <?php echo $nav_height; ?>px;
+		line-height: <?php echo $nav_height; ?>px;
+		border: none;
+		background: <?php echo $application_background_color; ?>;
+		color: <?php echo $foreground_color; ?>;
+		font-size: <?php echo 14*$font_size_scale_num; ?>px;
+		display: block;
+		outline: none;
+		padding: 0 20px 0 20px;
+	}
+	select:-moz-focusring {
+		color: transparent;
+		text-shadow: 0 0 0 #000;
+	}
+		.SuperNavSelect option {
+			padding: 0 20px 0 20px;
+		}
+	.SuperNav {
+		float: left;
+		position: relative;
+		height: <?php echo $nav_height; ?>px;
+		line-height: <?php echo $nav_height; ?>px;
+		background: <?php echo $application_background_color; ?>;
+		margin: 0;
+	}
+	.SuperNavLine {
+		float: left;
+		position: relative;
+		height: <?php echo $nav_height; ?>px;
+		line-height: <?php echo $nav_height; ?>px;
+		border-left: 1px <?php echo $stroke_color; ?> solid;
+	}
+	.SuperNav span {
+		display: inline-block;
+		color: <?php echo $foreground_color; ?>;
+		font-size: <?php echo 14*$font_size_scale_num; ?>px;
+		height: <?php echo $nav_height; ?>px;
+	}
+	.SuperNav .label {
+		font-weight: bold;
+	}
+	.SuperNav .icon {
+		display: inline-block;
+		width: 40px;
+		height: <?php echo $nav_height; ?>px;
+		background-repeat: no-repeat;
+		background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+		background-size: 500px 40px;
+	}
+	.SuperNav .count {
+	}
+	#controlbar-set .icon {
+		background-position: -400px 50% !important;
+	}
+	#controlbar-favorites .icon {
+		background-position: 0px 50% !important;
+	}
+	#controlbar-cart .icon {
+		background-position: -360px 50% !important;
+	}
+	.SuperNav div {
+		position: relative;
+		z-index: 1;
+		height: 100%;
+		padding: 0 15px 0 5px;
+		background: <?php echo $application_background_color; ?>;
+		cursor: pointer;
+		white-space: nowrap;
+		text-align: center;
+		background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+		background-repeat: no-repeat;
+		background-position: center <?php echo $nav_height - 14; ?>px;
+	}
+	.SuperNav ul {
+		list-style-type: none;
+		background-color: <?php echo $application_background_color; ?>;
+		position: absolute;
+		bottom: -1px;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		z-index: 0;
+		border: 1px <?php echo $stroke_color; ?> solid;
+		box-sizing: border-box;
+	}
+	.SuperNav li {
+		text-align: center;
+		height: 30px;
+		line-height: 30px;
+		margin: 0px 10px;
+		padding: 3px 0;
+		cursor: default;
+		white-space:nowrap;
+		color: <?php echo $foreground_color; ?>;
+		font-size: <?php echo 12*$font_size_scale_num; ?>px;
+	}
+	.no-touch .SuperNav li:hover,
+	.SuperNav li.Active {
+		color: <?php echo $highlight_color["css"]; ?>;
+		cursor: pointer;
+	}
+	.SuperNav li.Disabled {
+		color: <?php echo $foreground_color; ?> !important;
+		cursor: default;
+	}
+	.SuperNav li.BreakLine {
+		border-bottom: 1px <?php echo $stroke_color; ?> solid;
+		height: 0;
+	}
+	#controlbar .Disabled div {
+		opacity: .5;
+		cursor: default;
+	}
+@media screen and (max-width: 480px){
+	#controlbar {
+		position: relative !important;
+	}
+	.SuperNav  ,
+	.SuperNavSelect {
+		margin: 0;
+		width: 40px !important;
+		color: rgba(0, 0, 0, 0);
+		background-repeat: no-repeat;
+		background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+		background-size: 500px 40px;
+	}
+	.SuperNavSelect[disabled="disabled"] {
+		opacity: .5;
+	}
+	#controlbar-set {
+		background-position: -400px 50% !important;
+	}
+	#controlbar-favorites {
+		background-position: 0px 50% !important;
+	}
+	#controlbar-cart {
+		background-position: -360px 50% !important;
+	}
+}
+
+
+
+
+/* --- Image Wall --- */
+
+#image-wall-wrapper  {
+	display: none;
+	position: relative;
+	padding-top: 65px;
+	z-index: 2;
+	margin-bottom: -65px;
+}
+
+#image-wall-wrapper .ControlBar {
+	display: none;
+	position: relative;
+	height: 45px;
+	z-index: 2;
+}
+	#imagewall-controlbar-more {
+		background-color: <?php echo $foreground_color; ?> !important;
+		color: <?php echo $background_color; ?> !important;
+		opacity: 1;
+		cursor: pointer;
+	}
+	.no-touch #imagewall-controlbar-more:hover {
+		opacity: .8;
+	}
+	#imagewall-controlbar-top {
+		cursor: pointer;
+	}
+#image-wall {
+	position: relative;
+	z-index: 1;
+}
+#image-wall .Graphic {
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	left: 0;
+	float: left;
+	background: <?php echo $application_background_color; ?>;
+	border: <?php echo $tile_gutter_width_num; ?>px <?php echo $background_color; ?> solid;
+}
+	#image-wall .Graphic .Wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+		#image-wall .Graphic .Wrapper img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		#image-wall .Graphic .Highlight {
+			display: none;
+		}
+		#image-wall .Active .Highlight {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			border: 5px <?php echo $highlight_color["css"]; ?> solid;
+		}
+		#image-wall .Graphic .FavoriteButton {
+			display: none;
+			position: absolute;
+			left: 0px;
+			bottom: 0px;
+			width: 32px;
+			height: 32px;
+			opacity: .5;
+			background: <?php echo $application_background_color; ?> url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -3px 50%;
+			background-size: 500px 40px;
+			margin: 9px;
+			border: 1px <?php echo $stroke_color; ?> solid;
+		}
+		.no-touch #image-wall .Graphic .FavoriteButton:hover {
+			background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"]; ?>');
+			background-size: 500px 40px;
+			opacity: 1;
+		}
+		#image-wall .Graphic .Favorited {
+			background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"]; ?>');
+			background-size: 500px 40px;
+			opacity: 1 !important;
+		}
+		.no-touch #image-wall .Graphic .Favorited:hover {
+			background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') !important;
+			background-size: 500px 40px;
+			opacity: 1 !important;
+		}
+@media screen and (max-width: 600px){
+	#image-wall-wrapper {
+		padding-top: 0px;
+		margin-bottom: 0px;
+	}
+}
+
+
+
+/* ---- Overlay ---- */
+
+#overlay-container {
+	display: none;
+	position: fixed;
+	z-index: 3;
+	top: <?php echo $nav_height; ?>px;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+	#overlay-screen {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: <?php echo $application_background_color; ?>;
+	}
+	#overlay-skirt {
+		position: absolute;
+		z-index: 6;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: <?php echo $application_background_color; ?>;
+
+	}
+	.OverlayView {
+		display: none;
+		position: absolute;
+	}
+	#overlay-sidebar ,
+	#overlay-browser {
+		display: block !important;
+	}
+@media screen and (max-width: 800px){
+	#overlay-container {
+		top: 0px;
+		z-index: 5;
+	}
+}
+
+	
+	
+/* ---- Control Buttons ---- */
+
+.ControlBar {
+	text-align: center;
+}
+.ControlBar .TALeft { /* Text Action Left */
+	position: relative;
+	z-index: 2;
+	float: left;
+	height: 44px;
+	line-height: 44px;
+	font-size: <?php echo 16*$font_size_scale_num; ?>px;
+	font-weight: bold;
+	white-space: nowrap;
+	color: <?php echo $foreground_color; ?>;
+	cursor: pointer;
+	padding: 0 20px;
+}
+	.ControlBar .TALeft.Enabled {
+		opacity: .75;
+		cursor: pointer;
+	}
+	.no-touch .ControlBar .TALeft.Enabled:hover {
+		opacity: 1;
+	}
+	.ControlBar .TALeft.Disabled {
+		opacity: .25;
+		cursor: default;
+	}
+	.no-touch .ControlBar .TALeft.Disabled:hover {
+		opacity: .25;
+	}
+.ControlBar .IBLeft { /* Icon Button Left */
+	overflow: hidden;
+	position: relative;
+	z-index: 2;
+	cursor: pointer;
+	float: left;
+	width: 40px;
+	height: 100%;
+	opacity: .75;
+}
+	.no-touch .ControlBar .IBLeft:hover {
+		opacity: 1;
+	}
+.ControlBar .Center { /* Center */
+	position: relative;
+	display: inline-block;
+	height: 100%;
+	font-size: <?php echo 13*$font_size_scale_num; ?>px;
+	font-weight: bold;
+	line-height: 44px;
+	white-space: nowrap;
+	color: <?php echo $foreground_color; ?>;
+	cursor: default;
+	padding: 0 20px;
+}
+.ControlBar .TACenter { /* Text Action Center */
+	position: relative;
+	display: inline-block;
+	height: 44px;
+	line-height: 44px;
+	font-size: <?php echo 16*$font_size_scale_num; ?>px;
+	font-weight: bold;
+	white-space: nowrap;
+	color: <?php echo $foreground_color; ?>;
+	cursor: pointer;
+	padding: 0 20px;
+}
+	.ControlBar .TACenter.Enabled {
+		opacity: .75;
+		cursor: pointer;
+	}
+	.no-touch .ControlBar .TACenter.Enabled:hover {
+		opacity: 1;
+	}
+	.ControlBar .TACenter.Disabled {
+		opacity: .25;
+		cursor: default;
+	}
+	.no-touch .ControlBar .TACenter.Disabled:hover {
+		opacity: .25;
+	}
+.ControlBar .TARight { /* Text Action Right */
+	position: relative;
+	z-index: 2;
+	float: right;
+	height: 44px;
+	line-height: 44px;
+	font-size: <?php echo 16*$font_size_scale_num; ?>px;
+	font-weight: bold;
+	white-space: nowrap;
+	color: <?php echo $foreground_color; ?>;
+	cursor: pointer;
+	padding: 0 20px;
+}
+	.ControlBar .TARight.Enabled {
+		opacity: .75;
+		cursor: pointer;
+	}
+	.no-touch .ControlBar .TARight.Enabled:hover {
+		opacity: 1;
+	}
+	.ControlBar .TARight.Disabled {
+		opacity: .25;
+		cursor: default;
+	}
+	.no-touch .ControlBar .TARight.Disabled:hover {
+		opacity: .25;
+	}
+.ControlBar .IBRight {  /* Icon Button Right */
+	overflow: hidden;
+	position: relative;
+	z-index: 2;
+	cursor: pointer;
+	float: right;
+	width: 40px;
+	height: 100%;
+	opacity: .75;
+}
+	.no-touch .ControlBar .IBRight:hover {
+		opacity: 1;
+	}
+
+	#overview-controlbar-prev {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -280px 50%;
+		background-size: 500px 40px;
+	}
+	#overview-controlbar-next {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -120px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-prev {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -280px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fs {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -80px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fs.Active {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"]; ?>') no-repeat -40px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fs.Disabled {
+		cursor: progress;
+	}
+	#browse-controlbar-fs.Off {
+		cursor: default !important;
+		opacity: .25 !important;
+	}
+	#browse-controlbar-fav {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat 0px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-next {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -120px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fav.Active {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"]; ?>') no-repeat 0px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fav.Disabled {
+		cursor: progress;
+	}
+	#browse-controlbar-return-icon ,
+	#browse-controlbar-close {
+		background: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -440px 50%;
+		background-size: 500px 40px;
+	}
+
+	
+	
+/* ---- Browser ---- */					
+	
+#overlay-browser {
+	position: absolute;
+	z-index: 1;
+}
+	#overlay-browser .ControlBar {
+		position: absolute;
+		z-index: 2;
+		height: 44px;
+		width: 100%;
+		background: <?php echo $application_background_color; ?>;
+	}
+	#overlay-browser .Inner {
+	}
+		#browse-controlbar-done,
+		#browse-controlbar-options {
+			display: none;
+		}
+	#overlay-browser .Inner {
+		position: absolute;
+		z-index: 1;
+		width: 100%;
+	}
+	#overlay-browser .Display {
+		z-index: 1;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: <?php echo $application_background_color; ?>;
+	}
+		#overlay-browser .Display img {
+			position: absolute;
+			display: block;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+	#browser-paddles {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+	}
+	#browser-hitarea-prev,
+	#browser-hitarea-next {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 50%;
+		height: 100%;
+	}
+	#browser-hitarea-next {
+		left: 50%;
+	}
+	#browser-cropview {
+		position: absolute;
+		z-index: 3;
+		top: 0;
+		left: 0;
+	}
+		#browser-cropview-t,
+		#browser-cropview-l,
+		#browser-cropview-b,
+		#browser-cropview-r {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: <?php echo $application_background_color; ?>;
+			opacity: .8;
+		}
+		#browser-cropview-o {
+			position: absolute;
+			top: 0;
+			left: 0;
+			border: 1px <?php echo $stroke_color; ?> solid;
+			cursor: move;
+		}
+	#browser-zoom {
+		background: <?php echo $application_background_color; ?>;
+		position: absolute;
+		z-index: 4;
+		top: 0;
+		left: 0;
+		display: none;
+		overflow: hidden;
+	}
+		#browser-zoom img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			cursor: move;
+		}
+@media screen and (max-width: 800px){
+	#overlay-browser .ControlBar {
+		bottom: 0;
+	}
+	#overlay-browser.Editor .ControlBar div {
+		display: none;
+	}
+	#overlay-browser.Editor #browse-controlbar-done {
+		display: inline-block;
+	}
+	#browse-controlbar-done {
+		line-height: 40px;
+		height: 38px;
+		background-color: <?php echo $application_background_color; ?> !important;
+		border: 1px <?php echo $stroke_color; ?> solid;
+	}
+	#browse-controlbar-options {
+		display: inline-block;
+		line-height: 40px;
+		height: 38px;
+		background-color: <?php echo $application_background_color; ?> !important;
+		border: 1px <?php echo $stroke_color; ?> solid;
+	}
+	#overlay-browser #browse-controlbar-title {
+		display: none;
+	}
+	#overlay-browser .ControlBar .IBLeft {
+		margin-left: 5px;
+		width: 38px;
+		height: 38px;
+		background-color: <?php echo $application_background_color; ?> !important;
+		border: 1px <?php echo $stroke_color; ?> solid;
+	}
+	#overlay-browser .ControlBar .IBRight {
+		margin-right: 5px;
+		width: 38px;
+		height: 38px;
+		background-color: <?php echo $application_background_color; ?> !important;
+		border: 1px <?php echo $stroke_color; ?> solid;
+	}
+	#browse-controlbar-close {
+		position: fixed;
+		top: 5px;
+		right: 0px;
+	}
+}
+@media screen and (max-width: 480px){
+	#overlay-browser #browse-controlbar-prev ,
+	#overlay-browser #browse-controlbar-next ,
+	#overlay-browser #browse-controlbar-title {
+		display: none;
+	}
+}
+
+
+
+/*  --- Sidebar --- */
+
+#overlay-sidebar {
+	position: absolute;
+	z-index: 2;
+	background-color: <?php echo $application_background_alt; ?>;
+}
+	#overlay-sidebar .Inner {
+		position: relative;
+		z-index: 1;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		border-right: 1px <?php echo $stroke_color; ?> solid;
+		box-sizing: border-box;
+	}
+	#overlay-sidebar .ControlBar {
+		position: absolute;
+		z-index: 2;
+		height: 50px;
+		width: 100%;
+		background: <?php echo $application_background_color; ?>;
+		background-color: <?php echo $application_background_alt; ?>;
+		border-right: 1px <?php echo $stroke_color; ?> solid;
+		box-sizing: border-box;
+	}
+		#overlay-sidebar .ControlBar div {
+			margin-top: 5px;
+			height: 38px;
+			line-height: 40px;
+			background-color: <?php echo $application_background_color; ?>;
+			border: 1px <?php echo $stroke_color; ?> solid;
+		}
+		#browse-controlbar-return-icon {
+			margin-right: 5px;
+			width: 38px;
+		}
+		#browse-controlbar-add {
+			background-color: <?php echo $foreground_color; ?> !important;
+			color: <?php echo $background_color; ?> !important;
+			opacity: 1;
+		}
+		.no-touch #browse-controlbar-add:hover {
+			opacity: .8;
+		}
+		.no-touch #browse-controlbar-add.Disabled:hover ,
+		#browse-controlbar-add.Disabled {
+			background-color: <?php echo $application_background_color; ?>;
+			border: 1px <?php echo $stroke_color; ?> solid;
+			color: <?php echo $foreground_color; ?>;
+			opacity: .25;
+		}
+		#browse-controlbar-return-icon ,
+		#browse-controlbar-return {
+			display: none;
+		}
+	#sidebar-screen {
+		position: absolute;
+		z-index: 20;
+		top: 0;
+		left: 0;
+		background-color: <?php echo $application_background_color; ?>;
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#sidebar-input {
+		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		height: 100%;
+		width: 100%;
+	}
+	#sidebar-input-screen {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: <?php echo $application_background_color; ?>;
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#sidebar-input-content {
+		position: relative;
+		z-index: 2;
+	}
+		#sidebar-input .UIText {
+			position: absolute;
+			width: 100%;
+		}
+		#sidebar-input .UIText .Wrapper {
+			margin: 15px;
+			padding: 15px;
+			border: 1px solid <?php echo $stroke_color; ?>;
+			background: <?php echo $application_background_color; ?>;
+		}
+		#sidebar-input .UIText textarea {
+			box-sizing: border-box;
+			width: 100%;
+			resize: none;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			height: 80px;
+			margin-bottom: 10px;
+			border: 1px solid <?php echo $stroke_color; ?>;
+			background: <?php echo $application_background_color; ?>;
+			color: <?php echo $foreground_color; ?>;
+		}
+		#sidebar-input .UIText button {
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			-moz-outline-style: none;
+			outline: none;
+			text-decoration: none;
+			-webkit-appearance:none;
+			color: <?php echo $foreground_color; ?>;
+			background: <?php echo $form_background_color; ?>;
+			border: 1px solid <?php echo $stroke_color; ?>;
+			padding: 5px;
+		}
+		#overlay-sidebar label.Disabled {
+			opacity: .5;
+		}
+		#overlay-sidebar .Inner div {
+			position: relative;
+			padding: 10px;
+			background: <?php echo $application_background_alt; ?>;
+		}
+		#overlay-sidebar .Inner div > div {
+			display: none;
+			padding: 0 0 0 0;
+			border: none;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+			opacity: .5;
+		}
+		#overlay-sidebar .Input {
+			position: relative;
+		}
+			#overlay-sidebar .Input h3 {
+				font-size: <?php echo 14*$font_size_scale_num; ?>px;
+				margin: 0;
+				padding: 0;
+				margin-bottom: 5px;
+			}
+			#overlay-sidebar .Input span {
+				color: <?php echo $foreground_color; ?>;
+				display: block;
+				margin: 0 0 0 0;
+				padding: 5px;
+				color: <?php echo $foreground_color; ?>;
+				font-size: <?php echo 14*$font_size_scale_num; ?>px;
+				margin-bottom: 10px;
+				border: 1px solid <?php echo $stroke_color; ?>;
+				background: <?php echo $application_background_color; ?>;
+			}
+			#overlay-sidebar .Selection span {
+				display: none !important;
+			}
+			#overlay-sidebar .Input select {
+				-webkit-appearance: none;
+				-webkit-box-shadow: none;
+				-webkit-border-radius: 0;
+				-moz-appearance: none;
+				background: <?php echo $application_background_color; ?>;
+				background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+				background-repeat: no-repeat;
+				background-position: 98% center;
+				border: 1px solid <?php echo $stroke_color; ?>;
+				color: <?php echo $foreground_color; ?>;
+				font-size: <?php echo 14*$font_size_scale_num; ?>px;
+				margin: 0 0 0 0;
+				padding: 5px;
+				outline: none;
+				width: 100%;
+				box-sizing: border-box;
+			}
+			#overlay-sidebar .Input form {
+				display: block;
+				padding: 10px;
+				background: <?php echo $application_background_color; ?>;
+				border-top: 1px solid <?php echo $stroke_color; ?>;
+				margin-bottom: 10px;
+			}
+			#sidebar-comments form {
+				padding: 0px !important;
+				background: transparent !important;
+				border: none !important;
+			}
+				#overlay-sidebar .Input label {
+					display: inline-block;
+					padding: 3px;
+					color: <?php echo $foreground_color; ?>;
+					font-size: <?php echo 14*$font_size_scale_num; ?>px;
+				}
+				#overlay-sidebar .Text textarea {
+					box-sizing: border-box;
+					width: 100%;
+					color: <?php echo $foreground_color; ?>;
+					font-size: <?php echo 14*$font_size_scale_num; ?>px;
+					padding: 3px;
+					border: 1px solid <?php echo $stroke_color; ?>;
+					background: <?php echo $application_background_color; ?>;
+					height: 80px;
+					resize: none;
+				}
+			#overlay-sidebar .Button button {
+				box-sizing: border-box;
+				width: 100%;
+				background-color: <?php echo $foreground_color; ?> !important;
+				color: <?php echo $background_color; ?> !important;
+				opacity: 1;
+			}
+			.no-touch #overlay-sidebar .Button button:hover {
+				opacity: .8;
+			}
+			#overlay-sidebar .Numeric span {
+				margin: 0 0 0 0;
+				padding: 5px;
+				color: <?php echo $foreground_color; ?>;
+				font-size: <?php echo 14*$font_size_scale_num; ?>px;
+				margin-right: 75px;
+				margin-bottom: 10px;
+				border: 1px solid <?php echo $stroke_color; ?>;
+				background: <?php echo $application_background_color; ?>;
+			}
+			#overlay-sidebar .Numeric button {
+				float: right;
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				font-size: <?php echo 16*$font_size_scale_num; ?>px;
+				-moz-outline-style: none;
+				outline: none;
+				text-decoration: none;
+				-webkit-appearance:none;
+				color: <?php echo $foreground_color; ?>;
+				background: <?php echo $application_background_color; ?>;
+				border: 1px solid <?php echo $stroke_color; ?>;
+				margin-left: 5px;
+				opacity: .75;
+			}
+@media screen and (max-width: 800px){
+	#browse-controlbar-return ,
+	#browse-controlbar-add {
+		display: inline-block;
+	}
+	#overlay-sidebar .Inner {
+		border-right: none;
+	}
+	#overlay-sidebar .ControlBar {
+		border-right: none;
+	}
+}
+@media screen and (max-width: 320px){
+	#browse-controlbar-return {
+		display: none;
+	}
+	#browse-controlbar-return-icon {
+		display: block;
+	}
+}
+
+#overlay-container.NoSidebar #browse-controlbar-options ,
+#overlay-container.NoSidebar #browse-controlbar-done ,
+#overlay-container.NoSidebar #overlay-sidebar .ControlBar {
+	display: none;
+}
+
+
+
+/* ---- Pages ---- */
+
+.PageViews {
+	position: relative;
+	padding-top: 65px;
+}
+	.PageView {
+		display: none;
+	}
+@media screen and (max-width: 600px){
+	.PageViews {
+		padding-top: 0px;
+	}
+}
+
+
+
+/* ---- Cart Overview ---- */
+
+	#overview-screen {
+		display: none;
+		position: fixed;
+		z-index: 99999;
+		top: 0;
+		left: 0;
+		background-color: <?php echo $application_background_color; ?>;
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#overlay-cartview .Column1 {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		float: left;
+		width: 60%;
+		overflow: hidden;
+	}
+		#overlay-overview {
+			padding: 20px;
+			box-sizing: border-box;
+			border-left: 1px <?php echo $stroke_color; ?> solid;
+			background: <?php echo $application_background_alt; ?>;
+		}
+	#overlay-cartview .Column2 {
+		display: none;
+		position: relative;
+		margin: 0;
+		padding: 0;
+		float: right;
+		width: 40%;
+		overflow: hidden;
+	}
+		#overlay-cartview-controlbar {
+			display: none;
+			text-align: right;
+			margin: 0 20px;
+			margin-bottom: 20px;
+		}
+		#overview-controlbar-checkout {
+			background-color: <?php echo $foreground_color; ?> !important;
+			color: <?php echo $background_color; ?> !important;
+			cursor: pointer;
+			opacity: 1;
+		}
+		.no-touch #overview-controlbar-checkout:hover {
+			opacity: .8;
+		}
+		
+	#overlay-cart {
+		padding: 20px;
+	}
+	#overlay-cartview table {
+		width: 100%;
+		margin-bottom: 20px;
+		table-layout: fixed;
+	}
+	#overlay-cartview .Wide {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+	#overlay-cartview .Column1 {
+		max-width: none !important;
+	}
+	#overlay-cartview .EmptyNotice {
+		font-size: <?php echo 18*$font_size_scale_num; ?>px;
+		text-align: center;
+		color: <?php echo $highlight_color["css"]; ?>;
+		padding: 20px;
+		font-style: italic;
+	}
+		#overlay-cartview table button {
+			display: inline-block;
+			width: 30px;
+			height: 30px;
+			border: none;
+			text-indent: -5000px;
+			overflow: hidden;
+			padding: 5px;
+			background: transparent url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -440px 50%;
+			background-size: 500px 40px;
+		}
+		#overlay-cartview table .col2 {
+			width: 20%;
+		}
+		#overlay-cartview table .col3 {
+			text-align: center;
+			width: 40px;
+		}
+		#overlay-cartview table .col4 {
+			text-align: right;
+			width: 20%;
+		}
+		#overlay-cartview table .col5 {
+			text-align: center;
+			width: 40px !important;
+		}
+		#overlay-cartview tr {
+			padding: 0 0 0 0;
+			margin: 0 0 0 0;
+			cursor: pointer;
+		}
+		.no-touch #overlay-cartview .LineItem:hover {
+			color: <?php echo $highlight_color["css"]; ?> !important;
+		}
+		#overlay-cartview td {
+			height: 30px;
+			line-height: 30px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-size: <?php echo 12*$font_size_scale_num; ?>px;
+		}
+		#overlay-cartview .GroupHeading td {
+			font-size: <?php echo 16*$font_size_scale_num; ?>px;
+			font-weight: bold;
+			border-bottom: 1px <?php echo $stroke_color; ?> solid;
+			height: 40px;
+			line-height: 40px;
+			cursor: default;
+		}
+		#overlay-cartview .LineItem.Active {
+			color: <?php echo $highlight_color["css"]; ?> !important;
+		}
+@media screen and (max-width: 1000px){
+	#overlay-cartview .Column1 table .col2 ,
+	#overlay-cartview .Column1 table .col3 {
+		display: none;
+	}
+}
+@media screen and (max-width: 600px){
+	#overlay-cartview table .col5 ,
+	#overlay-cartview table .col4 {
+		width: auto;
+	}
+	#overlay-cartview-controlbar {
+		text-align: center;
+	}
+	#overlay-cartview table .col2 {
+		display: none;
+	}
+	#overlay-cartview table .col3 {
+		display: none;
+	}
+}
+
+			#overview-options .Input {
+				z-index: 2;
+				cursor: default;
+				position: relative;
+				margin-bottom: 20px;
+			}
+			#overview-options .Display {
+				height: 200px;
+				margin-bottom: 20px;
+			}
+			#overview-options .Display img {
+				display: block;
+				max-width: 100%;
+				max-height: 100%;
+				height: auto;
+			}
+			#overview-options h2 {
+				margin: 0 0 0 0;
+				padding: 0 0 0 0;
+			}
+			#overview-options .Input h3 {
+				margin: 0;
+				padding: 0;
+			}
+			#overview-options .Input span {
+				color: <?php echo $foreground_color; ?>;
+				font-size: <?php echo 12*$font_size_scale_num; ?>px;
+				display: block;
+				margin: 3px 0 0 5px;
+				padding: 0;
+			}
+			#overview-quantity span {
+				display: block;
+				margin: 0 0 0 0 !important;
+				margin-top: 5px !important;
+				padding: 5px !important;
+				color: <?php echo $foreground_color; ?>;
+				font-size: <?php echo 14*$font_size_scale_num; ?>px !important;
+				margin-right: 75px !important;
+				margin-bottom: 10px !important;
+				border: 1px solid <?php echo $stroke_color; ?>;
+				background: <?php echo $application_background_color; ?>;
+			}
+			#overview-quantity button {
+				float: right;
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				font-size: <?php echo 16*$font_size_scale_num; ?>px;
+				-moz-outline-style: none;
+				outline: none;
+				text-decoration: none;
+				-webkit-appearance:none;
+				color: <?php echo $foreground_color; ?>;
+				background: <?php echo $application_background_color; ?>;
+				border: 1px solid <?php echo $stroke_color; ?>;
+				margin-left: 5px;
+				margin-top: 5px !important;
+				opacity: .75;
+			}
+			#overview-controlbar-update {
+				width: auto;
+				display: inline-block;
+				background-color: <?php echo $foreground_color; ?> !important;
+				color: <?php echo $background_color; ?> !important;
+				opacity: 1;
+				cursor: pointer;
+			}
+			#overlay-packages-controlbar {
+				margin-bottom: 20px;
+			}
+			#overview-controlbar-cancel {
+				cursor: pointer;
+			}
+			.no-touch #overview-controlbar-update:hover {
+				opacity: .8;
+			}
+			.no-touch #overview-controlbar-update.Disabled:hover ,
+			#overview-controlbar-update.Disabled {
+				background-color: <?php echo $application_background_color; ?>;
+				border: 1px <?php echo $stroke_color; ?> solid;
+				color: <?php echo $foreground_color; ?>;
+				opacity: .25;
+				cursor: default;
+			}
+
+@media screen and (max-width: 600px){
+		#overlay-overview  {
+			border-left: none;
+			background: <?php echo $application_background_color; ?>;
+			top: 0;
+			left: 0;
+			position: fixed;
+			z-index: 9999;
+			overflow-x: hidden;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+			width: 100%;
+		}
+		#overlay-cartview .Column1 ,
+		#overlay-cartview .Column2 {
+			float: none;
+			width: 100%;
+		}
+}
+
+
+
+/* ---- Checkout ---- */
+
+#overlay-checkout .Column1 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: right;
+	width: 60%;
+}
+#overlay-checkout .Column2 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: left;
+	width: 40%;
+}
+	#checkout-screen {
+		display: none;
+		position: absolute;
+		z-index: 20;
+		top: 0;
+		left: 0;
+		background-color: <?php echo $application_background_color; ?>;
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#checkout-blocks {
+		padding: 20px;
+		background: <?php echo $application_background_alt; ?>;
+		border-right: 1px <?php echo $stroke_color; ?> solid;
+	}
+		#checkout-blocks .Input{
+			margin-bottom: 10px;
+		}
+		#checkout-blocks .Input h3 {
+			display: none;
+		}
+		#checkout-blocks h2 {
+			display: block;
+			color: <?php echo $foreground_color; ?>;
+			margin: 0 0 5px 0;
+			padding: 0 0 0 0;
+			cursor: default;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			font-weight: bold;
+		}
+		#checkout-blocks .Wrapper {
+			padding: 10px;
+			background: <?php echo $application_background_color; ?>;
+			border-top: 1px solid <?php echo $stroke_color; ?>;
+			margin-bottom: 15px !important;
+		}
+		#checkout-blocks .uiField {
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+		}
+		#checkout-blocks .Wrapper input {
+			display: inline-block;
+			color: <?php echo $foreground_color; ?>;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			clear: both;
+			padding: 3px;
+		}
+		#checkout-blocks .Wrapper label {
+			display: inline-block;
+			color: <?php echo $foreground_color; ?>;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			padding: 3px;
+		}
+		#checkout-blocks select {
+			-moz-appearance: none;
+			width: 100%;
+			box-sizing: border-box;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			padding: 7px;
+			background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+			background-repeat: no-repeat;
+			background-position: 98% center;
+		}
+		#checkout-blocks label.Disabled {
+			opacity: .5;
+		}
+		textarea.INTL {
+			resize: none;
+			height: 150px;
+		}
+		#checkout-comments textarea {
+			height: 80px;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			resize: none;
+			box-sizing: border-box;
+			width: 100%;
+		}
+		#checkout-discount input {
+			width: auto;
+			display: inline-block;
+		}
+		#checkout-discount button {
+			width: auto;
+			display: inline-block;
+			background-color: <?php echo $foreground_color; ?> !important;
+			color: <?php echo $background_color; ?> !important;
+			opacity: 1;
+			cursor: pointer;
+		}
+		.no-touch #checkout-discount button:hover {
+			opacity: .8;
+		}
+	#checkout-summary .Inner {
+		padding: 20px;
+	}
+		#summary-table {
+			background: <?php echo $form_background_color; ?>;
+			width: 100%;
+			max-width: 700px;
+			margin: 0 0 10px 0;
+		}
+			#summary-table tr td:first-child {
+			}
+			#summary-table .Label {
+				color: <?php echo $foreground_color; ?>;
+				font-weight: bold;
+			}
+			#summary-table .Value {
+				color: <?php echo $foreground_color; ?>;
+				text-align: right;
+			}
+			#summary-table td {
+				padding: 0px 10px 0px 10px;
+				font-size: <?php echo 12*$font_size_scale_num; ?>px;
+				color: <?php echo $foreground_color; ?>;
+				padding: 5px 10px 5px 20px;
+				font-weight: normal;
+			}
+			#cart-total td {
+				padding: 5px 10px 5px 10px;
+				font-size: <?php echo 18*$font_size_scale_num; ?>px;
+				color: <?php echo $foreground_color; ?>;
+				padding: 10px;
+				font-weight: bold;
+			}
+			#cart-final-total td {
+				padding: 5px 10px 5px 10px;
+				font-size: <?php echo 18*$font_size_scale_num; ?>px;
+				color: <?php echo $foreground_color; ?>;
+				padding: 10px;
+				font-weight: bold;
+			}
+			#checkout-controlbar-process {
+				background-color: <?php echo $foreground_color; ?> !important;
+				color: <?php echo $background_color; ?> !important;
+				opacity: 1;
+				cursor: pointer;
+			}
+			.no-touch #checkout-controlbar-process:hover {
+				opacity: .8;
+			}
+			.no-touch #checkout-controlbar-process.Disabled:hover ,
+			#checkout-controlbar-process.Disabled {
+				background-color: <?php echo $application_background_color; ?>;
+				border: 1px <?php echo $stroke_color; ?> solid;
+				color: <?php echo $foreground_color; ?>;
+				opacity: .25;
+				cursor: default;
+			}
+	#clickwrap {
+		background: <?php echo $form_background_color; ?>;
+		padding: 5px 5px;
+		margin: 0 0 10px 0;
+	}
+		#clickwrap label {
+			color: <?php echo $foreground_color; ?>;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+		}
+		#clickwrap a {
+			color: <?php echo $foreground_color; ?>;
+			font-size: <?php echo 14*$font_size_scale_num; ?>px;
+			cursor: pointer;
+			font-weight: bold;
+			text-decoration: underline;
+		}
+		.no-touch #clickwrap a:hover {
+			color: <?php echo $highlight_color["css"]; ?>;
+		}
+@media screen and (max-width: 1000px){
+		#overlay-checkout .Column1 ,
+		#overlay-checkout .Column2 {
+			width: 50%;
+		}
+}
+@media screen and (max-width: 600px){
+		#checkout-blocks {
+			border-right: none;
+			padding-bottom: 0px;
+			background: <?php echo $application_background_color; ?>;
+		}
+		#checkout-summary .Inner {
+			padding: 20px;
+		}
+		#overlay-checkout .Column1 ,
+		#overlay-checkout .Column2 {
+			float: none;
+			width: 100%;
+		}
+}
+
+
+
+/* ---- Checkout ---- */
+
+	#clickwrap-context h2 {
+		margin-top: 0;
+		padding-top: 0;
+	}
+	#clickwrap-context .Inner {
+		padding: 25px;
+	}
+	#clickwrap-context .Description {
+		-webkit-columns: 2 400px;
+		-moz-columns: 2 400px;
+		columns: 2 400px;
+	}
+	#clickwrap-controlbar-back {
+		background-color: <?php echo $foreground_color; ?> !important;
+		color: <?php echo $background_color; ?> !important;
+		opacity: 1;
+		cursor: pointer;
+		margin: 25px;
+		margin-top: 0px;
+	}
+	.no-touch #clickwrap-controlbar-back:hover {
+		opacity: .8;
+	}
+
+
+
+
+/* ---- Packages ---- */
+
+	#overlay-packages  .Column1 {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		float: right;
+		width: 40%;
+		display: none;
+	}
+		#overlay-packages  .Column1 .Inner {
+			padding: 20px;
+			box-sizing: border-box;
+			border-left: 1px <?php echo $stroke_color; ?> solid;
+			background: <?php echo $application_background_alt; ?>;
+		}
+	#overlay-packages  .Column2 {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		float: left;
+		width: 60%;
+	}
+		#overlay-packages  .Wide .Inner ,
+		#overlay-packages  .Column2 .Inner {
+			padding: 20px;
+			box-sizing: border-box;
+		}
+	
+	#overlay-packages .EmptyNotice {
+		font-size: <?php echo 18*$font_size_scale_num; ?>px;
+		text-align: center;
+		color: <?php echo $highlight_color["css"]; ?>;
+		padding: 20px;
+		font-style: italic;
+	}
+	
+	#overlay-packages table {
+		width: 100%;
+		margin-bottom: 20px;
+		table-layout: fixed;
+	}
+	#overlay-packages .Wide {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+	#overlay-packages .Column1 {
+		max-width: none !important;
+	}
+		#overlay-packages table button {
+			display: inline-block;
+			width: 30px;
+			height: 30px;
+			border: none;
+			text-indent: -5000px;
+			overflow: hidden;
+			padding: 5px;
+			background: transparent url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1); ?>') no-repeat -120px 50%;
+			background-size: 500px 40px;
+		}
+		#overlay-packages table .col2 {
+			width: 60px;
+			text-align: center;
+		}
+		#overlay-packages table .col3 {
+			width: 40%;
+			text-align: center;
+		}
+		#overlay-packages table .col4 {
+			text-align: center;
+			width: 40px !important;
+		}
+		#overlay-packages tr {
+			padding: 0 0 0 0;
+			margin: 0 0 0 0;
+			cursor: pointer;
+		}
+		.no-touch #overlay-packages .LineItem:hover {
+			color: <?php echo $highlight_color["css"]; ?> !important;
+		}
+		#overlay-packages td {
+			height: 30px;
+			line-height: 30px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-size: <?php echo 12*$font_size_scale_num; ?>px;
+		}
+		#overlay-packages .GroupHeading td {
+			font-size: <?php echo 16*$font_size_scale_num; ?>px;
+			font-weight: bold;
+			border-bottom: 1px <?php echo $stroke_color; ?> solid;
+			height: 40px;
+			line-height: 40px;
+			cursor: default;
+		}
+		#overlay-packages .LineItem.Active {
+			color: <?php echo $highlight_color["css"]; ?> !important;
+		}
+		#overlay-package-controlbar {
+			text-align: right;
+			margin-bottom: 20px;
+		}
+		#overlay-package-cancel {
+			cursor: pointer;
+		}
+@media screen and (max-width: 1000px){
+	#overlay-packages .Column2 table .col2 {
+		display: none;
+	}
+}
+@media screen and (max-width: 600px){
+	#overlay-packages table .col3 {
+		width: auto;
+	}
+	#overlay-packages table .col2 {
+		display: none;
+	}
+}
+	
+
+	#overlay-package .Display {
+		height: 200px;
+		margin-bottom: 20px;
+	}
+	#overlay-package .Display img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+	}
+	#package-context h2 {
+		margin-top: 0;
+	}
+	#packages-controlbar-add {
+		background-color: <?php echo $foreground_color; ?> !important;
+		color: <?php echo $background_color; ?> !important;
+		opacity: 1;
+		cursor: pointer;
+	}
+	.no-touch #packages-controlbar-add:hover {
+		opacity: .8;
+	}
+	#packages-controlbar-back {
+		cursor: pointer;
+	}
+
+@media screen and (max-width: 600px){
+		#overlay-packages  .Column1 .Inner {
+			border-left: none;
+			background: <?php echo $application_background_color; ?>;
+			top: 0;
+			left: 0;
+			position: fixed;
+			z-index: 9999;
+			overflow-x: hidden;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+			width: 100%;
+		}
+		#overlay-cartview .Column1 ,
+		#overlay-cartview .Column2 {
+			float: none;
+			width: 100%;
+		}
+}
+	
+	
+
+/* ---- Splash Wall View ---- */
+
+.WelcomeBox {
+	margin: 0 auto;
+	max-width: 1020px;
+	text-align: center;
+	padding-bottom: 15px;
+}
+	.WelcomeBox img {
+		margin: 0 auto;
+		display: block;
+		max-width: 100%;
+		height: inherit;
+		margin-top: <?php echo $splash_logo_margin_num; ?>px;
+		margin-bottom: <?php echo $splash_logo_margin_num; ?>px;
+	}
+	.WelcomeBox .Inner {
+		margin: 0 30px;
+	}
+		.WelcomeBox .Description {
+			margin: 0 auto;
+			max-width: 650px;
+		}
+.Wall {
+	margin: 0 auto;
+	max-width: 1020px;
+}
+	.WallItem {
+		width: 340px;
+		float: left;
+	}
+		.WallItem .Inner {
+			margin: 30px 15px;
+		}
+		.WallItem .GraphicWrapper {
+			float: left;
+			width: 310px;
+			height: 174px;
+			margin-bottom: 30px;
+			cursor: pointer;
+			background: <?php echo $application_background_alt; ?>;
+		}
+			.WallItem .Graphic {
+				background: transparent;
+			}
+				.WallItem .Graphic img {
+					width: 100%;
+					height: inherit;
+					display: block;
+					background: transparent;
+				}
+			.WallItem .InfoBlock {
+				text-align: center;
+			}
+			.WallItem .InfoBlock h2 {
+				display: inline-block;
+				color: <?php echo $foreground_color; ?>;
+				font-weight: bold;
+				font-size: <?php echo 16*$font_size_scale_num; ?>px;
+				margin: 0 0 10px 0;
+				line-height: 20px;
+				height: 20px;
+				overflow: hidden;
+			}
+			.WallItem .InfoBlock div {
+				color: <?php echo $foreground_color; ?>;
+				padding-left: 5px;
+				font-size: <?php echo 12*$font_size_scale_num; ?>px;
+				margin: 0 0 3px 0;
+			}
+			.WallItem .InfoBlock .Expired {
+				color: <?php echo $highlight_color["css"]; ?>;
+			}
+			.WallItem .InfoBlock .uiPushButton {
+				margin-top: 7px;
+				cursor: pointer;
+			}
+@media screen and (max-width: 1019px){
+	.Wall {
+		max-width: 680px;
+	}
+}
+@media screen and (max-width: 679px){
+	.Wall {
+		width: 100%;
+	}
+	.WallItem {
+		width: 100%;
+	}
+		.WallItem .GraphicWrapper {
+			width: 100%;
+			height: inherit;
+		}
+}
+
+
+
+/* ---- ContactPage Default Setup ---- */
+
+.Contact .Column1 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: right;
+	width: 60%;
+}
+	.Contact .Column1 .Inner {
+		padding: 20px;
+		width: 100%;
+		box-sizing: border-box;
+	}
+.Contact .Column2 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: left;
+	width: 40%;
+}
+	.Contact .Column2 .Inner {
+		padding: 20px;
+		box-sizing: border-box;
+		background: <?php echo $application_background_alt; ?>;
+		border-right: 1px <?php echo $stroke_color; ?> solid;
+	}
+
+.Contact .Context {
+	max-width: 800px;
+}
+	.Contact .Context h1 {
+		margin-top: 0;
+	}
+	.Contact .Context img {
+		display: block;
+		margin-bottom: 20px;
+		width: 100%;
+		max-width: auto;
+		height: inherit;
+	}
+.Contact #contact-form {
+	position: relative;
+	margin: 0;
+}
+.Contact .Hidden {
+	display: none;
+}
+.Contact label {
+	font-weight: bold;
+	margin: 0 0 0 3px;
+	font-size: <?php echo 14*$font_size_scale_num; ?>px;
+	color: <?php echo $foreground_color; ?>;
+}
+.Contact label span {
+	color: <?php echo $highlight_color["css"]; ?>;
+}
+.Contact form div {
+	margin: 5px 0px 15px 0;
+}
+.Contact form .uiField {
+	font-size: <?php echo 14*$font_size_scale_num; ?>px;
+}
+.Contact .Radio,
+.Contact .Checkbox,
+.Contact .Dropdown {
+	background: <?php echo $application_background_color; ?>;
+	border-top: 1px <?php echo $stroke_color; ?> solid;
+	position: relative;
+	font-size: <?php echo 12*$font_size_scale_num; ?>px;
+	margin: 5px 0px 15px 0;
+	padding: 5px;
+}
+.Contact .Dropdown {
+	border: none;
+	padding: 0;
+}
+.Contact .Dropdown select {
+	-moz-appearance: none;
+	-webkit-appearance:none;
+	border-radius: 0;
+	color: <?php echo $foreground_color; ?>;
+	border: 1px <?php echo $stroke_color; ?> solid;
+	width: 100%;
+	background: transparent;
+	outline: none;
+	padding: 5px;
+	font-size: <?php echo 16*$font_size_scale_num; ?>px;
+	margin: 0;
+	background-image: url('<?php echo SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1); ?>');
+	background-repeat: no-repeat;
+	background-position: 98% center;
+}
+.Contact .Radio input,
+.Contact .Checkbox input {
+	color: <?php echo $foreground_color; ?>;
+	border: auto;
+	width: auto;
+	margin: 5px;
+	background: auto;
+}
+.Contact .Area textarea {
+	height: 80px;
+}
+.Contact .ButtonGroup input {
+	width: auto;
+	display: inline-block !important;
+	background-color: <?php echo $foreground_color; ?> !important;
+	color: <?php echo $background_color; ?> !important;
+	opacity: 1;
+	cursor: pointer;
+}
+.Contact .ButtonGroup input:hover {
+	opacity: .8;
+}
+.Contact .Focused {
+	border-color: <?php echo $stroke_color; ?>;
+}
+.Contact .Default {
+	border-color: <?php echo $stroke_color; ?>;
+}
+.Contact .Invalid {
+	border-color: <?php echo $highlight_color["css"]; ?>;
+}
+.Contact select:focus,
+.Contact input:focus {
+	outline: none !important;
+}
+.Contact .Area textarea:required ,
+.Contact .Input input:required {
+	color: <?php echo $foreground_color; ?>;
+	background: <?php echo $form_background_color; ?>;
+}
+.Contact .Area textarea:invalid,
+.Contact .Dropdown select:invalid,
+.Contact .Input input:invalid {
+	color: <?php echo $highlight_color["css"]; ?>;
+}
+
+
+@media screen and (max-width: 1000px){
+		.Contact.Column1 ,
+		.Contact.Column2 {
+			width: 50%;
+		}
+}
+@media screen and (max-width: 600px){
+		.Contact .Column2 .Inner  {
+			border-right: none;
+			background: <?php echo $application_background_color; ?>;
+		}
+		.Contact .Column1 ,
+		.Contact .Column2 {
+			float: none;
+			width: 100%;
+		}
+}

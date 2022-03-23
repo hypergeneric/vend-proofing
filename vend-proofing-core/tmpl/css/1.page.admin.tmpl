@@ -1,0 +1,31 @@
+<?php
+
+	$CLEAN_URLS = false;
+
+	/* ---- Necessary Files ---- */
+	$framework = array(
+	
+		"css/extend/datatables.min.css", 
+		"css/extend/simplemde.min.css", 
+		"css/extend/spectrum.min.css", 
+		"css/extend/fileicon.css", 
+		"js/extend/jquery-toggles/css/toggles.css", 
+		"js/extend/jquery-toggles/css/themes/toggles-modern.css", 
+		"css/reset.css", 
+		"css/style.css", 
+		
+	);
+	
+	/* ---- Add Via readfile() ---- */
+	foreach($framework as $filename) {
+		readfile( SA_DIR_COREPATH . "/admin/$filename" );
+		print "\n\n";
+	}
+
+?>
+
+
+#container {
+	background: url("<?php echo SA_DIR_COREPATH; ?>/admin/graphics/ajax-loader.gif") no-repeat center center;
+	height: 100%;
+}

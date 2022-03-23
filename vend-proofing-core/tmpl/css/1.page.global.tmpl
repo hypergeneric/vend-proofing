@@ -1,0 +1,21 @@
+<?php
+
+	/* ---- Necessary Files ---- */
+	$core = array("reset.css");
+	$tmpl = array("2.global.vars.tmpl", "2.global.pages.tmpl");
+
+	/* ---- Add Via readfile() ---- */
+	foreach($core as $filename) {
+		readfile( SA_DIR_COREPATH . "/css/$filename" );
+		print "\n\n";
+	}
+
+	/* ---- Add Via include() ---- */
+	foreach($tmpl as $filename) {
+		include $filename;
+		print "\n\n";
+	}
+
+?>
+
+

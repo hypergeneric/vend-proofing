@@ -1,0 +1,64 @@
+<?php
+
+	$invoice_dialog_orderid = 			$this->getTypedValue("language", "invoice", "invoice_dialog_orderid");
+	$invoice_dialog_email_address = 	$this->getTypedValue("language", "invoice", "invoice_dialog_email_address");
+	$invoice_dialog_submit = 			$this->getTypedValue("language", "invoice", "invoice_dialog_submit");
+
+?>
+			<div class="dialog">
+				<div class="dialog-inner">
+					<form action="" method="post">
+<?php if ($orderobj==null) { ?>
+						<fieldset class="Inputs">
+							<label><?php echo $invoice_dialog_orderid["html"]; ?></label>
+							<input type="text" name="oid" value="<?php echo $orderid; ?>" />
+						</fieldset>
+<?php } ?>
+						<fieldset class="Inputs">
+							<label><?php echo $invoice_dialog_email_address["html"]; ?></label>
+							<input type="text" name="email_address" value="<?php echo $email_address; ?>" />
+						</fieldset>
+						<fieldset class="ButtonGroup">
+							<input type="submit" value="<?php echo $invoice_dialog_submit["html"]; ?>" />
+						</fieldset>
+<?php 
+	foreach ($form_errors as $form_error) { 
+		$invoice_dialog_error = 		$this->getTypedValue("language", "invoice", $form_error);
+?>
+						<div class="FormError"><?php echo $invoice_dialog_error["html"]; ?></div>
+<?php } ?>
+					</form>
+				</div>
+			</div>
+			<script type="text/javascript">
+				// <![CDATA[
+					$('form .Inputs input').focus(function () {
+						this.parentNode.className = "Inputs Focused";
+					});
+					$('form .Inputs input').blur(function () {
+						var isValid = this.value!="" && this.value!=undefined && this.value!=null;
+						if (isValid) this.parentNode.className = "Inputs Valid";
+						else this.parentNode.className = "Inputs Invalid";
+					});
+					$('form .Inputs input').blur();
+					$(window).resize(function() {
+						$('.dialog').css("marginTop", "0px");
+						$('.dialog').css("marginBottom", "0px");
+						$('.dialog').css("position", "relative");
+						var viewportheight = window.innerHeight ? window.innerHeight : $(window).height();
+						var formheight = $('.dialog').outerHeight();
+						if (viewportheight>formheight) {
+							var ypos = Math.max(0, Math.round((viewportheight-formheight)/2));
+							$('.dialog').css("top", ypos);
+						} else {
+							$('.dialog').css("top", "0px");
+							$('.dialog').css("marginTop", "25px");
+							$('.dialog').css("marginBottom", "25px");
+						}
+					});
+					$(window).resize();
+					$(window).load(function() {
+						$(window).resize();
+					});
+				// ]]>
+			</script>

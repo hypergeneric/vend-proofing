@@ -1,0 +1,8 @@
+<IfModule mod_headers.c>
+<FilesMatch ".(swf|xml)$">
+	Header unset Cache-Control
+	Header unset Expires
+	Header unset Last-Modified
+	Header unset Pragma
+</FilesMatch>
+</IfModule>

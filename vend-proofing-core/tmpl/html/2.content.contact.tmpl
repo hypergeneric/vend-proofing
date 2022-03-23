@@ -1,0 +1,151 @@
+<?php
+
+	/* --- Mailing List Stuff ---- */
+	$mailing_list = 				$this->getData("contact")!=false ? $this->getTypedValue("contact", "settings", "mailing_list")!="none" : false;
+
+	/* --- Language Strings --- */
+	$form_idle_message = 			$this->getTypedValue("language", "contact", "form_idle_message");
+	$contact_form_submit = 			$this->getTypedValue("language", "contact", "contact_form_submit");
+	$contact_form_ml_optin = 		$this->getTypedValue("language", "contact", "contact_form_ml_optin");
+	$contact_form_ml_checkbox = 	$this->getTypedValue("language", "contact", "contact_form_ml_checkbox");
+
+	/* --- Form Fields --- */
+	$formobjects = 					Flatfile::getSetTable("formobjects");
+	if (count($formobjects)==0) {
+		$formobjects = array(
+			"0" => array ("", "YOUR_NAME", $LANG->lookup('Your Full Name'), "input", "1", "", "input"),
+			"1" => array ("", "YOUR_EMAIL", $LANG->lookup('Your Email Address'), "input", "1", "", "email"),
+			"2" => array ("", "YOUR_MESSAGE", $LANG->lookup('Your Message'), "area", "1", "", "area")
+		);
+	}
+	if ($mailing_list) {
+		$formobjects["ml"] = 		array ("", "ADD_TO_MAILING_LIST", $contact_form_ml_optin["value"], "checkbox", "0", "", "1,".$contact_form_ml_checkbox["value"]);
+	}
+
+	/* --- Page Variables --- */
+	$page_title = 					$this->getTypedValue("contact", "settings", "title");
+	$description = 					$this->getTypedValue("contact", "settings", "description");
+	$image_asset = 					$this->getTypedValue("contact", "settings", "image_asset");
+	
+	$image_asset_tag = 		"\n";
+	if ($image_asset["source"]!="") {
+		$graphic = new Graphic();
+		$graphic->thumbnail(false);
+		$graphic->setBasepath("asset");
+		$graphic->setFilename($image_asset["child"]);
+		$graphic->resample(true, $resampling_quality_num, $resample_sharpen_bool, $resample_use_imagick_bool);
+		$graphic->setSize(min(800, $image_asset["width"]));
+		$dimensions = $graphic->dimensions();
+		$image_asset_tag .= "\t\t\t\t" . '<img src="' . Func::getBaseUrl() . "/" . $graphic->source() . '" width="' . $dimensions[0] . '" height="' . $dimensions[1] . '" alt="" />' . "\n";
+	}
+
+	/* --- in case it's stand-alone --- */
+	if ($final_class_name=="") {
+		$final_class_name = "Contact";
+	}
+
+?>
+				<div class="Column1">
+					<div class="Inner">
+						<div class="Context">
+							<?php echo $image_asset_tag; ?> 
+							<?php if ($page_title["value"]!="") { ?><h1><?php echo $page_title["html"]; ?></h1><?php } ?>
+							<div class="Description Markdown"><?php echo $description["markdown"]; ?>
+							</div><!-- End .Description -->
+						</div>
+					</div>
+				</div>
+				<div class="Column2 ContactForm">
+					<div class="Inner">
+						<form id="contact-form" action="<?php echo SA_NAMESPACE; ?>-gateway.php" method="post">
+							<fieldset class="Inputs">
+<?php
+	foreach ($formobjects as $row) {
+		$slug = 		strtoupper($row[1]."_".$row[0]);
+		$slug = 		trim($slug, "_");
+		$title = 		$row[2];
+		$title = 		htmlspecialchars($title);
+		$type = 		$row[3];
+		$required = 	$row[4];
+		$required = 	$required=="1" ? " required" : "";
+		$placeholder = 	@$row[5];
+		$placeholder = 	htmlspecialchars($placeholder);
+		$options = 		@$row[6];
+		$value = 		"";
+		if (strlen($title)>0) {
+?>
+								<label for="<?php echo $slug; ?>"><?php echo $title; ?><span><?php echo $required ? "*" : ""; ?></span></label>
+<?php		} ?>
+								<div class="<?php echo ucwords($type.$required); ?>" id="<?php echo $slug; ?>">
+<?php
+		switch ($type) {
+			case "date" :
+			case "input" :
+			case "area" :
+				$tagname = "input";
+				if ($type=="area") {
+					$type = "text";
+					$tagname = "textarea";
+				} else if ($type=="date") {
+					$value = "";
+					if ($placeholder>0&&strlen($placeholder)>0&&$placeholder!=null) {
+						$value = date("Y-m-d", $placeholder/1000);
+					}
+					$placeholder = "yyyy-mm-dd";
+					$type = "date";
+				} else if ($options=="number") {
+					$value = "0";
+					$type = "number";
+				} else if ($type!="date") {
+					$type = $options;
+				}
+?>
+									<<?php echo $tagname; ?> class="uiField" name="<?php echo $slug; ?>" value="<?php echo $value; ?>" type="<?php echo $type; ?>" placeholder="<?php echo $placeholder; ?>"<?php echo $required; ?>></<?php echo $tagname; ?>><br />
+<?php
+				break;
+			case "dropdown" :
+				$lines = explode("<[[BR]]>", $options);
+?>
+									<select name="<?php echo $slug; ?>"<?php echo $required; ?>>
+										<option></option>
+<?php
+				for ($i=0; $i<count($lines); ++$i) {
+					$line = explode(",", $lines[$i]);
+					$selected = array_shift($line);
+					$selected = $selected=="1" ? " selected" : "";
+					$value = htmlspecialchars(implode(",", $line));
+?>
+										<option<?php echo $selected; ?>><?php echo $value; ?></option>
+<?php
+				}
+?>
+									</select>
+<?php
+				break;
+			case "radio" :
+			case "checkbox" :
+				$lines = explode("<[[BR]]>", $options);
+				for ($i=0; $i<count($lines); ++$i) {
+					$line = explode(",", $lines[$i]);
+					$checked = array_shift($line);
+					$checked = $checked=="1" ? ' checked="checked"' : "";
+					$value = htmlspecialchars(implode(",", $line));
+?>
+										<input name="<?php echo $slug; ?>" type="<?php echo $type; ?>" value="<?php echo $value; ?>"<?php echo $checked; ?>><?php echo $value; ?></input><br />
+<?php
+				}
+				break;
+		}
+?>
+								</div>
+<?php
+	}
+?>
+							</fieldset>
+							<fieldset class="ButtonGroup">
+								<input class="uiPushButton" type="submit" name="submit" value="<?php echo $contact_form_submit["html"]; ?>" />
+							</fieldset>
+						</form>
+					</div>
+				</div>
+				<div class="clear"></div>

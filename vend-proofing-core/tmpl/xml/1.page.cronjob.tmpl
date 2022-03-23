@@ -1,0 +1,139 @@
+<?php
+
+	/* print doctype
+		*/
+	print '<?xml version="1.0"?>' . "\n";
+
+	function time_to_decimal($time) {
+		if (strlen($time)==0) return 0;
+		$timeArr = explode(':', $time);
+		$decTime = $timeArr[0] . "." . (($timeArr[1]/60)*100);
+		return $decTime;
+	}
+
+	$contact = Flatfile::getXmlArray("contact", null, true);
+	$language = Flatfile::getXmlArray("language");
+	$cron = Flatfile::getXmlArray("cron");
+	
+	$cron_enabled_bool = $cron->getNodeVal("data.settings.cron_enabled_bool")=="true";
+	$expiring_notify_bool = $cron->getNodeVal("data.settings.expiring_notify_bool")=="true";
+	$expiring_days_before_num = $cron->getNodeVal("data.settings.expiring_days_before_num");
+	$dropbox_purge_old_bool = $cron->getNodeVal("data.settings.dropbox_purge_old_bool")=="true";
+	$dropbox_days_after_num = $cron->getNodeVal("data.settings.dropbox_days_after_num");
+	
+	if ($cron_enabled_bool==true) {
+		
+?>
+<data enabled="true">
+<?php
+	
+		if ( $contact!=false && $expiring_notify_bool==true ) {
+?>
+	<notify>
+<?php
+			// origin mail
+			$date_pattern = $language->getNodeVal("data.localization.date_pattern");
+			// the pre-markdown array
+			$pre = array();
+			$pre["MESSAGE"] = "";
+			// the post-markdown array
+			$post = array();
+			$post["OWNER_NAME"] = $contact->getNodeVal("data.details.your_email");
+			$post["OWNER_EMAIL"] = $contact->getAttrVal("data.details.your_email.href");
+			$post["SENDER_NAME_LABEL"] = $language->getNodeVal("data.contact.mail_form_name");
+			$post["SENDER_EMAIL_LABEL"] = $language->getNodeVal("data.contact.mail_form_email_address");
+			$post["MESSAGE_LABEL"] = $language->getNodeVal("data.contact.mail_form_message");
+			// some data
+			$emails_sent = 0;
+			$emails_failed = 0;
+			foreach ($this->getData("page") as $page_id => $page_info) {
+				$mail_sent = false;
+				$recipients = "";
+				$expiry = "";
+				$page_data = Flatfile::getXmlArray(strtolower($page_info[2]), $page_id, true);
+				if ($page_data!=false) {
+					$password = "";
+					$sessions = Flatfile::getSetTable("session", $page_id);
+						foreach ($sessions as $obj) {
+							$recipients .= "," . $obj[1];
+						}
+					$password = $page_data->getNodeVal("data.settings.password");
+					if ($password!=null) {
+						$password = base64_decode($password);
+					}
+					$recipients .= "," . $page_data->getNodeVal("data.settings.set_contact_list");
+					$expires_on_date = $page_data->getNodeVal("data.settings.expires_on_date");
+					$expires_on_date_timezone = $page_data->getAttrVal("data.settings.expires_on_date.timezone");
+					$expires_on_date_offset = $page_data->getAttrVal("data.settings.expires_on_date.offset");
+					if ( $expires_on_date>0 && strlen($expires_on_date)>0 && $expires_on_date!=null ) {
+						if (strlen($expires_on_date_timezone)>0) { // old sets not re-set will default to the original time zone
+							if (function_exists("date_default_timezone_set")==false) @putenv("TZ=$expires_on_date_timezone");
+							else @date_default_timezone_set($expires_on_date_timezone);
+						}
+						$expires_on_date_actual = $expires_on_date/1000;
+						if (strlen($expires_on_date_offset)>0) { // old sets not re-set will default to the original time zone
+							$expires_on_date_actual = $expires_on_date_actual - (time_to_decimal($expires_on_date_offset)*60*60) - (date("I", $expires_on_date/1000)==1?3600:0);
+						}
+						$expiry = date($date_pattern, $expires_on_date_actual);
+						$reminder_interval_inside = ($expiring_days_before_num-1)*86400; // 24 hour window to send
+						$reminder_interval_outside = ($expiring_days_before_num)*86400; // time before now
+						$time_left = $expires_on_date_actual - round(microtime(true)); // future - present
+						if ( $time_left>$reminder_interval_inside && $time_left<$reminder_interval_outside ) { // we our time left to be less than the notification boundry, but within the 24 hour window after it
+							$mail_sent = true;
+							// the pre-markdown array
+							$pre["SET_URL"] = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/" . $this->flag_label_page . "/" . $page_id . "/" . $this->cleanTitleFragment($page_info[1]) . "/";
+							// the post-markdown array
+							$post["SET_ID"] = $page_id;
+							$post["PASSWORD"] = $password;
+							$post["EXPIRATION"] = $expiry;
+							// ok, send it out
+							$email = new Email();
+							$email->setSender($post["OWNER_EMAIL"], $post["OWNER_NAME"]);
+							$email->addRecipients($recipients);
+							$email->setSubjectTemplate("data.contact.output_reminder_subject");
+							$email->setBodyTemplate("data.contact.output_reminder_message_body");
+							$email->addPreTags($pre);
+							$email->addPostTags($post);
+							$email->send();
+						} 
+					}
+				}
+?>
+		<set id="<?php echo $page_id; ?>" expiry="<?php echo $expiry; ?>" recipients="<?php echo count($recipients); ?>" sent="<?php echo $mail_sent?"1":"0"; ?>" />
+<?php
+			}
+?>
+	</notify>
+<?php
+		}
+	
+		if ( $dropbox_purge_old_bool ) {
+?>
+	<purge>
+<?php
+			$dropboxer = new Dropboxer();
+			list($success, $data) = $dropboxer->connect();
+			if ($success) {
+				list($success, $data) = $dropboxer->purgeOldOrders( $dropbox_days_after_num*86400 );
+				if ($success) {
+					$date_pattern = $language->getNodeVal("data.localization.date_pattern");
+					foreach ($data as $obj) {
+						$created = date($date_pattern, $obj["created"]);
+?>
+		<order id="<?php echo $obj["id"]; ?>" created="<?php echo $created; ?>" deleted="<?php echo $obj["deleted"]==true?"1":"0"; ?>" />
+<?php
+					}
+				}
+			}
+?>
+	</purge>
+<?php
+		}
+	
+	} else {
+?>
+<data enabled="false">
+<?php
+	}
+?>
+</data>

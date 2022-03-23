@@ -1,0 +1,138 @@
+<?php
+
+	$data_setup = 					$this->getData("setup");
+
+	/* ---- Resampler Settings --- */
+	$resampling_quality_num = 		$data_setup->getNodeVal("data.settings.resampling_quality_num");
+	$resample_use_imagick_bool = 	$data_setup->getNodeVal("data.settings.resample_use_imagick_bool")=="true";
+	$resample_sharpen_bool =		$data_setup->getNodeVal("data.settings.resample_sharpen_bool")=="true";
+	$watermark_bool = 				$data_setup->getNodeVal("data.watermarking.watermark_bool")=="true";
+	$watermark_asset = 				$data_setup->getNodeVal("data.watermarking.watermark_asset");
+		$watermark_asset = 				basename($watermark_asset);
+	$watermark_x_num = 				$data_setup->getNodeVal("data.watermarking.watermark_x_num");
+	$watermark_y_num = 				$data_setup->getNodeVal("data.watermarking.watermark_y_num");
+	$watermark_alpha_num = 			$data_setup->getNodeVal("data.watermarking.watermark_alpha_num");
+	$crosshairs_bool = 				$data_setup->getNodeVal("data.watermarking.crosshairs_bool")=="true";
+	$crosshairs_color = 			$data_setup->getNodeVal("data.watermarking.crosshairs_color");
+		$crosshairs_color = 			str_replace("0x", "", strtolower($crosshairs_color));
+	$crosshairs_alpha_num = 		$data_setup->getNodeVal("data.watermarking.crosshairs_alpha_num");
+
+?>
+
+if (typeof classes == "undefined") classes = new Object();
+if (typeof classes.content == "undefined") classes.content = new Object();
+if (typeof classes.helpers == "undefined") classes.helpers = new Object();
+if (typeof classes.elements == "undefined") classes.elements = new Object();
+if (typeof classes.overlay == "undefined") classes.overlay = new Object();
+
+var NAMESPACE = 			"<?php echo SA_NAMESPACE; ?>";
+var APP_ROOT = 				"./";
+var APP_ROOT_ABSOLUTE = 	"<?php echo Func::getBaseUrl(); ?>";
+var URI_PAGE_PREFIX = 		"<?php echo $LANG->lookup('uri_page_identifier'); ?>";
+var URI_SPECIAL_PREFIX = 	"<?php echo $LANG->lookup('uri_special_identifier'); ?>";
+var URI_SPLASH_LABEL = 		"<?php echo $LANG->lookup('uri_splash_identifier'); ?>";
+var URI_CONTACT_LABEL = 	"<?php echo $LANG->lookup('uri_contact_identifier'); ?>";
+
+var VEND_GRAPHIC_QUALITY = <?php echo $resampling_quality_num; ?>;
+var VEND_GRAPHIC_SHARPEN = <?php echo $resample_sharpen_bool ? "true" : "false"; ?>;
+var VEND_GRAPHIC_IMAGIC = <?php echo $resample_use_imagick_bool ? "true" : "false"; ?>;
+var VEND_GRAPHIC_WATERMARK = <?php echo $watermark_bool ? "true" : "false"; ?>;
+var VEND_GRAPHIC_WATERMARK_ASSET = "<?php echo $watermark_asset; ?>";
+var VEND_GRAPHIC_WATERMARK_X = <?php echo $watermark_x_num; ?>;
+var VEND_GRAPHIC_WATERMARK_Y = <?php echo $watermark_y_num; ?>;
+var VEND_GRAPHIC_WATERMARK_ALPHA = <?php echo $watermark_alpha_num; ?>;
+var VEND_GRAPHIC_CROSSHAIRS = <?php echo $crosshairs_bool ? "true" : "false"; ?>;
+var VEND_GRAPHIC_CROSSHAIRS_COLOR = "<?php echo $crosshairs_color; ?>";
+var VEND_GRAPHIC_CROSSHAIRS_ALPHA = <?php echo $crosshairs_alpha_num; ?>;
+
+function trace (str) {
+	if (window.console != undefined) {
+		console.log(str);
+	}
+}
+
+<?php
+
+	/* ---- Necessary Files ---- */
+	$tmpl = array("2.global.l10n.tmpl");
+	$load = array();
+	$core = array(
+		"modernizr.js",
+		"jquery.js",
+		"extend/jplayer.playlist.min.js",
+		"extend/jquery.base64.min.js",
+		"extend/jquery.browser.min.js",
+		"extend/jquery.ba-hashchange.min.js",
+		"extend/jquery.event.drag-2.2.js",
+		"extend/jquery.jplayer.min.js",
+		"extend/jquery.mousewheel.js",
+		"extend/jquery.touchwipe.min.js",
+		"extend/md5.min.js",
+		"extend/mousewheelStopPropagation.js",
+		"extend/spin.min.js"
+	);
+	$vend = array(
+		"vend/helpers/Cookie.js",
+		"vend/helpers/EventDispatcher.js",
+		"vend/helpers/Func.js",
+		"vend/helpers/ResampledImageQueue.js",
+		"vend/Dialog.js",
+		"vend/Overlay.js",
+		"vend/Session.js",
+		"vend/Shell.js",
+		"vend/StageProxy.js",
+		"vend/elements/ContactForm.js",
+		"vend/elements/Controlbar.js",
+		"vend/elements/FormDialog.js",
+		"vend/elements/Graphic.js",
+		"vend/content/Contact.js",
+		"vend/content/Expired.js",
+		"vend/content/Login.js",
+		"vend/content/Splash.js",
+		"vend/content/Display.js",
+		"vend/overlay/Browser.js",
+		"vend/overlay/Cart.js",
+		"vend/overlay/Checkout.js",
+		"vend/overlay/Clickwrap.js",
+		"vend/overlay/Overview.js",
+		"vend/overlay/Package.js",
+		"vend/overlay/Packages.js",
+		"vend/overlay/Sidebar.js"
+	);
+	
+	if (file_exists(SA_DIR_COREPATH . "/js/vend-core.js")) {
+		array_push($load, "vend-core.js");
+	} else {
+		$load = array_merge($load, $core);
+	}
+	if (file_exists(SA_DIR_COREPATH . "/js/vend.js")) {
+		array_push($load, "vend.js");
+	} else {
+		$load = array_merge($load, $vend);
+	}
+	
+	/* ---- Add Via readfile() ---- */
+	foreach($load as $filename) {
+		readfile( SA_DIR_COREPATH . "/js/$filename" );
+		print "\n\n";
+	}
+
+	/* ---- Add Via include() ---- */
+	foreach($tmpl as $filename) {
+		include $filename;
+		print "\n\n";
+	}
+
+?>
+
+$(document).ready(function() {
+	
+	if (typeof fbq == 'function') { 
+		fbq('track', 'PageView');
+	}
+	if (typeof ga == 'function') { 
+		ga('set', 'page', document.location);
+		ga('send', 'pageview');
+	}
+	
+});

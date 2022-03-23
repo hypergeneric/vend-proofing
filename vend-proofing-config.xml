@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<setup>
+	<hub>false</hub>
+	<last_updated></last_updated>
+	<install_id>00000</install_id>
+	<reseller_id></reseller_id>
+	<product>vend-proofing</product>
+	<product_key></product_key>
+	<product_title>Vend</product_title>
+	<product_version>1.0.00</product_version>
+	<language>en</language>
+	<indexpath></indexpath>
+	<basepath>./</basepath>
+	<standalone>true</standalone>
+	<product_badge width="125" height="50">vend.png</product_badge>
+	<sitebar><!-- intrinsic tabs are "dashboard" "content" "sitemap" "soundtrack" -->
+		<tab key="dashboard" icon="dashboard" />
+		<tab key="orders" icon="usd" />
+		<tab key="sets" icon="list-alt" />
+		<tab key="mailpanel" icon="envelope" />
+		<tab key="pricing" icon="tags" />
+		<tab key="setup" icon="cog">
+			<tab key="setup" icon="file" />
+			<tab key="ordering" icon="file" />
+			<tab key="splash" icon="file" />
+			<tab key="policies" icon="file" />
+			<tab key="discounts" icon="cog" />
+			<tab key="cron" icon="cog" />
+			<tab key="musicpanel" icon="cog" />
+		</tab>
+		<tab key="design" icon="tint" />
+		<tab key="language" icon="globe" />
+	</sitebar>
+	<content>
+		<type key="UploadSet" images="true" audio="true" children="false" tabs="true" />
+		<type key="CategorySet" images="true" audio="true" children="false" tabs="true" />
+		<type key="DropboxSet" images="false" audio="true" children="false" tabs="true" />
+		<type key="ZipFile" images="false" audio="true" children="false" tabs="true" />
+	</content>
+</setup>

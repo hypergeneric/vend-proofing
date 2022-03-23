@@ -1,0 +1,46 @@
+<?php
+
+	/* ---- Necessary Files ---- */
+	$data_language = 				$this->getData("language");
+
+?>
+classes.helpers.L10N = (function () {
+	function Constructor () {
+		/* private methods
+			*/
+		var l10n = {
+<?php
+
+	$groups = $data_language->toArray();
+	$groups = $groups["data"]["_c"];
+	foreach($groups as $g_key => $g_arr) {
+		print "\t\t\t$g_key: {\n";
+		$nodes = $g_arr["_c"];
+		foreach($nodes as $n_key => $n_arr) {
+			$n_value = $n_arr["_v"];
+			if (isset($n_arr["_a"]["markdown"])) {
+				$n_value = $this->doMarkdown($n_value);
+				$n_value = str_replace(array("\n", "\r", "'"), array("", "", "\'"), $n_value);
+			} else if (isset($n_arr["_a"]["lines"])) {
+				$n_value = htmlspecialchars($n_value, ENT_QUOTES);
+				$n_value = str_replace(array("\n", "\r"), array('<br />', ""), $n_value);
+			} else {
+				$n_value = htmlspecialchars($n_value, ENT_QUOTES);
+			}
+			print "\t\t\t\t$n_key: '$n_value',\n";
+		}
+		print "\t\t\t\t" . "_" . ": '',\n";
+		print "\t\t\t},\n";
+	}
+
+?>
+			_: {}
+		};
+		/* public methods
+			*/
+		this.get = function(group, node) {
+			return l10n[group][node];
+		};
+	}
+	return new Constructor();
+})();

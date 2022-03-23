@@ -1,0 +1,533 @@
+<?php
+
+	$invoice_logo_asset = 			$this->getTypedValue("design", "design", "invoice_logo_asset");
+	$font_style = 					$this->getTypedValue("design", "design", "font_style");
+	$font_asset = 					$this->getTypedValue("design", "design", "font_asset");
+	$highlight_color = 				$this->getTypedValue("design", "design", "highlight_color");
+
+	$font_family = 					$font_style=="sans" ? 'Arial, sans-serif' : '"Times New Roman", Times, serif';
+	$font_family =					$this->unpackFont($font_asset, $font_family);
+
+	$invoice_logo_asset_width = 	$invoice_logo_asset["width"];
+	$invoice_logo_asset_height =	$invoice_logo_asset["height"];
+
+?>
+
+/* ---- Clear Default Browser Styles ---- */
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre,
+form, fieldset, input, p, blockquote, table, th, td, embed, object {
+	outline: none;
+	padding: 0;
+	margin: 0;
+}
+table {
+	page-break-inside: avoid;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+fieldset, img, abbr {
+	border: 0;
+}
+address, caption, cite, code, dfn, em,
+h1, h2, h3, h4, h5, h6, strong, th, var {
+	font-weight: normal;
+	font-style: normal;
+}
+ul {
+	list-style: none;
+}
+caption, th {
+	text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-size: 1.0em;
+}
+q:before, q:after {
+	content: '';
+}
+a, ins {
+	text-decoration: none;
+}
+a {
+	outline: none;
+}
+
+/* ---- Global Stuff ---- */
+
+* {
+	font-family: <?php echo $font_family; ?>;
+}
+
+.clear {
+	clear: both;
+}
+
+body {
+	background-color: #fff;
+}
+
+.dialog {
+	max-width: 480px;
+	width: 100%;
+	margin: 25px auto 25px auto;
+	position: relative;
+	background: #fff;
+	border: 1px solid #CCC;
+	box-sizing: border-box;
+}
+	.dialog-inner {
+		padding: 20px;
+	}
+	.dialog form fieldset {
+		position: relative;
+		margin-bottom: 10px;
+	}
+	.dialog form .Hidden {
+		display: none;
+	}
+	.dialog form .Inputs {
+		position: relative;
+		margin: 0 0 10px 0;
+		background: #fff;
+		border: 1px solid #ccc;
+	}
+		.dialog form .Inputs label {
+			display: block;
+			filter:alpha(opacity=10);
+			opacity: .1;
+			padding: 10px;
+			font-size: 18px;
+			color: #444;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		.dialog form .Inputs input {
+			white-space: nowrap;
+			display: block;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			padding: 10px;
+			font-size: 18px;
+			color: #444;
+			width: 100%;
+			box-sizing: border-box;
+			border-style: none;
+			background: transparent;
+			z-index: 2;
+		}
+	.dialog form .Focused,
+	.dialog form .Valid {
+		border: 1px solid #444;
+	}
+	.dialog form .Focused label,
+	.dialog form .Valid label {
+		opacity: .1;
+	}
+	.dialog form .Invalid label {
+		opacity: .9;
+	}
+	.dialog form .ButtonGroup a,
+	.dialog form .ButtonGroup input {
+		-webkit-appearance:none;
+		display: inline-block;
+		padding: 11px;
+		font-size: 14px;
+		color: #444;
+		background: #fff;
+		border: 1px solid #ccc;
+	}
+	.dialog form .ButtonGroup input:hover {
+		color: #000;
+	}
+	.dialog form .FormError {
+		color: #993300;
+		padding: 11px;
+		font-size: 18px;
+		border: 1px #ccc dotted;
+		background: #fff;
+		margin: 10px 0 0 0;
+	}
+@media screen and (max-width: 500px){
+	.dialog {
+		width: 90%;
+	}
+}
+
+/* ---- Invoice Content ---- */
+
+#invoice {
+	max-width: 900px;
+	margin: 0 auto 0 auto;
+	text-align: left;
+	padding: 25px;
+	font-size: 12px;
+	color: #444;
+}
+	#invoice-inner {
+		position: relative;
+		background: #fff;
+	}
+		#invoice .Logo {
+			float: left;
+		}
+		#invoice h2 {
+			font-size: 16px;
+			font-weight: bold;
+		}
+		#invoice .Logo img {
+			width: <?php echo $invoice_logo_asset_width/3; ?>px !important;
+			height: <?php echo $invoice_logo_asset_height/3; ?>px !important;
+		}
+			#invoice a {
+				font-weight: bold;
+				color: #666;
+				text-decoration: underline;
+			}
+			#invoice a:hover {
+				color: #333;
+			}
+			#invoice table .Label {
+				font-weight: bold;
+			}
+			#invoice table .Value {
+				text-align: right;
+			}
+		#invoice-meta {
+			float: right;
+			font-size: 14px;
+		}
+			#invoice-meta h1 {
+				text-align: right;
+				color: #ccc;
+				font-size: 24px;
+				font-weight: bold;
+				margin-bottom: 10px;
+			}
+			#invoice-meta td {
+				padding: 2px 0 2px 20px;
+			}
+@media screen and (max-width: 600px){
+	#invoice-meta {
+		clear: both;
+		float: none;
+		width: 100%;
+		padding-top: 20px;
+	}
+	#invoice-meta h1 {
+		text-align: left;
+	}
+	#invoice-table {
+		width: 100%;
+	}
+	#invoice-meta td {
+		padding: 2px 0 2px 0px;
+	}
+}
+
+
+#owner-data {
+	clear: both;
+}
+	#owner-data div,
+	#purchaser-data div {
+		margin-bottom: 12px;
+	}
+	#purchaser-data {
+		margin-bottom: 10px;
+		border-bottom: 1px #ccc solid;
+		padding-bottom: 8px;
+	}
+	#owner-data {
+		margin-top: 20px;
+		border-top: 1px #ccc solid;
+		padding-top: 20px;
+	}
+	#purchaser-notes {
+		margin-top: 20px;
+		border-top: 1px #ccc solid;
+		padding-top: 20px;
+	}
+	
+#download-process {
+	margin-top: 10px;
+	border: 1px #ccc dotted;
+	padding: 10px;
+}
+	#download-process button {
+		font-size: 14px;
+		font-weight: bold;
+		height: 40px;
+	}
+	#download-process span {
+		margin: 5px;
+	}
+	#download-process a {
+		display: inline-block;
+		padding: 5px 10px;
+		margin: 5px;
+		text-decoration: none;
+		border: 1px #999 solid;
+	}
+	#download-process a:hover {
+		border: 1px #333 solid;
+	}
+@media screen and (max-width: 600px){
+	#download-process {
+		text-align: center;
+	}
+	#download-process span {
+		margin: 20px 0px 10px 0;
+		display: block;
+	}
+}
+
+.ItemComment {
+	padding: 10px;
+	border: 1px #ccc dotted;
+	margin-top: 10px;
+}
+	.ItemComment strong {
+		font-weight: bold;
+		font-size: 12px;
+	}
+
+#footer-text {
+	margin-top: 20px;
+	border-top: 1px #ccc solid;
+	padding-top: 20px;
+	font-size: 10px;
+	color: #999;
+}
+
+/* ---- Purchase Table ---- */
+
+.PurchaseTable {
+	margin-top: 10px;
+	width: 100%;
+	border: 1px #666 solid;
+	border-spacing: 0px;
+	padding: 0 0 0 0;
+	text-align: right;
+}
+.PurchaseTable td {
+	border-left: 1px #ccc solid;
+}
+.PurchaseTable td.Column0 {
+	border-left-style: none;
+	text-align: left;
+}
+
+.PurchaseTableHead td {
+	padding: 10px;
+	font-weight: bold;
+	border-bottom: 1px #666 solid;
+	font-size: 14px;
+	background: #f1f1f1;
+	border-left: 1px #666 solid;
+}
+.PurchaseTable .Odd td {
+	background: #f1f1f1;
+}
+.PurchaseTableLineItem td {
+	padding: 5px 10px 0px 10px;
+	font-size: 12px;
+}
+.PurchaseTableSubItem td {
+	padding: 0px 10px 5px 20px;
+	font-size: 10px;
+}
+.DownloadTableLineItem td {
+	padding: 5px 10px 10px 10px;
+	font-size: 12px;
+}
+@media screen and (max-width: 600px){
+	.PurchaseTable .Column1,
+	.PurchaseTable .Column2 {
+		display: none;
+	}
+}
+
+
+#summary-table {
+	margin-top: 10px;
+	width: 301px;
+	float: right;
+	border: 1px #666 solid;
+}
+	#summary-table td {
+		padding: 0px 10px 0px 10px;
+		font-size: 11px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	#cart-total td {
+		padding: 5px 10px 5px 10px;
+		font-size: 14px;
+	}
+	#cart-spacer td {
+		height: 10px;
+	}
+	#cart-final-total td {
+		padding: 5px 10px 5px 10px;
+		background: #f1f1f1;
+	}
+	#summary-table .Strong {
+		border-top: 1px #ccc solid;
+		font-size: 14px;
+	}
+@media screen and (max-width: 600px){
+	#summary-table {
+		width: 100%;
+		float: none;
+	}
+	#summary-table colgroup {
+		width: 50% !important;
+	}
+}
+
+#purchase-comments {
+	margin-left: 320px;
+	margin-top: 20px;
+	border: 1px #666 solid;
+	padding: 10px;
+}
+
+#purchase-comments h2 {
+	font-size: 14px !important;
+	padding: 0 0 10px 0 !important;
+	margin: 0 0 0 0 !important;
+}
+
+/* ---- Invoice Content ---- */
+
+#output {
+	max-width: 900px;
+	margin: 0 auto 0 auto;
+	margin: 0 auto 0 auto;
+	text-align: left;
+	padding: 25px;
+	font-size: 12px;
+	color: #444;
+}
+	#output-inner {
+		position: relative;
+		background: #fff;
+	}
+		#output h2 {
+			font-size: 16px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+		#output a {
+			font-weight: bold;
+			color: #666;
+			text-decoration: underline;
+		}
+		#output a:hover {
+			color: #333;
+		}
+		#output table .Label {
+			font-weight: bold;
+		}
+		#output table .Value {
+			text-align: right;
+		}
+
+	#output #summary-table {
+		float: left;
+		border-top: 1px #666 solid;
+	}
+		#output a {
+			font-weight: bold;
+			color: #666;
+			text-decoration: underline;
+		}
+		#output a:hover {
+			color: #333;
+		}
+		#output .Label {
+			font-weight: bold;
+		}
+		#output .Value {
+			text-align: right;
+		}
+		#output .Strong {
+			font-size: 18px;
+		}
+	#order-overview {
+		margin-top: 20px;
+		border-top: 1px #ccc solid;
+		padding-top: 20px;
+	}
+		.OrderItem {
+			position: relative;
+			clear: both;
+			border: 1px #999 solid;
+			margin-bottom: 20px;
+		}
+		.OrderItem.Even {
+			background: #f1f1f1;
+		}
+		.OrderItem .Preview {
+			background: #fff;
+			float: left;
+			margin: 10px 20px 10px 10px;
+			border: 1px #ccc solid;
+			padding: 10px;
+		}
+			.OrderItem .Preview img {
+				display: block;
+			}
+		.OrderItem h2 {
+			margin: 10px;
+		}
+		.OrderItem .OrderItemMeta {
+			margin-bottom: 10px;
+		}
+			.OrderItem .OrderItemMeta span {
+				padding-right: 10px;
+				line-height: 16px;
+			}
+		.order-import {
+			margin-top: 20px;
+			border-top: 1px #ccc solid;
+			padding-top: 20px;
+		}
+			.order-import-inner{
+				border: 1px #999 solid;
+				margin-bottom: 20px;
+				padding: 10px;
+			}
+		.order-import h2 {
+			margin-bottom: 10px;
+		}
+			.order-import .ImportItem {
+				margin-bottom: 10px;
+			}
+@media screen and (max-width: 600px){
+	.OrderItem {
+		box-sizing: border-box;
+	}
+	.OrderItem .Preview {
+		float: none;
+		width: 100%;
+		box-sizing: border-box;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		border-top: none;
+		border-left: none;
+		border-right: none;
+	}
+		.OrderItem .Preview img {
+			width: 100%;
+			height: auto;
+			margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		}
+		.OrderItem .OrderItemMeta {
+			margin: 10px;
+		}
+}
