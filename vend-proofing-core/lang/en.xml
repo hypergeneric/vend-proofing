@@ -74,10 +74,7 @@
 		<mailinglists>
 			<provider name="None - Mailing List Unavailable" value="none" />
 			<provider name="Use MailChimp" value="mailchimp" />
-			<provider name="Use MadMimi" value="madmimi" />
-			<provider name="Use CampaignMonitor" value="campaignmonitor" />
 		</mailinglists>
-	<mailing_list_username name="Mailing List Account Username&#10;(if applicable)" />
 	<mailing_list_account_api_key name="Mailing List Account Api Key" />
 	<mailing_list_subscriber_list_key name="Mailing List Subscriber List Key/ID" />
 	<use_autoresponder_bool name="Use Autoresponder" />
@@ -272,15 +269,8 @@
 				<payment_gateways>
 					<gateway name="Credit Cards Not Accepted" value="none" />
 					<gateway name="Stripe" value="stripe" />
-					<gateway name="Paypal Website Payments Pro" value="paypal" />
-					<gateway name="Authorize.net" value="authorizedotnet" />
 				</payment_gateways>
 		<paypal_email_address name="Paypal Standard Email Address" />
-		<paypal_merchant_username name="Paypal API Username" />
-		<paypal_merchant_password name="Paypal API Password" />
-		<paypal_merchant_api_key name="Paypal API Signature" />
-		<authorize_net_login name="Authorize.net Login" />
-		<authorize_net_transkey name="Authorize.net Transaction Key" />
 		<stripe_api_key name="Stripe Live Secret API Key" />
 		<stripe_charge_description name="Stripe Payment Title&#10;(optional -- will show up on credit card statements)" />
 		<dropbox_api_key name="Dropbox API Key" />

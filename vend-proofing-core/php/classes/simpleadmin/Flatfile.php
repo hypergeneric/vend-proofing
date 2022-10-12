@@ -40,7 +40,7 @@
 				$width = $imagesize[0];
 				$height = $imagesize[1];
 				if ( $width>3000 || $height>1600 ) {
-					return false;
+					//return false;
 				}
 				$fileobject["dimensions"] = $width . "x" . $height;
 			}
@@ -48,7 +48,7 @@
 			$imagetypes = array("jpg","jpeg","gif","png");
 			if ($filesize && in_array($fileobject["file"]["ext"], $imagetypes)) {
 				if ( $filesize>2621440 ) {
-					return false;
+					//return false;
 				}
 				$fileobject["size"] = $filesize;
 			}

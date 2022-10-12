@@ -60,10 +60,10 @@
 			if (strlen($folder)>0) Filesystem::mkdirR($folder . "/");
 			$handle = @fopen($path, $mode);
 			if (!$handle) return false;
-			@flock($path, 2);
+			@flock($handle, 2);
 			if (@fwrite($handle, $data)===false) return false;
 			@chmod($path, SA_PERMISSION_FILE);
-			@flock($path, 3);
+			@flock($handle, 3);
 			fclose($handle);
 			return true;
 		}

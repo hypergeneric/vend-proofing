@@ -302,9 +302,10 @@
 				$imagick_version = $imagick_version[1];
 			}
 			$reseller_id = $this->getRequestVariable("reseller_id", $CONFIG->getNodeVal("setup.reseller_id"));
+			$last_updated = $CONFIG->getNodeVal("setup.last_updated");
 			if (SA_DEMOMODE) $reseller_id = $CONFIG->getNodeVal("setup.reseller_id");
 			$props = array(
-				"last_updated" => 				@date("m/d/Y", $CONFIG->getNodeVal("setup.last_updated")/1000),
+				"last_updated" => 				is_numeric( $last_updated ) ? @date("m/d/Y", $CONFIG->getNodeVal("setup.last_updated")/1000) : "N/A",
 				"product_version" => 			$CONFIG->getNodeVal("setup.product_version"),
 				"reseller_id" => 				$reseller_id,
 				"user_generated_storage" => 	Func::bytesToSize(Filesystem::getDirSize(SA_DIR_STORAGE)),

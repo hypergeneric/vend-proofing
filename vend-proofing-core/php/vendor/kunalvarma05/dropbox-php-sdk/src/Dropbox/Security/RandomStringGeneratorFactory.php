@@ -33,14 +33,14 @@ class RandomStringGeneratorFactory
             return $generator;
         }
 
-        //Mcrypt
+        // Mcrypt
         if ('mcrypt' === $generator) {
-            return new McryptPseudoRandomStringGenerator();
+            return new McryptRandomStringGenerator();
         }
 
         //OpenSSL
         if ('openssl' === $generator) {
-            return new OpenSslPseudoRandomStringGenerator();
+            return new OpenSslRandomStringGenerator();
         }
 
         //Invalid Argument
@@ -57,7 +57,7 @@ class RandomStringGeneratorFactory
     protected static function defaultRandomStringGenerator()
     {
         //Mcrypt
-        if (function_exists('mcrypt_create_iv')) {
+        if (function_exists('mcrypt_create_iv') && version_compare(PHP_VERSION, '7.1', '<')) {
             return new McryptRandomStringGenerator();
         }
 

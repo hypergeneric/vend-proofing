@@ -7,7 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Omnipay\\Common\\' => array($vendorDir . '/omnipay/common/src'),
-    'Michelf' => array($vendorDir . '/michelf/php-markdown'),
     'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
     'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),

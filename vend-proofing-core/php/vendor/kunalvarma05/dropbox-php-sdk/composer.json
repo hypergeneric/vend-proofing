@@ -10,12 +10,15 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "~6.0",
-        "tightenco/collect": "^5.2"
+        "guzzlehttp/guzzle": "~6.0|~7.0",
+        "illuminate/collections": "^8.0|^9.0"
     },
     "autoload": {
         "psr-4": {
             "Kunnu\\Dropbox\\": "src/Dropbox"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0"
     }
 }

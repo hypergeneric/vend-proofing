@@ -6,7 +6,7 @@
 
 	/* some compile-time stuff
 		*/
-	error_reporting(0);
+	//error_reporting(0);
 
 	if (!defined('SA_BASEPATH')) define("SA_BASEPATH", "");
 	define("SA_NAMESPACE", $namespace);
@@ -25,7 +25,6 @@
 		*/
 	require_once(SA_DIR_COREPATH."/php/classes/getid3/getid3/getid3.php");
 	require_once(SA_DIR_COREPATH."/php/classes/pclzip/pclzip.lib.php");
-	require_once(SA_DIR_COREPATH."/php/classes/campaignmonitor/createsend-php/csrest_subscribers.php");
 	require_once(SA_DIR_COREPATH."/php/classes/gradient.php");
 	require_once(SA_DIR_COREPATH."/php/vendor/autoload.php");
 	spl_autoload_register(function ($class) {

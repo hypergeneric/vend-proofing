@@ -1134,7 +1134,6 @@
 				$firstname = implode(" ", $nameparts);
 			}
 			$mailing_list = $contact->getNodeVal("data.settings.mailing_list");
-			$mailing_list_username = $contact->getNodeVal("data.settings.mailing_list_username");
 			$mailing_list_account_api_key = $contact->getNodeVal("data.settings.mailing_list_account_api_key");
 			$mailing_list_subscriber_list_key = $contact->getNodeVal("data.settings.mailing_list_subscriber_list_key");
 			switch ($mailing_list) {
@@ -1144,14 +1143,6 @@
 					$table = Flatfile::updateTableRow($tablepath, $data);
 					Flatfile::saveTableArray($tablepath, $table);
 					return true;
-				case "campaignmonitor" :
-					$wrap = new CS_REST_Subscribers($mailing_list_subscriber_list_key, array('api_key' => $mailing_list_account_api_key));
-					$result = $wrap->add(array(
-						'EmailAddress' => $email,
-						'Name' => $fullname,
-						'Resubscribe' => true
-					));
-					return $result->was_successful();
 				case "mailchimp" :
 					$MailChimp = new MailChimp($mailing_list_account_api_key);
 					$result = $MailChimp->post("lists/$mailing_list_subscriber_list_key/members", [
@@ -1160,18 +1151,6 @@
 						'status'        => 'subscribed'
 					]);
 					return $MailChimp->success();
-				case "madmimi" :
-					Func::getRemotePage(
-						'http://api.madmimi.com/audience_lists/' . rawurlencode($mailing_list_subscriber_list_key) . '/add',
-						array(
-							"api_key" => $mailing_list_account_api_key,
-							"username" => $mailing_list_username,
-							"email" => $email,
-							"first_name" => $firstname,
-							"last_name" => $lastname
-						)
-					);
-					return true;
 			}
 		}
 

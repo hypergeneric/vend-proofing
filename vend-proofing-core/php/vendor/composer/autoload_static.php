@@ -4,13 +4,14 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
+class ComposerStaticInit1082da24de82a52af2a3a7f92a3db554
 {
     public static $files = array (
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        '7ba3c774c30c8399e359b5ff7f3b943e' => __DIR__ . '/..' . '/tightenco/collect/src/Illuminate/Support/helpers.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        '60799491728b879e74601d83e38b2cad' => __DIR__ . '/..' . '/illuminate/collections/helpers.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
     );
 
@@ -23,13 +24,18 @@ class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
+            'Psr\\Container\\' => 14,
         ),
         'O' => 
         array (
             'Omnipay\\Stripe\\' => 15,
-            'Omnipay\\PayPal\\' => 15,
-            'Omnipay\\AuthorizeNet\\' => 21,
+        ),
+        'M' => 
+        array (
+            'Michelf\\' => 8,
         ),
         'K' => 
         array (
@@ -37,7 +43,8 @@ class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
         ),
         'I' => 
         array (
-            'Illuminate\\' => 11,
+            'Illuminate\\Support\\' => 19,
+            'Illuminate\\Contracts\\' => 21,
         ),
         'G' => 
         array (
@@ -64,29 +71,43 @@ class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
         'Omnipay\\Stripe\\' => 
         array (
             0 => __DIR__ . '/..' . '/omnipay/stripe/src',
         ),
-        'Omnipay\\PayPal\\' => 
+        'Michelf\\' => 
         array (
-            0 => __DIR__ . '/..' . '/omnipay/paypal/src',
-        ),
-        'Omnipay\\AuthorizeNet\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/omnipay/authorizenet/src',
+            0 => __DIR__ . '/..' . '/michelf/php-markdown/Michelf',
         ),
         'Kunnu\\Dropbox\\' => 
         array (
             0 => __DIR__ . '/..' . '/kunalvarma05/dropbox-php-sdk/src/Dropbox',
         ),
-        'Illuminate\\' => 
+        'Illuminate\\Support\\' => 
         array (
-            0 => __DIR__ . '/..' . '/tightenco/collect/src/Illuminate',
+            0 => __DIR__ . '/..' . '/illuminate/macroable',
+            1 => __DIR__ . '/..' . '/illuminate/collections',
+        ),
+        'Illuminate\\Contracts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/contracts',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -114,13 +135,6 @@ class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
                 0 => __DIR__ . '/..' . '/omnipay/common/src',
             ),
         ),
-        'M' => 
-        array (
-            'Michelf' => 
-            array (
-                0 => __DIR__ . '/..' . '/michelf/php-markdown',
-            ),
-        ),
         'G' => 
         array (
             'Guzzle\\Tests' => 
@@ -142,6 +156,7 @@ class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'EasyPeasyICS' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
         'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
         'Omnipay\\Omnipay' => __DIR__ . '/..' . '/omnipay/common/src/Omnipay/Omnipay.php',
@@ -157,10 +172,10 @@ class ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitde3353ae9a5ad05d86a376c6a72ea6f6::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit1082da24de82a52af2a3a7f92a3db554::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit1082da24de82a52af2a3a7f92a3db554::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit1082da24de82a52af2a3a7f92a3db554::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit1082da24de82a52af2a3a7f92a3db554::$classMap;
 
         }, null, ClassLoader::class);
     }

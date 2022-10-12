@@ -7,7 +7,6 @@
 		<description markdown="true" toolbar="true" lines="6"><![CDATA[]]></description>
 		<contact_form_recipients lines="5"></contact_form_recipients>
 		<mailing_list options="mailinglists.provider">none</mailing_list>
-		<mailing_list_username></mailing_list_username>
 		<mailing_list_account_api_key></mailing_list_account_api_key>
 		<mailing_list_subscriber_list_key></mailing_list_subscriber_list_key>
 		<use_autoresponder_bool>false</use_autoresponder_bool>

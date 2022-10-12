@@ -200,6 +200,7 @@
 		public static function sizeToBytes ($val) {
 			$val = trim($val);
 			$last = strtolower(substr($val, -1));
+		 	$val = (int)$val;
 			if ($last == 'g') $val = $val*1024*1024*1024;
 			if ($last == 'm') $val = $val*1024*1024;
 			if ($last == 'k') $val = $val*1024;
@@ -297,9 +298,9 @@
 					trigger_error( "Invalid hex length", E_USER_ERROR );
 			}
 			// Start shifting
-			$RGB_values['R'] = hexdec($supplied_hex{0}.$supplied_hex{1});
-			$RGB_values['G'] = hexdec($supplied_hex{2}.$supplied_hex{3});
-			$RGB_values['B'] = hexdec($supplied_hex{4}.$supplied_hex{5});
+			$RGB_values['R'] = hexdec($supplied_hex[0].$supplied_hex[1]);
+			$RGB_values['G'] = hexdec($supplied_hex[2].$supplied_hex[3]);
+			$RGB_values['B'] = hexdec($supplied_hex[4].$supplied_hex[5]);
 			foreach($RGB_values as $c => $v) {
 				switch($shift_method) {
 					case '-':

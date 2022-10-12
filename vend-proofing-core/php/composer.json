@@ -1,12 +1,10 @@
 {
     "require": {
-        "kunalvarma05/dropbox-php-sdk": "^0.2.0",
         "phpmailer/phpmailer": "^5.2",
         "mobiledetect/mobiledetectlib": "^2.8",
         "michelf/php-markdown": "^1.7",
-        "drewm/mailchimp-api": "^2.4",
-        "omnipay/paypal": "^2.6",
-        "omnipay/authorizenet": "^2.5",
+        "drewm/mailchimp-api": "^2.5",
+        "kunalvarma05/dropbox-php-sdk": "^0.4.1",
         "omnipay/stripe": "^2.4"
     }
 }

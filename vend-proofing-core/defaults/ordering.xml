@@ -29,11 +29,6 @@
 	<payment_gateway>
 		<merchant_gateway options="payment_gateways.gateway">none</merchant_gateway>
 		<paypal_email_address encoded="true"></paypal_email_address>
-		<paypal_merchant_username private="true" encoded="true"></paypal_merchant_username>
-		<paypal_merchant_password private="true" encoded="true"></paypal_merchant_password>
-		<paypal_merchant_api_key private="true" encoded="true"></paypal_merchant_api_key>
-		<authorize_net_login private="true" encoded="true"></authorize_net_login>
-		<authorize_net_transkey private="true" encoded="true"></authorize_net_transkey>
 		<stripe_api_key private="true" encoded="true"></stripe_api_key>
 		<stripe_charge_description></stripe_charge_description>
 		<dropbox_api_key private="true" encoded="true"></dropbox_api_key>
