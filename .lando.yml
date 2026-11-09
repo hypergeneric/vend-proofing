@@ -2,3 +2,5 @@ name: vend-proofing
 recipe: lamp
 config:
   php: '8.4'
+  config:
+    php: .lando/php.ini

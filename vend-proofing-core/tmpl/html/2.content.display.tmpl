@@ -711,7 +711,7 @@
 							shipping: "<?php echo htmlspecialchars($row[4]); ?>",
 							formats: [
 <?php 		foreach ($lineitems as $key => $row) { ?>
-								{ title: "<?php echo htmlspecialchars($row[1]); ?>", quantity: "<?php echo $row[2]; ?>", aspect: "<?php echo @($row[3]/$row[4]); ?>", area: "<?php echo ($row[3]*$row[4]); ?>" },
+								{ title: "<?php echo htmlspecialchars($row[1]); ?>", quantity: "<?php echo $row[2]; ?>", aspect: "<?php echo (float)$row[4] !== 0.0 ? $row[3] / $row[4] : ''; ?>", area: "<?php echo ($row[3]*$row[4]); ?>" },
 <?php 		} ?>
 							]
 						});
@@ -754,7 +754,7 @@
 							shipping: "<?php echo htmlspecialchars($row[4]); ?>",
 							formats: [
 <?php 		foreach ($lineitems as $key => $row) { ?>
-								{ title: "<?php echo htmlspecialchars($row[1]); ?>", quantity: "<?php echo $row[2]; ?>", aspect: "<?php echo @($row[3]/$row[4]); ?>", area: "<?php echo ($row[3]*$row[4]); ?>" },
+								{ title: "<?php echo htmlspecialchars($row[1]); ?>", quantity: "<?php echo $row[2]; ?>", aspect: "<?php echo (float)$row[4] !== 0.0 ? $row[3] / $row[4] : ''; ?>", area: "<?php echo ($row[3]*$row[4]); ?>" },
 <?php 		} ?>
 							]
 						});
