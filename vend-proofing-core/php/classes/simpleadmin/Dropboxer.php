@@ -448,7 +448,7 @@
 			Filesystem::deleteFile($tempfile);
 		}
 
-		protected function parseFolderMeta ($type="tree", $path) {
+		protected function parseFolderMeta ($type, $path) {
 			$list = array();
 			try {
 				$folderdata = $this->client->listFolder($path);

@@ -47,7 +47,7 @@
 
 		public function __construct() {
 			global $LANG;
-			$query_clean = rawurldecode($_SERVER['QUERY_STRING']);
+			$query_clean = rawurldecode($_SERVER['QUERY_STRING'] ?? '');
 			if ( strpos($query_clean, "/")!== false ) {
 				$query_clean = substr($query_clean, 0, strrpos($query_clean, "/") + 1);
 				$this->query_original = $query_clean;
