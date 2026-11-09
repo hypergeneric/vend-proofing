@@ -21,7 +21,7 @@ classes.content.Display = (function () {
 		var lastindex = 			0;
 		var lastwidth = 			0;
 		var inited = 				false;
-		var row_height = 			200;
+		var row_height = 			300;
 		var welcome_str = 			"";
 		var intro_str = 			"";
 		var bg_image_arr = 			["", "", ""];
@@ -420,8 +420,11 @@ classes.content.Display = (function () {
 					return false;
 				});
 			}
-			if ( !Shell.device().tablet ) {
-				row_height = 175;
+			if ( Shell.device().tablet ) {
+				row_height = 250;
+			}
+			if ( Shell.device().phone ) {
+				row_height = 200;
 			}
 			
 			$("#imagewall-controlbar-more").click(nextpage);

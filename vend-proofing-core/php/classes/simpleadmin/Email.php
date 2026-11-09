@@ -376,7 +376,7 @@
 					}
 				}
 			} else if ( $this->provider=="sendgrid" ) {
-				$sendgrid_apikey = $this->contact->getNodeVal("data.mailer_settings.sendgrid_api_key"); //'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';
+				$sendgrid_apikey = $this->contact->getNodeVal("data.mailer_settings.sendgrid_api_key");
 				if ( $sendgrid_apikey!=null ) {
 					$sendgrid_apikey = base64_decode($sendgrid_apikey);
 				}
