@@ -96,8 +96,8 @@ classes.Overlay = (function () {
 				if (sidebarwidth<350) {
 					sidebarwidth = 350;
 				}
-				if (sidebarwidth>600) {
-					sidebarwidth = 600;
+				if (sidebarwidth>400) {
+					sidebarwidth = 400;
 				}
 				sidebarleft = 0;
 			}
