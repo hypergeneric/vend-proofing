@@ -99,7 +99,7 @@
 					}
 				}
 ?>
-		<set id="<?php echo $page_id; ?>" expiry="<?php echo $expiry; ?>" recipients="<?php echo count($recipients); ?>" sent="<?php echo $mail_sent?"1":"0"; ?>" />
+		<set id="<?php echo $page_id; ?>" expiry="<?php echo $expiry; ?>" recipients="<?php echo count(array_filter(array_map('trim', explode(',', $recipients)))); ?>" sent="<?php echo $mail_sent?"1":"0"; ?>" />
 <?php
 			}
 ?>

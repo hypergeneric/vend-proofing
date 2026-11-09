@@ -1,4 +1,4 @@
 name: vend-proofing
 recipe: lamp
 config:
-  php: '7.4'
+  php: '8.4'

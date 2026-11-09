@@ -122,7 +122,7 @@
 			return 100;
 		}
 
-		public static function addFileUrl ($type, $folder=null, $uri, $filename=null) {
+		public static function addFileUrl ($type, $folder, $uri, $filename=null) {
 			if (SA_DEMOMODE) return -100;
 			/* get the path to the storage location
 				*/
@@ -174,7 +174,7 @@
 			return array($fileobject["file"]["final"], $fileobject["file"]["name"], $fileobject["dimensions"], 0, 0, "", $proxy->getURL(), $service);
 		}
 		
-		public static function sideloadFile ($type, $folder=null, $uri, $filename=null) {
+		public static function sideloadFile ($type, $folder, $uri, $filename=null) {
 			if (SA_DEMOMODE) return -100;
 			/* get the path to the storage location
 				*/
@@ -299,7 +299,7 @@
 			return Flatfile::updateTableRow($tablepath, $row);
 		}
 
-		public static function deleteFileTable ($type, $folder=null, $files) {
+		public static function deleteFileTable ($type, $folder, $files) {
 			/* get the path to the storage location
 				*/
 			if ($folder==null) $folder = $type;
@@ -337,7 +337,7 @@
 			return Flatfile::getTableArray($tablepath);
 		}
 
-		public static function sortFileTable ($type, $folder=null, $to, $from) {
+		public static function sortFileTable ($type, $folder, $to, $from) {
 			/* get the path to the storage location
 				*/
 			if ($folder==null) $folder = $type;
@@ -347,7 +347,7 @@
 			return Flatfile::reIndexRow($tablepath, $to, $from);
 		}
 
-		public static function updateFileTable ($type, $folder=null, $data) {
+		public static function updateFileTable ($type, $folder, $data) {
 			/* delete any files and folders asscocated with the parent id
 				*/
 			if ($folder==null) $folder = $type;
