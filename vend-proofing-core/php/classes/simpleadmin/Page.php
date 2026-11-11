@@ -316,7 +316,7 @@
 				*/
 			$this->data_lookup["splash"] = Flatfile::getXmlArray("splash", null, true);
 			$this->data_lookup["contact"] = Flatfile::getXmlArray("contact", null, true);
-			$this->data_lookup["page"] = Flatfile::getSetTable("page");
+			$this->data_lookup["page"] = Catalog::pageRows();
 			$this->data_lookup["asset"] = Flatfile::getFileTable("asset");
 			/* find the site homepage
 				*/

@@ -23,7 +23,7 @@
 			}
 			break;
 		case "UploadSet" :
-			$images = Flatfile::getFileTable("image", $this->info("id"));
+			$images = Catalog::imageRows($this->info("id"));
 			$category = array("page" => array("page", "", count($images)));
 			break;
 		case "ZipFile" :
@@ -31,8 +31,8 @@
 			$category = Flatfile::getSetTable("zipfile-category", $this->info("id"));
 			break;
 		case "CategorySet" :
-			$images = Flatfile::getFileTable("image", $this->info("id"));
-			$category = Flatfile::getSetTable("category", $this->info("id"));
+			$images = Catalog::imageRows($this->info("id"));
+			$category = Catalog::categoryRows($this->info("id"));
 			break;
 	}
 	

@@ -11,11 +11,11 @@ function check (bool $condition, string $message): void {
 }
 
 $db = Database::connection();
-check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 2, 'Schema migrations missing');
+check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 4, 'Schema migrations missing');
 check((int) $db->query('SELECT COUNT(*) FROM administrators')->fetchColumn() === 0, 'Fresh install is not empty');
 check((int) $db->query('PRAGMA foreign_keys')->fetchColumn() === 1, 'Foreign keys are disabled');
 Database::migrate();
-check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 2, 'Migration ran twice');
+check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 4, 'Migration ran twice');
 try {
 	Database::install();
 	throw new RuntimeException('Install overwrote an existing database');
