@@ -568,7 +568,7 @@
 
 		protected function checkForInit () {
 			global $CONFIG;
-			$hasAuth = file_exists(SA_DIR_AUTH) || $CONFIG->getNodeVal("setup.hub")=="true";
+			$hasAuth = AdminAccount::exists();
 			$hasContent = count($this->data_lookup["page"])>0;
 			if ( !$hasAuth && !$hasContent && $this->render_type=="html" && $this->flag_is_home ) {
 				header("Location: " . Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/init/");

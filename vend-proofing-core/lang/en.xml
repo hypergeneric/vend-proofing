@@ -755,19 +755,11 @@
 
 
 	<!-- Login/Password Mechanism -->
+	<username_or_password_invalid name="Username or password invalid." />
 	<logging_out name="Logging Out ..." />
 	<logging_out_description name="Logging you out of this session.  Please wait ..." />
 	<authentication_error name="Authentication Error!" />
 	<authentication_error_description name="It appears you have been logged out of your current session.  Please refresh your browser and login again." />
-	<username_invalid name="Username invalid!" />
-	<password_invalid name="Password invalid!" />
-	<address_supplied_does_not_match_address_on_file name="The address supplied does not match the address on file." />
-	<incorrect_answer_to_secret_question name="Incorrect answer to the secret question." />
-	<new_credentials_delivery_failure name="Failed to deliver your credentials!" />
-	<new_credentials_delivered name="We've emailed you your new credentials.  Please check your email." />
-	<your_new_temporary_credentials_email_body name="You or someone on your behalf has requested new credentials to your product installed here:&#10;{BASEURL}&#10;&#10;We have deleted your previous login credentials, and have created a new temporary login and password.  Please take this moment to login and change them both under the Dashboard.&#10;&#10;Admin Login: {ADMINURL}&#10;Username: {USERNAME}&#10;Password: {PASSWORD}&#10;&#10;Thanks for using intothedarkroom!" />
-	<username_invalid_description name="The username you supplied does not match the username we have on file.  Please check your values and try again." />
-	<password_invalid_description name="The password you supplied does not match the password we have on file.  Please check your values and try again." />
 	<original_password_invalid name="Password invalid!" />
 	<original_password_invalid_description name="The password you supplied does not match the password we have on file.  Please check your values and try again." />
 	<password_changed_successfully name="Password changed successfully!" />
@@ -779,15 +771,8 @@
 	<!-- Setup Initialization Items -->
 	<site_footer_text name="© Copyright &lt;a href='http://intothedarkroom.com' target='_blank'&gt;&lt;u&gt;intothedarkroom.com&lt;/u&gt;&lt;/a&gt;" />
 	<init_title name="Setup Required" />
-	<init_description name="You are seeing this message because you have recently installed this product.  You will need to setup your admin panel, and create some content, as there is no content yet to display.  Please refer to your introduction email for further assistance, or click the link below to visit the resources site." />
-	<initial_setup name="Lets do this!" />
-	<intial_page_description name="If you just installed this product for the first time, you're almost there!&lt;br /&gt;&lt;br /&gt;We just need to do some last minute initialization for you to get started.  This form will create your user account, and initialize the software so you can login and start using it.  Please make sure that the email address is a valid email address, and please make sure your secret question/answer is something you'll remember.&lt;br /&gt;&lt;br /&gt;If you ever forget your login/password, you'll need it to get back in the system.&lt;br /&gt;&lt;br /&gt;If you have recently updated your software, please note:&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;CLEAR YOUR CACHE!!&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;CLEAR YOUR CACHE!!&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;CLEAR YOUR CACHE!!&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Thanks! And enjoy your new product!&lt;br /&gt;" />
+	<init_description name="Vend needs an administrator before you can use the admin interface. On the server, run php scripts/admin-account.php create USERNAME EMAIL, then reload this page." />
 	<you_must_supply_a_valid_email_address name="You must supply a valid Email Address!" />
-	<you_must_supply_a_secret_question name="You must supply a secret question!" />
-	<you_must_supply_the_answer_to_the_secret_question name="You must supply the answer to the secret question!" />
-	<username_must_be_a_minimum_of_6_characters name="Username must be a minimum of 6 characters!" />
-	<password_must_be_a_minimum_of_6_characters name="Password must be a minimum of 6 characters!" />
-	<passwords_do_not_match name="Passwords do not match!" />
 
 
 	<!-- General Dialog Errors -->

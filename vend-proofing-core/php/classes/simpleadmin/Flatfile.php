@@ -5,23 +5,7 @@
 		/* ---- Public Methods ---- */
 
 		public static function createUID () {
-			$indexfile = SA_DIR_STORAGE . "/suid.index";
-			/* get the current index
-				assume 0, but if the index file exists, use that
-				*/
-			$current = file_exists($indexfile) ? trim(file_get_contents($indexfile)) : rand(10000, 50000);
-			/* add one
-				*/
-			$current += 1;
-			/* get the id
-				*/
-			$suid = dechex($current);
-			/* resave the file
-				*/
-			Filesystem::makeFile($indexfile, $current);
-			/* return the suid
-				*/
-			return $suid;
+			return Database::allocateSuid();
 		}
 
 		/* ---- File Upload Table Functions ---- */

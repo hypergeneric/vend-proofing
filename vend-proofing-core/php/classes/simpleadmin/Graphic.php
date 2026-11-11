@@ -84,6 +84,9 @@
 			
 			$parent_name = basename($q[0]);
 			$child_name = basename($q[1]);
+			if ($parent_name !== $q[0] || $child_name !== $q[1] || !$this->isPublicSource($parent_name, $child_name)) {
+				$this->process(false, "Image Does Not Exist");
+			}
 			$width = strlen($q[2])>0 ? $q[2] : 0; // optional
 			$height = strlen($q[3])>0 ? $q[3] : 0; // optional
 			$exact = strlen($q[4])>0 ? $q[4] : 0; // optional
@@ -92,6 +95,10 @@
 			$cache = strlen($q[7])>0 ? $q[7] : 1; // optional
 			$watermark = strlen($q[8])>0 ? $q[8] : 0; // optional
 			$watermark_name = strlen($q[9])>0 ? $q[9] : ""; // optional
+			if ($watermark_name !== "" && !isset(Flatfile::getFileTable("asset", "asset")[$watermark_name])) {
+				$watermark = 0;
+				$watermark_name = "";
+			}
 			$watermark_x = strlen($q[10])>0 ? $q[10] : 50; // optional
 			$watermark_y = strlen($q[11])>0 ? $q[11] : 50; // optional
 			$watermark_alpha = strlen($q[12])>0 ? $q[12] : 50; // optional
@@ -140,6 +147,29 @@
 			$this->watermark($watermark, $watermark_name, $watermark_x, $watermark_y, $watermark_alpha, $crosshairs, $crosshairs_color, $crosshairs_alpha);
 			$this->setMultiplier($multiplier);
 			
+		}
+
+		protected function isPublicSource (string $parent, string $child): bool {
+			if ($child === "" || $child[0] === '.' || !preg_match('/^[A-Za-z0-9._-]+$/', $child)) return false;
+			if (is_link(SA_DIR_STORAGE . "/" . $parent) || is_link(SA_DIR_STORAGE . "/" . $parent . "/" . $child)) return false;
+			$pages = Flatfile::getSetTable("page");
+			if (preg_match('/^([a-f0-9]{1,16})\.zip$/i', $parent, $matches)) {
+				return isset($pages[$matches[1]]) && ctype_digit($child) &&
+					!is_link(SA_DIR_DATAPATH . "/uploads/" . $parent) &&
+					isset(Flatfile::getSetTable("zipfile-fileindex", $matches[1])[$child]);
+			}
+			if (in_array($parent, array("asset", "audio", "track", "package", "product"), true)) {
+				$types = array($parent);
+			} elseif (preg_match('/^[a-f0-9]{1,16}$/i', $parent) && isset($pages[$parent])) {
+				$types = array("image", "asset", "track");
+			} else {
+				return false;
+			}
+			$lookup = str_ends_with($child, ".snapshot.jpg") ? substr($child, 0, -13) : $child;
+			foreach ($types as $type) {
+				if (isset(Flatfile::getFileTable($type, $parent)[$lookup])) return true;
+			}
+			return false;
 		}
 		
 		public function process ($valid=true, $error="") {

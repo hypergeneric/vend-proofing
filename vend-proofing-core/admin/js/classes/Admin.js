@@ -30,72 +30,19 @@ classes.Admin = (function () {
 		
 		function onLoaded () {
 			Dialog.initialize();
-			if ( _config.setup.hub._value=="true" || _config.setup.standalone._value=="false" ) {
-				Auth.send(this, onTouch, {
-					action: "touch"
-				});
-			} else {
-				Auth.subscribe("valid", valid);
-				Auth.subscribe("invalid", invalid);
-				Auth.start();
-			}
-		}
-		function onTouch (success, data) {
-			Auth.token(data);
 			Auth.subscribe("valid", valid);
 			Auth.subscribe("invalid", invalid);
 			Auth.start();
 		}
 		function invalid (eo) {
-			/* if the Auth reports invalid, it can be one of a couple things:
-				- if it's standalone, they may not have logged in yet
-				- if it's standalone, the user clicked "Logout"
-				- if it's embedded, the user logged out of the parent application
-				- if it's embedded, the authentication mechanism is reporting false
-				- the authentication cookie somehow gets cleared in the browser
-				*/
-			if ( _config.setup.standalone._value=="true" && _config.setup.hub._value!="true" ) {
-				/*  if we're in standalone mode, we need to require logins
-					and we'll be using our own user authentication mechanism
-					*/
-				Dialog.create({
-					size: "420x*",
-					title: Lang.lookup("User Authentication"),
-					content: classes.dialogs.Login,
-					owner: this,
-					options: [{
-						close: false,
-						label: Lang.lookup("Forgot Login"),
-						func: openForgotLogin
-					}]
-				});
-				/* and since it's standalone, since the is technically not a "page", set the page title to
-					reflect that we're requesting credentials
-					*/
-				document.title = $("<div>" + _config.setup.product_title._value + " » " + Lang.lookup("User Authentication") + "</div>").text();
-			} else {
-				/* if it's not standalone, we're leaving authentication up to the system
-					our job is just to notify.
-					*/
-				Dialog.create({
-					size: "420x*",
-					title: Lang.lookup("Authentication Error"),
-					content: Lang.lookup("Authentication Error Description"),
-					owner: this,
-					options: []
-				});
-			}
-		}
-		function openForgotLogin (eo) {
 			Dialog.create({
-				size: "600x*",
-				title: Lang.lookup("Request New Credentials"),
-				content: classes.dialogs.ForgotLogin,
+				size: "420x*",
+				title: Lang.lookup("User Authentication"),
+				content: classes.dialogs.Login,
 				owner: this,
-				options: [{
-					label: Lang.lookup("Close")
-				}]
+				options: []
 			});
+			document.title = $("<div>" + _config.setup.product_title._value + " » " + Lang.lookup("User Authentication") + "</div>").text();
 		}
 		function valid (eo) {
 			/* a successfull login after not being logged in
@@ -358,12 +305,12 @@ classes.Admin = (function () {
 				owner: this,
 				options: []
 			});
-			Auth.token("");
 			Auth.send(this, onLogout, {
 				action: "logout"
 			});
 		}
 		function onLogout () {
+			Auth.token("");
 			document.location = Auth.basepath() + Auth.indexpath() + "?/admin/";
 		}
 		function start () {

@@ -37,8 +37,8 @@ classes.dialogs.Login = function () {
 		Auth.send(this, onLogin, {
 			action: "login",
 			username: username_field.val(),
-			password: sha1(md5(NAMESPACE)+md5(password_field.val())),
-			persist: (remember_check.checked?"yes":"no")
+			password: password_field.val(),
+			persist: (remember_check.prop("checked")?"yes":"no")
 		});
 		toggle_remember();
 		Func.stop(e);

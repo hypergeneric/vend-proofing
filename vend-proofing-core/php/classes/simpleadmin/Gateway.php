@@ -40,25 +40,6 @@
 			return $auth->invalidate();
 		}
 
-		public function validate ($expiration) {
-			$auth = $this->auth;
-			return $auth->validate($expiration);
-		}
-		
-		public function createUser ($username, $password, $email_address, $secret_question, $secret_question_answer=null, $secret_question_answer_hash=null) {
-			/* clear any existing cookies
-				*/
-			$this->invalidate();
-			setcookie("remember", "", time() - 3600);
-			setcookie("username", "", time() - 3600);
-			/* create the username/password hash
-				*/
-			Gateway::setUserHash($username, $password);
-			/* create the username/password hash
-				*/
-			Gateway::setEmailHash($email_address, $secret_question, $secret_question_answer, $secret_question_answer_hash);
-		}
-
 		/* ---- Constructor ---- */
 
 		public function __construct() {
@@ -75,42 +56,6 @@
 				$this->action = $action;
 			}
 			$this->auth = new Auth();
-		}
-		
-		/* ---- Static Methods Properties ---- */
-		
-		protected static function setUserHash ($username, $password=null, $password_hash=null) {
-			global $CONFIG;
-			$userhash = sha1(md5($username).md5($CONFIG->getNodeVal("setup.product_key")));
-			$datapath = SA_DIR_AUTH . "/" . $userhash;
-			$userdata = $password_hash!=null ? $password_hash : sha1(md5(SA_NAMESPACE).md5($password));
-			Filesystem::deleteFile($datapath);
-			return Filesystem::makeFile($datapath, $userdata);
-		}
-		
-		protected static function setEmailHash ($email_address, $secret_question, $secret_question_answer=null, $secret_question_answer_hash=null) {
-			global $CONFIG;
-			$mailhash = sha1(sha1(md5($email_address).md5($CONFIG->getNodeVal("setup.product_key")))); // double sha in case they chooose thier email address as the username
-			$datapath = SA_DIR_AUTH . "/" . $mailhash;
-			$userdata = $secret_question;
-			$userdata .= "\n";
-			$userdata .= $secret_question_answer_hash!=null ? $secret_question_answer_hash : sha1(md5(SA_NAMESPACE).md5($secret_question_answer));
-			Filesystem::deleteFile($datapath);
-			return Filesystem::makeFile($datapath, $userdata);
-		}
-		
-		protected static function getUserHash ($username) {
-			global $CONFIG;
-			$userhash = sha1(md5($username).md5($CONFIG->getNodeVal("setup.product_key")));
-			$datapath = SA_DIR_AUTH . "/" . $userhash;
-			return Filesystem::getFileData($datapath);
-		}
-
-		protected static function getEmailHash ($email_address) {
-			global $CONFIG;
-			$mailhash = sha1(sha1(md5($email_address).md5($CONFIG->getNodeVal("setup.product_key")))); // double sha in case they chooose thier email address as the username
-			$datapath = SA_DIR_AUTH . "/" . $mailhash;
-			return Filesystem::getFileData($datapath);
 		}
 		
 		/* ---- Private Properties ---- */
@@ -134,59 +79,31 @@
 			return $default;
 		}
 
+		protected function requireAdmin (): void {
+			if ($this->authenticated) return;
+			http_response_code(403);
+			$this->respond(array("type" => "xml", "errors" => array("Administrator access required")));
+		}
+
 		protected function changeSystemPassword () {
-			global $CONFIG;
 			$username = $this->getRequestVariable("username");
-			$o_password = $this->getRequestVariable("o_password");
-			$n_password = $this->getRequestVariable("n_password");
-			/* check username validity (and get the password hash)
-				*/
-			$userhash = Gateway::getUserHash($username);
-			if ($userhash===false) {
-				$this->respond(array(
-					"data" => "Username Invalid"
-				));
-			}
-			/* if the hash file doesnt exits, the username doesnt exist
-				*/
-			if ($o_password!==$userhash) {
-				$this->respond(array(
-					"data" => "Original Password Invalid"
-				));
-			}
-			/* if w're here, new username is legit
-				*/
+			$o_password = isset($_POST["o_password"]) && is_string($_POST["o_password"]) ? $_POST["o_password"] : "";
+			$n_password = isset($_POST["n_password"]) && is_string($_POST["n_password"]) ? $_POST["n_password"] : "";
+			$success = AdminAccount::changePassword($username, $o_password, $n_password);
 			$this->respond(array(
-				"success" => Gateway::setUserHash($username, null, $n_password),
-				"data" => "Password Changed Successfully"
+				"success" => $success,
+				"data" => $success ? "Password Changed Successfully" : "Original Password Invalid"
 			));
 		}
 
 		protected function changeSystemUsername () {
-			global $CONFIG;
 			$o_username = $this->getRequestVariable("o_username");
 			$n_username = $this->getRequestVariable("n_username");
-			$password = $this->getRequestVariable("password");
-			/* check username validity (and get the password hash)
-				*/
-			$userhash = Gateway::getUserHash($o_username);
-			if ($userhash===false) {
-				$this->respond(array(
-					"data" => "Username Invalid"
-				));
-			}
-			/* if the hash file doesnt exits, the username doesnt exist
-				*/
-			if ($password!==$userhash) {
-				$this->respond(array(
-					"data" => "Original Password Invalid"
-				));
-			}
-			/* if w're here, new username is legit
-				*/
+			$password = isset($_POST["password"]) && is_string($_POST["password"]) ? $_POST["password"] : "";
+			$success = AdminAccount::changeUsername($o_username, $n_username, $password);
 			$this->respond(array(
-				"success" => Gateway::setUserHash($n_username, null, $password),
-				"data" => "Username Changed Successfully"
+				"success" => $success,
+				"data" => $success ? "Username Changed Successfully" : "Original Password Invalid"
 			));
 		}
 
@@ -431,6 +348,7 @@
 			global $LANG;
 			switch ($this->action) {
 			 case "system_phpinfo" :
+				$this->requireAdmin();
 				$this->showPhpInfo();
 				break;
 			 case "create_gradient" :
@@ -571,107 +489,24 @@
 						));
 				}
 				break;
-			 case "reset_user_credentials" :
-				$email_address = strtolower($this->getRequestVariable("email_address"));
-				$secret_question_hash = $this->getRequestVariable("secret_question_hash");
-				$mailhash = Gateway::getEmailHash($email_address);
-				if ($mailhash===false) {
-					$this->respond(array(
-						"data" => "Address Supplied Does Not Match Address On File"
-					));
-				}
-				/* ok, email address checks out, lets find out if they get thier own question right
-					*/
-				$fragments = explode("\n", $mailhash);
-				$secret_question = $fragments[0];
-				$secret_question_answer_hash = $fragments[1];
-				//$submitted_answer_hash = sha1(md5(SA_NAMESPACE).md5($secret_question_answer));
-				if ($secret_question_answer_hash!==$secret_question_hash) {
-					$this->respond(array(
-						"data" => "Incorrect Answer to Secret Question"
-					));
-				}
-				/* ok, if we are here, that means they're legit.  start by deleting all the old stuff
-					*/
-				Filesystem::purgeFolder(SA_DIR_AUTH);
-				/* create the new user
-					*/
-				$username = Func::generateMnemonicPhrase();
-				$password = Func::generateMnemonicPhrase();
-				$this->createUser($username, $password, $email_address, $secret_question, null, $secret_question_answer_hash);
-				/* email it out
-					*/
-				$message = $LANG->lookup('Your New Temporary Credentials Email Body');
-				$message = str_replace("{BASEURL}", Func::getBaseUrl(), $message);
-				$message = str_replace("{ADMINURL}", Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/admin/", $message);
-				$message = str_replace("{USERNAME}", $username, $message);
-				$message = str_replace("{PASSWORD}", $password, $message);
-				/* send it off
-					*/
-				$success = mail($email_address, $LANG->lookup('Your New Temporary Credentials'), $message);
-				$response = $success ? 'New Credentials Delivered' : 'New Credentials Delivery Failure';
-				$this->respond(array(
-					"success" => $success,
-					"data" => $response
-				));
-			 case "get_secret_question" :
-				$email_address = strtolower($this->getRequestVariable("email_address"));
-				$mailhash = Gateway::getEmailHash($email_address);
-				if ($mailhash===false) {
-					$this->respond(array(
-						"data" => "Address Supplied Does Not Match Address On File"
-					));
-				}
-				$fragments = explode("\n", $mailhash);
-				$this->respond(array(
-					"success" => true,
-					"data" => $fragments[0]
-				));
 			 case "login" :
 				$username = $this->getRequestVariable("username");
-				$password = $this->getRequestVariable("password");
+				$password = isset($_POST["password"]) && is_string($_POST["password"]) ? $_POST["password"] : "";
 				$persist = $this->getRequestVariable("persist");
-				/* decide on cookie persistence
-					*/
-				$expiration = 0;
-				if ($persist=="yes") $expiration = time()+60*60*24*14;
-				/* check username validity (and get the password hash)
-					*/
-				$userhash = Gateway::getUserHash($username);
-				if ($userhash===false) {
-					$this->invalidate();
-					$this->respond(array(
-						"data" => "Username Invalid"
-					));
-				}
-				/* check password validity
-					*/
-				if ($userhash!==$password) {
-					$this->invalidate();
-					$this->respond(array(
-						"data" => "Password Invalid"
-					));
-				}
-				/* ok, if we're here, we're logged in
-					*/
+				$token = $this->auth->login($username, $password, $persist==="yes");
 				$this->respond(array(
-					"success" => true,
-					"data" => $this->validate($expiration)
+					"success" => $token!=="",
+					"data" => $token!=="" ? $token : "Username or password invalid"
 				));
 			 case "logout" :
-				$this->invalidate();
+				if ($this->auth->authenticate()["authenticated"]) $this->invalidate();
 				$this->respond(array(
 					"success" => true
 				));
-			 case "auth_start" :
-				$auth = $this->auth;
-				$path = $auth->start();
-				$this->doRedirect($path);
-			 case "touch" :
-				$auth = $this->auth;
-				$token = $auth->token();
+			 case "auth_status" :
+				$token = $this->auth->token();
 				$this->respond(array(
-					"success" => true,
+					"success" => $token!=="",
 					"data" => $token
 				));
 				break;
@@ -681,6 +516,7 @@
 				$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH;
 				$this->doRedirect($path);
 			 case "get_xml" :
+				$this->requireAdmin();
 				$type = $this->getRequestVariable("type", "");
 				$suid = $this->getRequestVariable("suid", null);
 				$required = $this->getRequestVariable("required", false);
@@ -709,6 +545,7 @@
 					"data" => $data
 				));
 			 case "get_files" :
+				$this->requireAdmin();
 				$type = $this->getRequestVariable("type", "");
 				$suid = $this->getRequestVariable("suid", null);
 				/* do some error checking
@@ -743,6 +580,7 @@
 					"data" => $data
 				));
 			 case "get_set" :
+				$this->requireAdmin();
 				$name = $this->getRequestVariable("name", "");
 				$suid = $this->getRequestVariable("suid", null);
 				/* do some error checking

@@ -1,0 +1,27 @@
+<?php
+
+// CLI only. Apply pending versioned schema changes to an installed Vend database.
+if (PHP_SAPI !== 'cli') exit(1);
+
+$root = dirname(__DIR__);
+$args = $argv;
+array_shift($args);
+if (count($args) === 0) {
+	$dataDir = $root . '/vend-proofing-data';
+} elseif (count($args) === 2 && $args[0] === '--data-dir') {
+	$dataDir = $args[1];
+} else {
+	fwrite(STDERR, "Usage: php scripts/migrate.php [--data-dir DIR]\n");
+	exit(2);
+}
+
+define('SA_DIR_AUTH', rtrim($dataDir, '/') . '/auth');
+require $root . '/vend-proofing-core/php/classes/simpleadmin/Database.php';
+
+try {
+	Database::migrate();
+	fwrite(STDOUT, "Vend schema is current.\n");
+} catch (Throwable $error) {
+	fwrite(STDERR, $error->getMessage() . "\n");
+	exit(1);
+}

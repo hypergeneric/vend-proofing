@@ -5,8 +5,6 @@ classes.data.Auth = (function () {
 	function Constructor () {
 		/* "imported" classes
 			*/
-		var Admin;
-		var Cookie;
 		/* private properites
 			*/
 		var _instance = 			this;
@@ -43,48 +41,22 @@ classes.data.Auth = (function () {
 			}
 		}
 		function authenticate () {
-			/* if there is no token yet, skip this whole thing
-				*/
-			if (_token=="") {
-				
-				invalid();
-				return;
-			}
-			/* ok continue with further checks
-				*/
-			var cookie_name = md5(Admin.config().setup.product._value);
-			var cookie_value = Cookie.get(cookie_name);
-			/* check to see if we have a valid cookie
-				*/
-			if (cookie_value==""||cookie_value==null||cookie_value=="null"||cookie_value==undefined||cookie_value=="undefined") {
-				invalid("invalid cookie: '" + cookie_value + "'");
-				return;
-			}
-			/* ok, cookie exists at least, lets's check it's parts
-				*/
-			var cookie_fragments = cookie_value.split("-").join("").split(".");
-			if (cookie_fragments.length!=2) { // invalid cookie format
-				invalid("invalid cookie length: '" + cookie_fragments.length + "' cookie: '" + cookie_value + "'");
-				return;
-			}
-			/* ok, if we're this far, time to check to see if our cookie is legit
-				*/
-			var cookie_product_hash = cookie_fragments[0];
-			var cookie_shared_key_hash = cookie_fragments[1];
-			var cookie_product_hash_actual = md5(Admin.config().setup.product_key._value);
-			var cookie_shared_key_hash_actual = sha1(_token);
-			if (cookie_product_hash!=cookie_product_hash_actual) {
-				invalid("invalid product hash: '" + cookie_product_hash + "' actual: '" + cookie_product_hash_actual + "'");
-				return;
-			}
-			if (cookie_shared_key_hash!=cookie_shared_key_hash_actual) {
-				invalid("invalid shared key hash: '" + cookie_shared_key_hash + "' actual: '" + cookie_shared_key_hash_actual + "'");
-				return;
-			}
-			/* ok, if we're here, everything has checked out.
-				*/
-			valid();
-			return;
+			$.ajax(_basepath + NAMESPACE + "-gateway.php", {
+				data: {action: "auth_status"},
+				dataType: "text",
+				method: "POST",
+				success: function (data) {
+					var result = unserialize(data);
+					if (result.s=="true") {
+						_token = result.r;
+						valid();
+					} else {
+						_token = "";
+						invalid();
+					}
+				},
+				error: function () { invalid(); }
+			});
 		}
 		function rawurldecode(str) {
 			try {
@@ -209,9 +181,8 @@ classes.data.Auth = (function () {
 		/* public methods
 			*/
 		this.token = function(str) {
-			if (str) {
+			if (arguments.length) {
 				_token = str;
-				Cookie.set("token", _token, 14);
 			}
 			return _token;
 		};
@@ -277,9 +248,6 @@ classes.data.Auth = (function () {
 		};
 		this.initialize = function () {
 			
-			Admin = classes.Admin;
-			Cookie = classes.helpers.Cookie;
-			
 			_uploader = new XMLHttpRequest(),
 			_uploader.upload.addEventListener("abort", onAbort, false);
 			_uploader.upload.addEventListener("loadstart", onStart, false);
@@ -297,7 +265,7 @@ classes.data.Auth = (function () {
 			_basepathabsolute += pathname;
 			_basepathabsolute += "/";
 			
-			_token = Cookie.get("token");
+			_token = "";
 			
 		};
 	}
