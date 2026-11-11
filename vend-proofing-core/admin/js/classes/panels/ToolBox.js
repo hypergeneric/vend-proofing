@@ -88,7 +88,7 @@ classes.panels.ToolBox = function () {
 			action: "account_changeusername",
 			o_username: original_username_field.val(),
 			n_username: new_username_field.val(),
-			password: sha1(md5(NAMESPACE)+md5(password_field.val()))
+			password: password_field.val()
 		});
 	}
 	function change_password_check () {
@@ -109,8 +109,8 @@ classes.panels.ToolBox = function () {
 		Auth.send(this, onResponse, {
 			action: "account_changepassword",
 			username: username_field.val(),
-			o_password: sha1(md5(NAMESPACE)+md5(original_password_field.val())),
-			n_password: sha1(md5(NAMESPACE)+md5(new_password_field.val()))
+			o_password: original_password_field.val(),
+			n_password: new_password_field.val()
 		});
 	}
 	function onResponse (success, data) {
@@ -198,7 +198,7 @@ classes.panels.ToolBox = function () {
 			xhtml += 		'</div>';
 			xhtml += 		'<div class="Group Input">';
 			xhtml += 			'<label>' + Lang.lookup("New Username") + '</label>';
-			xhtml += 			'<input id="new_username_field" type="password" value="" />';
+			xhtml += 			'<input id="new_username_field" type="text" value="" />';
 			xhtml += 		'</div>';
 			xhtml += 		'<div class="Group Input">';
 			xhtml += 			'<label>' + Lang.lookup("Password") + '</label>';

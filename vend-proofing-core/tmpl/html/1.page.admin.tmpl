@@ -2,25 +2,25 @@
 
 	use Michelf\Markdown;
 
-	$inited = 							@file_exists(SA_DIR_AUTH);
-	$hub = 								$CONFIG->getNodeVal("setup.hub")=="true";
+	$inited = AdminAccount::exists();
+	if (!$inited) {
+		include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+		return;
+	}
 
-	if ( $inited || $hub ) {
+	if ( $inited ) {
 
-		if ($hub) {
-			$auth = new Auth();
-			$auth->check();
-		}
+		$auth = new Auth();
 		
 		$data_contact = 				Flatfile::getXmlArray("contact", null, true);
 		$show_setup = 					false;
-		if ($data_contact) {
+		if ($auth->sessionAuthenticated() && $data_contact) {
 			$your_email = 				$data_contact->getAttrVal("data.details.your_email.href");
 			if (Func::validEmail(trim($your_email))==false) {
 				$error = 				"Contact Email Not Configured Or Invalid";
 				$show_setup = 			true;
 			}
-		} else {
+		} else if ($auth->sessionAuthenticated()) {
 			$error = 					"Contact Tab Not Configured";
 			$show_setup = 				true;
 		}
@@ -85,6 +85,9 @@
 			/* if it's a submit, search for errors
 				*/
 			if (strlen($submit)) {
+				if (!isset($_POST["admin_csrf"]) || !is_string($_POST["admin_csrf"]) || !hash_equals($auth->token(), $_POST["admin_csrf"])) {
+					$form_errors[] = "Your admin session expired. Reload this page and try again.";
+				}
 				if (strlen($your_name)==0) {
 					$form_errors[] = 		$LANG->lookup("You must supply an Email Name");
 				}
@@ -135,18 +138,19 @@
 					<div class="Body">
 						<div class="Description"><?php echo $page_description; ?></div>
 							<form action="?/admin/" method="post">
+							<input type="hidden" name="admin_csrf" value="<?php echo htmlspecialchars($auth->token(), ENT_QUOTES, 'UTF-8'); ?>" />
 							<div class="formtitle"><?php echo $your_website_name_label; ?></div>
-							<input type="text" name="your_website_name" value="<?php echo $your_website_name; ?>" />
+							<input type="text" name="your_website_name" value="<?php echo htmlspecialchars($your_website_name, ENT_QUOTES, 'UTF-8'); ?>" />
 							<div class="formtitle"><?php echo $your_website_url_label; ?></div>
-							<input type="text" name="your_website_url" value="<?php echo $your_website_url; ?>" />
+							<input type="text" name="your_website_url" value="<?php echo htmlspecialchars($your_website_url, ENT_QUOTES, 'UTF-8'); ?>" />
 							<div class="formtitle"><?php echo $your_phone_number_label; ?></div>
-							<input type="text" name="your_phone_number" value="<?php echo $your_phone_number; ?>" />
+							<input type="text" name="your_phone_number" value="<?php echo htmlspecialchars($your_phone_number, ENT_QUOTES, 'UTF-8'); ?>" />
 							<div class="formtitle"><?php echo $your_physical_address_label; ?></div>
-							<textarea name="your_physical_address" value="<?php echo $your_physical_address; ?>"></textarea>
+							<textarea name="your_physical_address"><?php echo htmlspecialchars($your_physical_address, ENT_QUOTES, 'UTF-8'); ?></textarea>
 							<div class="formtitle"><?php echo $your_name_label; ?></div>
-							<input type="text" name="your_name" value="<?php echo $your_name; ?>" />
+							<input type="text" name="your_name" value="<?php echo htmlspecialchars($your_name, ENT_QUOTES, 'UTF-8'); ?>" />
 							<div class="formtitle"><?php echo $your_email_label; ?></div>
-							<input type="text" name="your_email" value="<?php echo $your_email; ?>" />
+							<input type="text" name="your_email" value="<?php echo htmlspecialchars($your_email, ENT_QUOTES, 'UTF-8'); ?>" />
 							<input class="InputButton" type="submit" name="submit" value="<?php echo $submit_title; ?>" />
 							<?php if ($form_error!="") { ?><div class="formerror"><?php echo $form_error; ?></div><?php } ?>
 						</form>
@@ -160,118 +164,6 @@
 </html>
 <?php
 		}
-
-	} else {
-
-		/* get all the text stuff
-			*/
-		$page_title = 					$LANG->lookup("Initial Setup");
-		$page_description = 			$LANG->lookup("Intial Page Description");
-		$page_footer = 					$LANG->lookup("Intial Page Footer");
-		$email_address_label = 			$LANG->lookup("Your Primary Email Address");
-		$secret_question_label = 		$LANG->lookup("Your Secret Question");
-		$secret_question_answer_label = $LANG->lookup("Secret Question Answer");
-		$username_label = 				$LANG->lookup("Choose a Username");
-		$password_label = 				$LANG->lookup("Choose a Password");
-		$password_again_label = 		$LANG->lookup("Verify Password");
-		$submit_title = 				$LANG->lookup("Initialize");
-		
-		/* this might be a submit call, lets pull any post vars in
-			*/
-		$form_error = 					"";
-		$form_errors = 					array();
-		$email_address = 				isset($_POST["email_address"]) ? strtolower($_POST["email_address"]) : "";
-		$secret_question = 				isset($_POST["secret_question"]) ? $_POST["secret_question"] : "";
-		$secret_question_answer = 		isset($_POST["secret_question_answer"]) ? strtolower($_POST["secret_question_answer"]) : "";
-		$submit = 						isset($_POST["submit"]) ? $_POST["submit"] : "";
-		$username = 					isset($_POST["username"]) ? $_POST["username"] : "";
-		$password = 					isset($_POST["password"]) ? $_POST["password"] : "";
-		$password_again = 				isset($_POST["password_again"]) ? $_POST["password_again"] : "";
-		
-		/* if it's a submit, search for errors
-			*/
-		if (strlen($submit)) {
-			if (strlen($email_address)==0) 				$form_errors[] = $LANG->lookup("You must supply a valid Email Address");
-			if (strlen($secret_question)==0) 			$form_errors[] = $LANG->lookup("You must supply a secret question");
-			if (strlen($secret_question_answer)==0) 	$form_errors[] = $LANG->lookup("You must supply the answer to the secret question");
-			if (strlen($username)<6) 					$form_errors[] = $LANG->lookup("Username must be a minimum of 6 characters");
-			if (strlen($password)<6) 					$form_errors[] = $LANG->lookup("Password must be a minimum of 6 characters");
-			if ($password!=$password_again) 			$form_errors[] = $LANG->lookup("Passwords do not match");
-			/* if there are no errors, we should be good to go, create the account info
-				and then redirect to yourself to start her up!
-				auto exits and redirects
-				*/
-			if (count($form_errors)==0) {
-				$gateway = new Gateway();
-				$gateway->createUser($username, $password, $email_address, $secret_question, $secret_question_answer);
-				/* redirect to the new admin
-					*/
-				$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/admin/";
-				header("Location: $path");
-				exit;
-			}
-		}
-		/* consolidate any errors
-			*/
-		foreach ($form_errors as $str) $form_error .= "<p>$str</p>";
-
-?>
-<!doctype html>
-<html class="no-js" lang="en">
-<head>
-	<title><?php echo $page_title; ?></title>
-	<meta charset="utf-8">
-	<!-- Mobile viewport optimized -->
-	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
-	<!-- CSS: implied media=all -->
-	<link rel="stylesheet" href="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/css/admin/<?php echo SA_PRODUCT_VERSION; ?>/">
-</head>
-<body>
-	<div id="admin">
-		<div class="Dialog">
-			<div class="Header"><?php echo $page_title; ?></div>
-			<div class="Content">
-				<div class="Markdown"><?php echo $page_description; ?></div>
-				<form action="?/admin/" method="post">
-					<div class="DialogForm">
-						<div class="Group Input">
-							<label><?php echo $email_address_label; ?></label>
-							<input name="email_address" type="input" value="<?php echo $email_address; ?>" required />
-						</div>
-						<div class="Group Input">
-							<label><?php echo $secret_question_label; ?></label>
-							<input name="secret_question" type="input" value="<?php echo $secret_question; ?>" required />
-						</div>
-						<div class="Group Input">
-							<label><?php echo $secret_question_answer_label; ?></label>
-							<input name="secret_question_answer" type="input" value="<?php echo $secret_question_answer; ?>" required />
-						</div>
-						<div class="Group Input">
-							<label><?php echo $username_label; ?></label>
-							<input name="username" type="input" value="<?php echo $username; ?>" required />
-						</div>
-						<div class="Group Input">
-							<label><?php echo $password_label; ?></label>
-							<input name="password" type="password" value="" required />
-						</div>
-						<div class="Group Input">
-							<label><?php echo $password_again_label; ?></label>
-							<input name="password_again" type="password" value="" required />
-						</div>
-						<div class="Submit">
-							<input type="submit" name="submit" value="<?php echo $submit_title; ?>" />
-						</div>
-						<div class="Clear"></div>
-						<div style="visibility:<?php echo $form_error!=""?"visible":"hidden"; ?>;" class="Response"><?php echo $form_error; ?></div>
-					</div>
-				</form>
-			</div>
-			<div class="Footer">
-			</div>
-		</div>
-	</div>
-</body>
-<?php
 
 	}
 

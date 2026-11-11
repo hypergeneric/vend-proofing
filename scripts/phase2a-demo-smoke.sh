@@ -30,3 +30,6 @@ echo 'PASS upload: dimensionless product renders without division by zero'
 grep -Fq 'classes.overlay.Package.add("7642"' "$work_dir/upload.html" || { echo 'FAIL upload: assigned package missing' >&2; exit 1; }
 grep -Fq '16 x 16 canvas' "$work_dir/upload.html" || { echo 'FAIL upload: package format missing' >&2; exit 1; }
 echo 'PASS upload: assigned package and format allocation render'
+asset_status="$(curl -ksS --connect-timeout 10 --max-time 60 -o "$work_dir/asset.jpg" -w '%{http_code}' "$base_url/vend-proofing-gateway.php?action=get_public_asset&folder=775c&filename=jessmat-16-3c38-775d.jpg")"
+[[ "$asset_status" == 200 && -s "$work_dir/asset.jpg" ]] || { echo "FAIL gallery public asset: HTTP $asset_status" >&2; exit 1; }
+echo 'PASS gallery public asset: HTTP 200'

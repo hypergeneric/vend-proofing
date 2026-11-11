@@ -496,13 +496,47 @@
 		protected function runPublic () {
 			global $CONFIG;
 			global $LANG;
+			$gallery_actions = array("list_session_table", "delete_session_type", "delete_session_item", "update_session_item", "add_all_of_type", "open_session", "prequalify_order", "verify_discount_code", "process_credit_card", "finalize_order");
+			$session_actions = array("list_session_table", "delete_session_type", "delete_session_item", "update_session_item", "add_all_of_type", "process_credit_card", "finalize_order");
+			if (in_array($this->action, $gallery_actions, true)) {
+				$puid = $this->getRequestVariable("puid");
+				if (!is_string($puid) || !preg_match('/^[a-f0-9]{1,16}$/i', $puid)) {
+					http_response_code(400);
+					$this->respond(array("type" => "xml", "errors" => array("Invalid gallery identifier")));
+				}
+			}
+			if (in_array($this->action, $session_actions, true)) {
+				$name = $this->getRequestVariable("name");
+				if (!is_string($name) || !preg_match('/^[a-f0-9]{32}$/i', $name)) {
+					http_response_code(400);
+					$this->respond(array("type" => "xml", "errors" => array("Invalid proofing session identifier")));
+				}
+			}
 			switch ($this->action) {
 			 case "get_public_asset" :
 				$folder = $this->getRequestVariable("folder", "asset");
 				$filename = $this->getRequestVariable("filename");
-					$filename = basename($filename);
+				$valid_folder = in_array($folder, array("asset", "audio"), true) ||
+					(is_string($folder) && preg_match('/^[a-f0-9]{1,16}$/i', $folder) && isset(Flatfile::getSetTable("page")[$folder]));
+				$valid_name = is_string($filename) && $filename !== "" && $filename === basename($filename) &&
+					preg_match('/^[A-Za-z0-9._-]+$/', $filename) && $filename[0] !== '.';
+				if (!$valid_folder || !$valid_name) {
+					http_response_code(404);
+					exit();
+				}
+				$listed = false;
+				foreach (array("asset", "track", "audio") as $media_type) {
+					if (isset(Flatfile::getFileTable($media_type, $folder)[$filename])) {
+						$listed = true;
+						break;
+					}
+				}
+				if (!$listed) {
+					http_response_code(404);
+					exit();
+				}
 				$asset_path = SA_DIR_STORAGE . "/$folder/" . $filename;
-				if (strlen($filename)>0&&file_exists($asset_path)&&is_file($asset_path)) {
+				if (is_file($asset_path) && !is_link($asset_path) && !is_link(SA_DIR_STORAGE . "/" . $folder)) {
 					$file_extension = strtolower(substr(strrchr($filename,"."),1));
 					switch ($file_extension) {
 						case "pdf": $ctype="application/pdf"; break;
@@ -975,6 +1009,10 @@
 						"type" => "raw"
 					));
 				}
+				if (!is_string($suid) || !preg_match('/^[a-f0-9]{1,16}$/i', $suid) || !isset(Flatfile::getSetTable("page")[$suid])) {
+					http_response_code(400);
+					$this->respond(array("type" => "xml", "errors" => array("Invalid gallery identifier")));
+				}
 				$page_data = Flatfile::getXmlArray("uploadset", $suid, true);
 				if ($page_data==false) {
 					$page_data = Flatfile::getXmlArray("zipfile", $suid, true);
@@ -1001,7 +1039,7 @@
 						"type" => "raw"
 					));
 				}
-				if (file_exists(SA_DIR_STORAGE."/$suid/")) {
+				if (is_string($suid) && preg_match('/^[a-f0-9]{1,16}$/i', $suid) && isset(Flatfile::getSetTable("page")[$suid])) {
 					setcookie("validate_suid", "", time() - 3600);
 					$this->respond(array(
 						"type" => "raw",
