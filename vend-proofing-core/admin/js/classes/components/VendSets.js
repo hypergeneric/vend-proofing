@@ -231,17 +231,6 @@ classes.components.VendSets = function () {
 				key: "dropbox",
 				options: []
 			});
-		} else if (content_settings.key=="ZipFile") {
-			if (Admin.config().setup.hub._value!="true") {
-				_tabdata.push({
-					classid: classes.panels.ZipFile,
-					init: {
-					},
-					label: Lang.lookup("Zip File"),
-					key: "zipfile",
-					options: []
-				});
-			}
 		}
 		_tabdata.push(audio_list);
 		_tabdata.push(discount_list);

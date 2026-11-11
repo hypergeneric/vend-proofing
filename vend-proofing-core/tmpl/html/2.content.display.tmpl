@@ -26,10 +26,6 @@
 			$images = Catalog::imageRows($this->info("id"));
 			$category = array("page" => array("page", "", count($images)));
 			break;
-		case "ZipFile" :
-			$images = Flatfile::getSetTable("zipfile-fileindex", $this->info("id"));
-			$category = Flatfile::getSetTable("zipfile-category", $this->info("id"));
-			break;
 		case "CategorySet" :
 			$images = Catalog::imageRows($this->info("id"));
 			$category = Catalog::categoryRows($this->info("id"));
@@ -260,11 +256,6 @@
 		$cathash = isset($image[6]) ? strlen($image[6])==0 ? "page" : $image[6] : "page";
 		$dimensions = $image[2];
 		$filename = $image[1];
-		if ($this->info("class")=="ZipFile") {
-			$cathash = $image[1];
-			$dimensions = $image[3];
-			$filename = $image[2];
-		}
 		if ($dimensions=="x") continue;
 		$dimensions = explode("x", $dimensions);
 		$sorted[$cathash]["images"][] = array( "c" => $image[0], "f" => $filename, "w" => $dimensions[0], "h" => $dimensions[1] );

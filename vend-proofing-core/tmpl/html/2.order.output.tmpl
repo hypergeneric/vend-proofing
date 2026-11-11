@@ -27,17 +27,11 @@
 	/* page properties
 		*/
 	$set_id = 				$orderobj[1];
-	$set_path = 			SA_DIR_STORAGE . "/" . $set_id . "/";
 	$setid_uri = 			SA_DIR_INDEXPATH . "?/" . $LANG->lookup('uri_page_identifier') . "/" . $set_id . "/";
-	$isZipSet = 			file_exists($set_path."/zipfile.xml")==true;
-	if ($isZipSet) {
-		$fileindex = 		Flatfile::getSetTable("zipfile-fileindex", $set_id);
+	if (in_array(Catalog::pageType($set_id), array("UploadSet", "CategorySet"), true)) {
+		$fileindex = Catalog::imageRows($set_id);
 	} else {
-		if (in_array(Catalog::pageType($set_id), array("UploadSet", "CategorySet"), true)) {
-			$fileindex = Catalog::imageRows($set_id);
-		} else {
-			$fileindex = Flatfile::getFileTable("image", $set_id);
-		}
+		$fileindex = Flatfile::getFileTable("image", $set_id);
 	}
 
 	/* order info

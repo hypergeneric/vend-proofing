@@ -54,7 +54,7 @@
 	/* ---- Authentication / Page Props --- */
 	$isAuthenticated = 				false;
 	$set_cover_image_asset = 		array("source"=>"");
-	if ($this->info("class")=="ZipFile"||$this->info("class")=="UploadSet"||$this->info("class")=="CategorySet"||$this->info("class")=="DropboxSet") {
+	if ($this->info("class")=="UploadSet"||$this->info("class")=="CategorySet"||$this->info("class")=="DropboxSet") {
 		$isAuthenticated = 			$this->isPageAuthenticated($this->info("id"), $this->info("data"));
 		$isExpired = 				$this->isPageExpired($this->info("id"), $this->info("data"));
 		$set_cover_image_asset = 	$this->getTypedValue($page_data, "settings", "set_cover_image_asset");

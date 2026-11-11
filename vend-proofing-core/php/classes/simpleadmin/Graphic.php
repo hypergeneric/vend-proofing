@@ -1,21 +1,8 @@
 <?php
 
-	function Graphic_PCLZIP_CB_PRE_EXTRACT ($p_event, &$p_header)
-	{
-		$filename_bits = explode("/", $p_header['filename']);
-		$filename = array_pop($filename_bits);
-		$filenamehash = md5(uniqid().$filename);
-		$filename = $filenamehash."-".$filename;
-		$filename_bits[] = $filename;
-		$p_header['filename'] = implode("/", $filename_bits);
-		return 1;
-	}
-
 	class Graphic {
 		
 		protected $flag_basename = 			"";
-		protected $flag_basename_ext = 		"";
-		protected $flag_is_zip = 			0;
 		protected $flag_filename = 			"";
 		protected $flag_filename_ext = 		"";
 		protected $flag_width = 			0;
@@ -36,7 +23,6 @@
 		protected $flag_crosshairs_alpha = 	100;
 		protected $flag_multiplier = 		1;
 		
-		protected $zip_archive_uri = 		"";
 		protected $image_original_uri = 	"";
 		protected $watermark_uri = 			"";
 		protected $image_unique_hash = 		"";
@@ -153,11 +139,6 @@
 			if ($child === "" || $child[0] === '.' || !preg_match('/^[A-Za-z0-9._-]+$/', $child)) return false;
 			if (is_link(SA_DIR_STORAGE . "/" . $parent) || is_link(SA_DIR_STORAGE . "/" . $parent . "/" . $child)) return false;
 			$pages = Catalog::pageRows();
-			if (preg_match('/^([a-f0-9]{1,16})\.zip$/i', $parent, $matches)) {
-				return isset($pages[$matches[1]]) && ctype_digit($child) &&
-					!is_link(SA_DIR_DATAPATH . "/uploads/" . $parent) &&
-					isset(Flatfile::getSetTable("zipfile-fileindex", $matches[1])[$child]);
-			}
 			if (in_array($parent, array("asset", "audio", "track", "package", "product"), true)) {
 				$types = array($parent);
 			} elseif (preg_match('/^[a-f0-9]{1,16}$/i', $parent) && isset($pages[$parent])) {
@@ -178,16 +159,9 @@
 		public function process ($valid=true, $error="") {
 			
 			if ( $valid==true ) {
-				if ( $this->flag_is_zip==true ) {
-					if ( !file_exists($this->zip_archive_uri) ) {
-						$valid = false;
-						$error = "Zip Archive Does Not Exist";
-					}
-				} else {
-					if ( !file_exists($this->image_original_uri) ) {
-						$valid = false;
-						$error = "Original Image Does Not Exist";
-					}
+				if ( !file_exists($this->image_original_uri) ) {
+					$valid = false;
+					$error = "Original Image Does Not Exist";
 				}
 			}
 			
@@ -211,7 +185,6 @@
 		}
 		
 		public function update () {
-			$this->zip_archive_uri = SA_DIR_DATAPATH . "/uploads/" . $this->flag_basename;
 			$this->image_original_uri = SA_DIR_STORAGE . "/" . $this->flag_basename . "/" . $this->flag_filename;
 			$this->watermark_uri = SA_DIR_STORAGE . "/asset/" . $this->flag_watermark_asset;
 			$this->image_unique_hash = md5(
@@ -245,8 +218,6 @@
 		
 		public function setBasepath ($str) {
 			$this->flag_basename = $str;
-			$this->flag_basename_ext = strtolower(substr($this->flag_basename, strrpos($this->flag_basename, ".")+1));
-			$this->flag_is_zip = $this->flag_basename_ext=="zip";
 			$this->update();
 		}
 		
@@ -300,9 +271,7 @@
 		}
 		
 		public function setExtension ($str) {
-			if ( $str=="" || $str=="zip" ) {
-				$str = $this->flag_is_zip ? "jpg" : $this->flag_filename_ext;
-			}
+			if ( $str=="" ) $str = $this->flag_filename_ext;
 			$this->flag_filename_ext = $str;
 			$this->update();
 		}
@@ -579,18 +548,6 @@
 				//$this->update(); ??
 			}
 			/*
-				if it's a zip file, extract it
-				*/
-			if ( $this->flag_is_zip ) {
-				$zip_archive = new PclZip($this->zip_archive_uri);
-				$extraction = $zip_archive->extract(
-					PCLZIP_OPT_BY_INDEX, $this->flag_filename,
-					PCLZIP_OPT_PATH, SA_DIR_TEMP,
-					PCLZIP_CB_PRE_EXTRACT, 'Graphic_PCLZIP_CB_PRE_EXTRACT',
-					PCLZIP_OPT_REMOVE_ALL_PATH);
-				$this->image_original_uri = $extraction[0]["filename"];
-			}
-			/*
 				ok, if we're here, it's time to get down too
 				business.  we're gonna resample and crop the image
 				as quickly as possible.
@@ -602,7 +559,7 @@
 				unless it needs a watermark
 				*/
 			if ( $resample==false ) {
-				if ( !$this->flag_is_zip && !$this->flag_watermark && !$this->flag_crosshairs ) {
+				if ( !$this->flag_watermark && !$this->flag_crosshairs ) {
 					$this->outputOriginal();
 				}
 			}
@@ -792,11 +749,6 @@
 							break;
 					}
 				}
-			}
-			/* delete our temp image if we pulled it out from a zip
-				*/
-			if ( $this->flag_is_zip ) {
-				@unlink($this->image_original_uri);
 			}
 			/*
 				and finally, let's send it out!

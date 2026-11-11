@@ -1,5 +1,17 @@
 # Vend modernization log
 
+## ZIP gallery retirement (implemented)
+
+**Decision:** The photographer can drag a folder into CategorySet, so the FTP-delivered ZIP gallery no longer justifies a separate ingestion, index, and image-serving pipeline in the new release. The user created the `legacy-checkpoint/pre-zip-removal` branch to preserve the old implementation. This is a product retirement, not a data migration.
+
+- Removed ZipFile from the set type chooser and relational page type allowlist, removed its admin panel and XML default, and removed its verification and metadata Gateway actions. General gallery-type validation remains; no ZIP-specific request compatibility branches were added.
+- Removed ZIP gallery reads from storefront and order templates, ZIP entry resampling and access checks from `Graphic`, and the ZIP-specific storefront image URL branches. Retained PclZip for separate font and application archive operations.
+- Migration `005_remove_zip_gallery.sql` drops the unused `gallery_archives` and `archive_entries` tables. Existing migration files remain immutable. No ZIP gallery data is imported into the new release.
+
+**Tested:** PHP 8.4 foundation, basic upload-set, and category-set smokes passed on disposable installations. Listed JPEG resampling and both supported gallery storefronts still work. The local Lando archive tables were empty before migration `005` was applied; the migration completed without changing the existing set records.
+
+**Left open:** The historical audit and staged-demo smoke remain records of the older release. They are not current ZIP gallery acceptance tests. The next persistence slice should be chosen from supported features; Dropbox ingestion and saved XML configuration remain candidates.
+
 ## Relational catalog — category set slice (implemented)
 
 **Decision:** CategorySet images and folder categories are authoritative in SQLite. Preserve category hashes, image row column 7, Gateway responses, folder-upload behavior, storefront layout, and media files. No category or image table fallback was added.
@@ -8,7 +20,7 @@
 - `Catalog` now lists, saves, reorders, and deletes categories and projects CategorySet image rows with their category hash. `CatalogGateway` handles category requests and CategorySet image actions. The storefront, proofing image lookup, public resampling authorization, and order image lookup read these relational rows. Physical JPEGs and derivatives remain files.
 - The disposable category smoke creates two folders, uploads two JPEGs, checks the Gateway rows and storefront, plants decoy table files to prove they are ignored, restarts PHP, resizes a listed image, rejects unlisted/traversal sources, then reorders and deletes records. It checks that normal uploads created no `image.table` or `set.category.table`. The category smoke, basic upload-set smoke, and foundation/Gateway smoke passed on PHP 8.4. The additive migration was applied to the local Lando database without changing its existing set or images.
 
-**Left open:** CategorySet XML settings and the broader XML-to-JSON interface, ZIP and Dropbox records, commerce and proofing records, media cleanup after interrupted SQL/file operations, and backup of SQLite with media remain separate phases. Next bounded step: qualify and move ZIP gallery archive/index records without changing ZIP verification or image-processing behavior.
+**Left open:** CategorySet XML settings and the broader XML-to-JSON interface, Dropbox records, commerce and proofing records, media cleanup after interrupted SQL/file operations, and backup of SQLite with media remain separate phases. ZIP galleries were retired in the subsequent product decision above.
 
 ## Development tooling — VS Code template association
 

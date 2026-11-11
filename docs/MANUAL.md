@@ -6,7 +6,7 @@ Vend helps photographers present galleries, collect favorites and print choices,
 
 To create the first administrator, run `lando php scripts/admin-account.php create USERNAME EMAIL` on the host and enter a password of at least 12 characters. Open `?/admin/` and sign in with that username and password. If the password is lost, run `lando php scripts/admin-account.php reset USERNAME` locally. If Vend is installed without Lando, use `php` in the same commands. Password recovery requires server access for now; it does not use email or secret questions.
 
-In the administration interface, create a gallery set and add photographs. Upload sets store photographs on the Vend server. ZIP and Dropbox sets use different ingestion paths. A gallery can have a password, expiration date, cover image, welcome text, and assigned pricing groups.
+In the administration interface, create a gallery set and add photographs. Upload sets store photographs on the Vend server; category sets accept folders of photographs. Dropbox sets use a separate ingestion path. A gallery can have a password, expiration date, cover image, welcome text, and assigned pricing groups.
 
 Create formats, papers, modifiers, packages, and products in pricing before offering them in a gallery. A package bundles chosen photographs into specified print formats; a product is package-like without format allocations. Orders provide invoices and production instructions. Physical prints are fulfilled manually by the photographer or their chosen lab.
 

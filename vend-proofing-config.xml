@@ -35,6 +35,5 @@
 		<type key="UploadSet" images="true" audio="true" children="false" tabs="true" />
 		<type key="CategorySet" images="true" audio="true" children="false" tabs="true" />
 		<type key="DropboxSet" images="false" audio="true" children="false" tabs="true" />
-		<type key="ZipFile" images="false" audio="true" children="false" tabs="true" />
 	</content>
 </setup>

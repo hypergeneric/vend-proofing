@@ -170,7 +170,7 @@ classes.Overlay = (function () {
 			var obj_xoffset = 50;
 			var obj_yoffset = 50;
 			if (wallview=="set") {
-				obj_puid = classid=="ZipFile" ? suid + ".zip" : suid;
+				obj_puid = suid;
 				obj_cuid = obj.c;
 				obj_hash = md5(obj_puid+obj_cuid);
 				obj_filename = obj.f;
@@ -246,7 +246,7 @@ classes.Overlay = (function () {
 			if (!obj) return;
 			if (wallview=="set") {
 				return {
-					parent: 	classid=="ZipFile"  ? suid + ".zip" : suid,
+					parent: 	suid,
 					child: 		obj.c,
 					filename: 	obj.f,
 					width: 		parseInt(obj.w, 10),

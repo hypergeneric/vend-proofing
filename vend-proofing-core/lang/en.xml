@@ -16,8 +16,6 @@
 	<uploadset_description name="Single Category - Upload via this CMS" />
 	<categoryset_description name="Multiple Categories - Upload via this CMS" />
 	<categoryset name="Category" />
-	<zipfile name="Zip Archive" />
-	<zipfile_description name="Multiple categories - FTP a Zip file" />
 	<dropboxset name="Dropbox Set" />
 	<dropboxset_description name="Use Dropbox to Offer Digital Downloads" />
 	<expires_on_date name="Date and Time Site Expires&#10;(timezone aware)" />
@@ -37,13 +35,6 @@
 	<set_cover_image_asset name="Gallery Image&#10;(use a 16:9 aspect ratio for best results)&#10;(must be larger than 800px in either direction to display)" />
 	<set_contact_list name="Contact List&#10;(comma-separated email addresses)" />
 	<set_welcome_message name="Welcome Message" />
-	<ftp_server_path name="FTP Server Path" />
-	<zipfile_directions name="To create categories, you are going to FTP a zip file to a specified location on your server. &lt;br /&gt;&lt;br /&gt;1. Create a zip file with organized folders of images. Those folder names will become your category names. The zip file name should match exactly as it is seen below at the end of the path (ie: a023.zip).&lt;br /&gt;&lt;br /&gt;2. FTP your zip file to the location specified below. The path below (ie: /vend-proofing-data/uploads/XXXX.zip) outlines the location that your new zip file should be uploaded to. &lt;br /&gt;&lt;br /&gt;You will have to create the &quot;uploads&quot; folder if you haven't yet done so and place the zip file into that folder.&lt;br /&gt;&lt;br /&gt;3. Once you FTP your zip file to the proper location, please click the “Verify Zip File” button below. &lt;br /&gt;&lt;br /&gt;4.You can then move your folders up or down in order. However, you can not organize/rename folders and images. If you want to make changes, you will have to re-upload/replace the zip with a modified zip file of the same name." />
-	<zip_verify_warning name="WARNING!" />
-	<zip_verify_warning_accept name="I Understand, Continue With Verification" />
-	<zip_verify_warning_description name="&lt;b&gt;Do not panic -- just read carefully!&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;Please proceed with the verification if you are verifying this set for very the first time or have not shared this set with any clients yet.&lt;br /&gt;&lt;br /&gt;If you have already shared this set with a client, please be aware that re-verifying this set is &lt;i&gt;&lt;b&gt;not necessarily a good idea&lt;/b&gt;&lt;/i&gt;. Since we can't be sure that the new zip file's images and image order are exactly the same as before, we must clear existing client sessions/carts/favorites to eliminate any inconsistencies. If any orders have already been placed, the order's file and financial information will remain intact, however the image thumbnails may no longer be correct." />
-	<zip_verify_failure name="Cannot Verify Zip File!" />
-	<zip_verify_failure_description name="We cannot seem to verify the zip file.  Please re-check the instructions, and try again." />
 	<dropbox_folder_location name="Unique Dropbox Folder Location" />
 	<dropbox_sync_directions name="&#x3C;a href=&#x22;https://intothedarkroom.zendesk.com/hc/en-us/articles/208110476-Images-Dropbox-set-digital-downloads-&#x22; target=&#x22;_blank&#x22;&#x3E;&#x3C;u&#x3E;&#x3C;b&#x3E;Full Directions Here&#x3C;/b&#x3E;&#x3C;/u&#x3E;&#x3C;/a&#x3E;&#x3C;br /&#x3E;&#x3C;br /&#x3E;Go to your Dropbox account or drive and create a folder with the folder name given below in your Vend App Folder.&#x3C;br /&#x3E;&#x3C;br /&#x3E;Copy your high resolution images into this folder. Depending on the number of images you have, this could take hours. HINT: If you would like to categorize your images (i.g. reception, ceremony, bridal party, etc), name the folders that you place in the set folders with the category names and add the images to the appropriate folder.&#x3C;br /&#x3E;&#x3C;br /&#x3E;Once the images are uploaded to Dropbox, you will click the &#x22;Sync&#x22; button below.&#x3C;br /&#x3E;&#x3C;br /&#x3E;Once the files are synced, it will show you the date and number of images that are in this set. If you change anything in this Dropbox set folder, you must resync the folder. Once you send out the link to the client is is best not to re-sync anything." />
 	<dropbox_sync_heading name="Dropbox" />

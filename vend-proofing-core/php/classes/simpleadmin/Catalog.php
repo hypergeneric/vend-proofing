@@ -66,7 +66,7 @@
 				$type = isset($values[1]) ? (string) $values[1] : ($existing["gallery_type"] ?? "UploadSet");
 				$count = isset($values[2]) ? max(0, (int) $values[2]) : (int) ($existing["image_count"] ?? 0);
 
-				$allowed = array("UploadSet", "CategorySet", "DropboxSet", "ZipFile");
+				$allowed = array("UploadSet", "CategorySet", "DropboxSet");
 				if (!in_array($type, $allowed, true)) {
 					throw new InvalidArgumentException("Invalid gallery type.");
 				}
@@ -111,8 +111,7 @@
 
 				$sql = "DELETE FROM media_assets
 					WHERE id = ?
-					AND id NOT IN (SELECT asset_id FROM gallery_images)
-					AND id NOT IN (SELECT asset_id FROM gallery_archives)";
+					AND id NOT IN (SELECT asset_id FROM gallery_images)";
 				$delete = $db->prepare($sql);
 				foreach ($assetIds as $assetId) {
 					$delete->execute(array($assetId));
@@ -328,8 +327,7 @@
 				$deleteImage = $db->prepare("DELETE FROM gallery_images WHERE id = ?");
 				$sql = "DELETE FROM media_assets
 					WHERE id = ?
-					AND id NOT IN (SELECT asset_id FROM gallery_images)
-					AND id NOT IN (SELECT asset_id FROM gallery_archives)";
+					AND id NOT IN (SELECT asset_id FROM gallery_images)";
 				$deleteAsset = $db->prepare($sql);
 
 				foreach ($keys as $key) {

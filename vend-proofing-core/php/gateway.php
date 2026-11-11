@@ -119,139 +119,6 @@
 					"success" => true,
 					"data" => $response
 				));
-			 case "zipfile_meta" :
-				$suid = $this->getRequestVariable("suid");
-				$zipurl = SA_DIR_DATAPATH . "/uploads/$suid.zip";
-				$category_file = SA_DIR_STORAGE."/$suid/set.zipfile-category.table";
-				$success = file_exists($zipurl);
-				if ($success) {
-					$props = array(
-						"last_updated" => file_exists($category_file) ? date("m/d/Y", @filemtime($category_file)) : "N/A",
-						"size" => Func::bytesToSize(filesize($zipurl))
-					);
-				} else {
-					$props = array(
-						"last_updated" => "---",
-						"filesize" => "N/A"
-					);
-				}
-				$response = "";
-				foreach ($props as $key => $value) {
-					$response .= $response=="" ? $key . "=" . $value : "&" . $key . "=" . $value;
-				}
-				$this->respond(array(
-					"success" => $success,
-					"data" => $response
-				));
-			 case "verify_zip_file" :
-				$suid = $this->getRequestVariable("suid");
-				$zipurl = SA_DIR_DATAPATH . "/uploads/$suid.zip";
-				$archive = new PclZip($zipurl);
-				$success = true;
-				if (file_exists($zipurl)==false) {
-					$success = false;
-				} else {
-					function cleanExtractedFilename ($p_event, &$p_header)
-					{
-						// cget pertinant info
-						$stored_filename = trim($p_header['stored_filename'], "/");
-						$folder = $p_header['folder'];
-						$filename = $p_header['filename'];
-						$index = $p_header['index'];
-						// skip any folders
-						if ($folder==true) return 0;
-						// skip any folders
-						if (substr($stored_filename, 0, 8)=="__MACOSX") return 0;
-						// skip anything that isn't an image
-						$extension = strtolower(substr($stored_filename, strrpos($stored_filename, '.')+1));
-						if (in_array($extension, array("jpg", "jpeg", "png"))==false) return 0;
-						// ok, if we're here, lets extract it to a unique name
-						$filename_bits = explode("/", $filename);
-						$filename = array_pop($filename_bits);
-						$filename = $index.".".$extension;
-						$filename_bits[] = $filename;
-						$p_header['filename'] = implode("/", $filename_bits);
-						return 1;
-					}
-					$extractpath = SA_DIR_TEMP."/".$suid;
-					$contents = $archive->extract(
-						PCLZIP_OPT_PATH, $extractpath,
-						PCLZIP_CB_PRE_EXTRACT, "cleanExtractedFilename",
-						PCLZIP_OPT_REMOVE_ALL_PATH);
-					if ($contents==0) {
-						$success = false;
-					} else {
-						$lookup = array();
-						$total = count($contents);
-						for ($i=0; $i<$total; ++$i) {
-							$obj = $contents[$i];
-							$filename = $obj['filename'];
-							$stored_filename = trim($obj['stored_filename'], "/");
-							$folder = trim($obj['folder'], "/");
-							$status = trim($obj['status'], "/");
-							if (substr($stored_filename, 0, 8)=="__MACOSX") continue;
-							if ($status=="skipped") continue;
-							if ($folder==true) {
-								$folder = trim($stored_filename, "/");
-								$folderhash = md5($folder);
-								if (isset($lookup[$folderhash])==false) {
-									$folderbits = explode("/", $folder);
-									$lookup[$folderhash] = array();
-									$lookup[$folderhash]["images"] = array();
-									$lookup[$folderhash]["category"] = array_pop($folderbits);
-								}
-							} else {
-								$filenamebits = explode("/", $stored_filename);
-								array_pop($filenamebits);
-								$folder = implode("/", $filenamebits);
-								$folder = trim($folder, "/");
-								$folderhash = md5($folder);
-								if (isset($lookup[$folderhash])) {
-									$imagesize = getimagesize($filename);
-									$image_width = $imagesize[0];
-									$image_height = $imagesize[1];
-									$lookup[$folderhash]["images"][] = array("name"=>basename($stored_filename),"index"=>$i,"dimensions"=>$image_width."x".$image_height);
-									@unlink($filename);
-								}
-							}
-						}
-						$datapath = SA_DIR_STORAGE . "/" . $suid;
-						$category = "";
-						$fileindex = "";
-						$image_total = 0;
-						$category_total = 0;
-						foreach ($lookup as $folderhash => $obj) {
-							$images = count($obj["images"]);
-							if ($images==0) continue;
-							$image_total += $images;
-							$category_total += 1;
-							$category .= $folderhash . "\t" . $obj["category"] . "\t" . $images . "\n";
-							for ($i=0; $i<$images; ++$i) {
-								$imgobj = $obj["images"][$i];
-								$fileindex .= $imgobj["index"] . "\t" . $folderhash . "\t" . $imgobj["name"] . "\t" . $imgobj["dimensions"] . "\n";
-							}
-						}
-						if ($category_total==0) {
-							$success = false;
-						} else {
-							$category = trim($category);
-							$fileindex = trim($fileindex);
-							Filesystem::makeFile(SA_DIR_STORAGE."/$suid/set.zipfile-category.table", $category);
-							Filesystem::makeFile(SA_DIR_STORAGE."/$suid/set.zipfile-fileindex.table", $fileindex);
-							Catalog::setImageCount($suid, $image_total);
-							$session = Flatfile::getSetTable("session", $suid);
-							foreach ($session as $hash => $object) {
-								@unlink(SA_DIR_STORAGE."/$suid/set.$hash.table");
-							}
-							@unlink(SA_DIR_STORAGE."/$suid/set.session.table");
-						}
-						@rmdir($extractpath);
-					}
-				}
-				$this->respond(array(
-					"type" => "txt",
-					"success" => $success
-				));
 			 case "duplicate_set" :
 				if ($this->getRequestVariable("name") === "page") {
 					$this->respond(array("success" => false, "data" => "Set duplication will be restored with the remaining gallery sources"));
@@ -409,9 +276,6 @@
 					}
 				}
 				$page_data = Flatfile::getXmlArray("uploadset", $suid, true);
-				if ($page_data==false) {
-					$page_data = Flatfile::getXmlArray("zipfile", $suid, true);
-				}
 				if ($page_data==false) {
 					$page_data = Flatfile::getXmlArray("categoryset", $suid, true);
 				}
@@ -1024,9 +888,6 @@
 					$this->respond(array("type" => "xml", "errors" => array("Invalid gallery identifier")));
 				}
 				$page_data = Flatfile::getXmlArray("uploadset", $suid, true);
-				if ($page_data==false) {
-					$page_data = Flatfile::getXmlArray("zipfile", $suid, true);
-				}
 				if ($page_data==false) {
 					$page_data = Flatfile::getXmlArray("categoryset", $suid, true);
 				}
