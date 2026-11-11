@@ -152,7 +152,7 @@
 		protected function isPublicSource (string $parent, string $child): bool {
 			if ($child === "" || $child[0] === '.' || !preg_match('/^[A-Za-z0-9._-]+$/', $child)) return false;
 			if (is_link(SA_DIR_STORAGE . "/" . $parent) || is_link(SA_DIR_STORAGE . "/" . $parent . "/" . $child)) return false;
-			$pages = Flatfile::getSetTable("page");
+			$pages = Catalog::pageRows();
 			if (preg_match('/^([a-f0-9]{1,16})\.zip$/i', $parent, $matches)) {
 				return isset($pages[$matches[1]]) && ctype_digit($child) &&
 					!is_link(SA_DIR_DATAPATH . "/uploads/" . $parent) &&
@@ -166,6 +166,9 @@
 				return false;
 			}
 			$lookup = str_ends_with($child, ".snapshot.jpg") ? substr($child, 0, -13) : $child;
+			if (isset($pages[$parent]) && in_array(Catalog::pageType($parent), array("UploadSet", "CategorySet"), true)) {
+				return isset(Catalog::imageRows($parent)[$lookup]);
+			}
 			foreach ($types as $type) {
 				if (isset(Flatfile::getFileTable($type, $parent)[$lookup])) return true;
 			}

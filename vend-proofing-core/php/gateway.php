@@ -20,6 +20,10 @@
 		protected function runPrivate () {
 			global $CONFIG;
 			global $LANG;
+			$catalogResponse = CatalogGateway::dispatch($this->action, $this->post);
+			if ($catalogResponse !== null) {
+				$this->respond($catalogResponse);
+			}
 			switch ($this->action) {
 			 case "delete_dropbox_set" :
 				$dropboxer = new Dropboxer();
@@ -234,9 +238,7 @@
 							$fileindex = trim($fileindex);
 							Filesystem::makeFile(SA_DIR_STORAGE."/$suid/set.zipfile-category.table", $category);
 							Filesystem::makeFile(SA_DIR_STORAGE."/$suid/set.zipfile-fileindex.table", $fileindex);
-							$table = Flatfile::getSetTable("page");
-							$table = Flatfile::updateSetTable("page", array($suid, null, null, $image_total));
-							Flatfile::saveSetTable($table, "page");
+							Catalog::setImageCount($suid, $image_total);
 							$session = Flatfile::getSetTable("session", $suid);
 							foreach ($session as $hash => $object) {
 								@unlink(SA_DIR_STORAGE."/$suid/set.$hash.table");
@@ -251,6 +253,9 @@
 					"success" => $success
 				));
 			 case "duplicate_set" :
+				if ($this->getRequestVariable("name") === "page") {
+					$this->respond(array("success" => false, "data" => "Set duplication will be restored with the remaining gallery sources"));
+				}
 				$new_suid = Flatfile::createUID();
 				$old_suid = $this->getRequestVariable("suid");
 				$name = $this->getRequestVariable("name");
@@ -493,6 +498,7 @@
 			parent::runPrivate();
 		}
 
+
 		protected function runPublic () {
 			global $CONFIG;
 			global $LANG;
@@ -517,7 +523,7 @@
 				$folder = $this->getRequestVariable("folder", "asset");
 				$filename = $this->getRequestVariable("filename");
 				$valid_folder = in_array($folder, array("asset", "audio"), true) ||
-					(is_string($folder) && preg_match('/^[a-f0-9]{1,16}$/i', $folder) && isset(Flatfile::getSetTable("page")[$folder]));
+					(is_string($folder) && preg_match('/^[a-f0-9]{1,16}$/i', $folder) && isset(Catalog::pageRows()[$folder]));
 				$valid_name = is_string($filename) && $filename !== "" && $filename === basename($filename) &&
 					preg_match('/^[A-Za-z0-9._-]+$/', $filename) && $filename[0] !== '.';
 				if (!$valid_folder || !$valid_name) {
@@ -902,7 +908,11 @@
 				$table = 		Flatfile::getSetTable($name, $puid);
 				$rows = array();
 				if ($group=="cart") {
-					$images = 		Flatfile::getFileTable("image", $puid);
+					if (in_array(Catalog::pageType($puid), array("UploadSet", "CategorySet"), true)) {
+						$images = Catalog::imageRows($puid);
+					} else {
+						$images = Flatfile::getFileTable("image", $puid);
+					}
 					$item_price = 	$price;
 					$remainder = 	0;
 					if ($flat=="true") {
@@ -1009,7 +1019,7 @@
 						"type" => "raw"
 					));
 				}
-				if (!is_string($suid) || !preg_match('/^[a-f0-9]{1,16}$/i', $suid) || !isset(Flatfile::getSetTable("page")[$suid])) {
+				if (!is_string($suid) || !preg_match('/^[a-f0-9]{1,16}$/i', $suid) || !isset(Catalog::pageRows()[$suid])) {
 					http_response_code(400);
 					$this->respond(array("type" => "xml", "errors" => array("Invalid gallery identifier")));
 				}
@@ -1039,7 +1049,7 @@
 						"type" => "raw"
 					));
 				}
-				if (is_string($suid) && preg_match('/^[a-f0-9]{1,16}$/i', $suid) && isset(Flatfile::getSetTable("page")[$suid])) {
+				if (is_string($suid) && preg_match('/^[a-f0-9]{1,16}$/i', $suid) && isset(Catalog::pageRows()[$suid])) {
 					setcookie("validate_suid", "", time() - 3600);
 					$this->respond(array(
 						"type" => "raw",
@@ -1232,8 +1242,7 @@
 
 		protected function onDeleteFileTable ($table, $name, $suid, $type) {
 			if ($name=="page"&&$type=="image") {
-				$parent = Flatfile::updateSetTable("page", array($suid, null, null, count($table)));
-				Flatfile::saveSetTable($parent, "page");
+				Catalog::setImageCount($suid, count($table));
 			}
 			return $table;
 		}
@@ -1276,8 +1285,7 @@
 					$tabledata = Flatfile::updateTableRow($tablepath, $data);
 					Flatfile::saveTableArray($tablepath, $tabledata);
 				}
-				$parent = Flatfile::updateSetTable("page", array($suid, null, null, count($table)));
-				Flatfile::saveSetTable($parent, "page");
+			Catalog::setImageCount($suid, count($table));
 			}
 			return $table;
 		}

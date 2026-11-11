@@ -42,6 +42,7 @@ php -d display_errors=1 -d error_reporting=24575 phase1-storage.php
 php scripts/install.php
 php scripts/migrate.php
 php scripts/foundation-test.php
+php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Catalog.php"; Catalog::savePage("875c", ["Test Gallery", "UploadSet", 0]); unlink("vend-proofing-data/storage/set.page.table");'\''
 php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-server.log 2>&1 &
 server_pid=$!
 trap "kill $server_pid" EXIT

@@ -129,9 +129,7 @@
 			}
 			Filesystem::makeFile(SA_DIR_STORAGE."/$suid/image.table", $image_index);
 			// update the page table with the image count
-			$table = Flatfile::getSetTable("page");
-			$table = Flatfile::updateSetTable("page", array($suid, null, null, $image_total));
-			Flatfile::saveSetTable($table, "page");
+			Catalog::setImageCount($suid, $image_total);
 			// delete the existing sessions and the session table
 			$session = Flatfile::getSetTable("session", $suid);
 			foreach ($session as $hash => $object) {

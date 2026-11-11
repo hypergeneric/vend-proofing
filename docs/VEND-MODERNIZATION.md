@@ -1,5 +1,31 @@
 # Vend modernization log
 
+## Relational catalog — category set slice (implemented)
+
+**Decision:** CategorySet images and folder categories are authoritative in SQLite. Preserve category hashes, image row column 7, Gateway responses, folder-upload behavior, storefront layout, and media files. No category or image table fallback was added.
+
+- Migration `004_gallery_category_keys.sql` adds a per-gallery public key to `gallery_categories`. The existing `gallery_images.category_id` relationship links each uploaded image to a category. Folder uploads create or reuse the category and image record in one database transaction; uploads without a folder remain ungrouped.
+- `Catalog` now lists, saves, reorders, and deletes categories and projects CategorySet image rows with their category hash. `CatalogGateway` handles category requests and CategorySet image actions. The storefront, proofing image lookup, public resampling authorization, and order image lookup read these relational rows. Physical JPEGs and derivatives remain files.
+- The disposable category smoke creates two folders, uploads two JPEGs, checks the Gateway rows and storefront, plants decoy table files to prove they are ignored, restarts PHP, resizes a listed image, rejects unlisted/traversal sources, then reorders and deletes records. It checks that normal uploads created no `image.table` or `set.category.table`. The category smoke, basic upload-set smoke, and foundation/Gateway smoke passed on PHP 8.4. The additive migration was applied to the local Lando database without changing its existing set or images.
+
+**Left open:** CategorySet XML settings and the broader XML-to-JSON interface, ZIP and Dropbox records, commerce and proofing records, media cleanup after interrupted SQL/file operations, and backup of SQLite with media remain separate phases. Next bounded step: qualify and move ZIP gallery archive/index records without changing ZIP verification or image-processing behavior.
+
+## Development tooling — VS Code template association
+
+- Added project workspace settings mapping `.tmpl` files under `tmpl/` folders to PHP for editor language support.
+- Validated the settings as JSON and checked whitespace with `git diff --check`. No application behavior changed; no outstanding work for this tooling change.
+
+## Relational catalog — basic upload set slice (implemented)
+
+**Decision:** Prove the shared display path used by `2.content.uploadset.tmpl`: create an upload set, upload an image, render it, and reload it after a server restart. Page rows and upload-set image metadata are authoritative in SQLite. The physical JPEG and generated resize remain files. No flat-file page or upload-set image fallback was added.
+
+- Added a `pages.image_count` migration and `Catalog.php`, which writes page/gallery and image/asset relationships through transactions and projects the existing tab-delimited Gateway rows for the JavaScript admin. `CatalogGateway.php` owns the admin request routing for `page` and basic `UploadSet` images; `LocalGateway` delegates through one dispatch call. Public page lookup, basic-set rendering, proofing image selection, resampling, and order image lookup read the same relational records. Other set image sources still use their current files until their bounded extensions.
+- `scripts/basic-set-smoke.sh` creates a disposable empty installation, logs in, creates an upload set, uploads and resizes a JPEG, renders the storefront, restarts PHP, edits the set and image, then deletes them. It verifies SQL row counts and that no `set.page.table` or upload-set `image.table` is created. It also plants decoy flat-file records temporarily and confirms the admin lists ignore them. Passed on PHP 8.4.22. The foundation and synthetic CategorySet upload smokes passed after their fixtures were updated to put pages in SQLite. `scripts/phase1-dev.sh` now starts with an empty page catalog for interactive QA.
+- Applied the additive migration to the disposable local Lando database. Existing staged-demo page rows remain on disk for reference but are no longer read as the page catalog; that site starts with an empty set list until sets are created in admin. No historical data importer was introduced.
+- After author feedback, expanded the new catalog classes and their touched call sites into the project's tab-indented, step-by-step PHP style. The request dispatch remains in `CatalogGateway.php`; no catalog behavior changed. The basic-set, foundation, and synthetic CategorySet smoke checks passed again.
+
+**Left open:** ZIP, Dropbox, and CategorySet image lists, categories, set duplication, remote image sideloading, gallery XML settings, proofing records, and commerce are later slices. Admin duplicate-set and upload-set sideload actions currently return clear failures rather than writing invisible flat-file records. Set deletion commits the relational deletion before removing its media directory, so interrupted cleanup can leave orphan files; recovery/cleanup needs a later media lifecycle pass. The historical staged-demo gallery smoke is now a reference baseline, not an acceptance test for the fresh SQL catalog. Next bounded step: move CategorySet image/category records to relational tables while retaining the shared display and Gateway response contracts.
+
 ## Phase 2B — Public Gateway and media access boundary (implemented)
 
 **Decision:** Complete a narrow public-access pass before moving page/gallery records to SQLite. Public image and asset requests must refer to listed gallery or global media. This pass keeps the existing Gateway response shapes and storefront URLs; it does not move gallery, proofing, or commerce records.

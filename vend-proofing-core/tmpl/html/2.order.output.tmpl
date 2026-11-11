@@ -33,7 +33,11 @@
 	if ($isZipSet) {
 		$fileindex = 		Flatfile::getSetTable("zipfile-fileindex", $set_id);
 	} else {
-		$fileindex = 		Flatfile::getFileTable("image", $set_id);
+		if (in_array(Catalog::pageType($set_id), array("UploadSet", "CategorySet"), true)) {
+			$fileindex = Catalog::imageRows($set_id);
+		} else {
+			$fileindex = Flatfile::getFileTable("image", $set_id);
+		}
 	}
 
 	/* order info
