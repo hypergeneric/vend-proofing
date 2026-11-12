@@ -11,262 +11,27 @@
 		}
 
 		public function getOrderSession ($oid, $msts) {
-			$base_path = $this->getFuzzyOrderBasePath($oid, $msts);
-			$session_path = "$base_path/set.$oid.table";
-			return Flatfile::getTableArray($session_path);
+			return OrderRecords::items($oid);
 		}
 
 		public function deleteOrder ($oid, $msts) {
-			$base_path = $this->getFuzzyOrderBasePath($oid, $msts);
-			$session_path = "$base_path/set.$oid.table";
-			// the log path, if any
-			$log_path = "$base_path/$oid.payment.log";
-			// the daily order table
-			$table_path = "$base_path/set.order.table";
-			$table_data = Flatfile::deleteTableRow($table_path, $oid);
-			// do the dirty deed
-			Filesystem::deleteFile($session_path);
-			Filesystem::deleteFile($log_path);
-			Flatfile::saveTableArray($table_path, $table_data);
+			OrderRecords::delete($oid);
 		}
 
-		public function getLogById($oid, $path=""){
-			if ($path=="") $path = SA_DIR_STORAGE . "/orders";
-			$handle = @opendir($path);
-			$filepath = null;
-			$paths = array();
-			if ($handle) {
-				while (false !== ( $file = readdir($handle) )) {
-					if (is_link("$path/$file") || $file == '.' || $file == '..') continue;
-					if (is_file("$path/$file")&&$file=="$oid.payment.log") {
-						$filepath = "$path/$file";
-					} else if (is_dir("$path/$file")) {
-						$paths[] = "$path/$file";
-					}
-				}
-				closedir($handle);
-			}
-			if ($filepath!=null) {
-				return Filesystem::getFileData($filepath);
-			}
-			foreach ($paths as $subdir) {
-				$response = $this->getLogById($oid, $subdir);
-				if ($response!=null) {
-					return $response;
-				}
-			}
-			return null;
+		public function getLogById ($oid) {
+			return OrderRecords::getLog($oid);
 		}
 
-		public function getOrderById($oid, $path=""){
-			if ($path=="") $path = SA_DIR_STORAGE . "/orders";
-			$handle = @opendir($path);
-			$files = array();
-			$paths = array();
-			if ($handle) {
-				while (false !== ( $file = readdir($handle) )) {
-					if (is_link("$path/$file") || $file == '.' || $file == '..') continue;
-					if (is_file("$path/$file")&&$file=="set.order.table") {
-						$files[] = "$path/$file";
-					} else if (is_dir("$path/$file")) {
-						$paths[] = "$path/$file";
-					}
-				}
-				closedir($handle);
-			}
-			foreach ($files as $tablepath) {
-				$table = Flatfile::getTableArray($tablepath);
-				if (isset($table[$oid])) {
-					return $table[$oid];
-				}
-			}
-			foreach ($paths as $subdir) {
-				$response = $this->getOrderById($oid, $subdir);
-				if ($response!=null) {
-					return $response;
-				}
-			}
-			return null;
+		public function getOrderById ($oid) {
+			return OrderRecords::get($oid);
 		}
 
 		public function search ($start, $end, $params=array()) {
-			$date_start = explode("/", $start);
-			$date_end = explode("/", $end);
-			$startyear = $date_start[0];
-			$endyear = $date_end[0];
-			$response = array();
-			$matchy = count($params)>0;
-			for ($year=$startyear; $year<=$endyear; ++$year) {
-				$startmonth = 1;
-				$endmonth = 12;
-				if ($year==$date_start[0]) {
-					$startmonth = $date_start[1];
-				}
-				if ($year==$date_end[0]) {
-					$endmonth = $date_end[1];
-				}
-				for ($month=$startmonth; $month<=$endmonth; ++$month) {
-					$startday = 1;
-					$endday = $this->daysInMonth($month, $year);
-					if ($month==$date_start[1] && $year==$date_start[0]) {
-						$startday = $date_start[2];
-					}
-					if ($month==$date_end[1] && $year==$date_end[0]) {
-						$endday = $date_end[2];
-					}
-					for ($day=$startday; $day<=$endday; ++$day) {
-						$path = SA_DIR_STORAGE . "/orders/$year/$month/$day/set.order.table";
-						if (file_exists($path)) {
-							$table = Flatfile::getTableArray($path);
-							foreach ($table as $key => $arr) {
-								$match = true;
-								if ($matchy) {
-									$match = false;
-									if (isset($params["payment_type"])) {
-										if ($arr[3]==$params["payment_type"]) $match = true;
-									}
-									if ($match==false&&isset($params["orderid"])) {
-										if ($arr[0]==$params["orderid"]) $match = true;
-									}
-									if ($match==false&&isset($params["setid"])) {
-										if ($arr[1]==$params["setid"]) $match = true;
-									}
-									if ($match==false&&isset($params["full_name"])) {
-										if (stristr($arr[7], $params["full_name"])!==false) $match = true;
-									}
-									if ($match==false&&isset($params["email_address"])) {
-										if (stristr($arr[8], $params["email_address"])!==false) $match = true;
-									}
-								}
-								if ($match) $response[] = implode("\t", $arr);
-							}
-						}
-					}
-				}
-			}
-			return implode("\n", $response);
+			return OrderRecords::search($start, $end, $params);
 		}
 
 		public function statsSearch ($start, $end) {
-			$date_start = explode("/", $start);
-			$date_end = explode("/", $end);
-			$startyear = $date_start[0];
-			$endyear = $date_end[0];
-			$response = array();
-			for ($year=$startyear; $year<=$endyear; ++$year) {
-				$startmonth = 1;
-				$endmonth = 12;
-				if ($year==$date_start[0]) {
-					$startmonth = $date_start[1];
-				}
-				if ($year==$date_end[0]) {
-					$endmonth = $date_end[1];
-				}
-				for ($month=$startmonth; $month<=$endmonth; ++$month) {
-					$startday = 1;
-					$endday = $this->daysInMonth($month, $year);
-					if ($month==$date_start[1] && $year==$date_start[0]) {
-						$startday = $date_start[2];
-					}
-					if ($month==$date_end[1] && $year==$date_end[0]) {
-						$endday = $date_end[2];
-					}
-					for ($day=$startday; $day<=$endday; ++$day) {
-						$path = SA_DIR_STORAGE . "/orders/$year/$month/$day/set.order.table";
-						$data = array("$year/$month/$day", "", "", 0, 0, 0, 0, 0, 0, 0);
-						if (file_exists($path)) {
-							$table = Flatfile::getTableArray($path);
-							$timestamp = "$year/$month/$day";
-							foreach ($table as $key => $arr) {
-								$region = $arr[11] . "-" . $arr[13];
-								$data = array();
-								$data[] = $timestamp;			// timestamp
-								$data[] = trim($region, "-");		// region
-								$data[] = $arr[14];			// gross
-								$data[] = $arr[15];			// subtotal
-								$data[] = $arr[16];			// discount
-								$data[] = $arr[17];			// shipping
-								$data[] = $arr[18];			// handling
-								$data[] = $arr[19];			// tax
-								$response[] = implode("\t", $data);
-							}
-						} else {
-							$data = array("$year/$month/$day", "", "0", "0", "0", "0", "0", "0");
-							$response[] = implode("\t", $data);
-						}
-					}
-				}
-			}
-			return implode("\n", $response);
-		}
-
-		public function verifyDiscountCode ($puid, $code, $subtotal) {
-			// check to see if it's a local discount
-			$discount_obj = null;
-			$local_discounts = Flatfile::getSetTable("discount", $puid);
-			foreach ($local_discounts as $key => $arr) {
-				if ($arr[1]==$puid&&$arr[2]==$code) {
-					$discount_obj = $arr;
-					break;
-				}
-			}
-			if ($discount_obj==null) { // if here, no local discounts
-				$global_discounts = Flatfile::getSetTable("discount");
-				foreach ($global_discounts as $key => $arr) {
-					if ($arr[2]==$code) {
-						$discount_obj = $arr;
-						break;
-					}
-				}
-			}
-			if ($discount_obj==null) { // does not exist
-				return array (false, "discount_does_not_exist");
-			}
-			// ok, discount match, lets see if it's still valid
-			$expires_on_date = $discount_obj[7];
-			$expired = false;
-			if ($expires_on_date>0&&strlen($expires_on_date)>0&&$expires_on_date!=null) {
-				$expires_on_date_actual = $expires_on_date/1000;
-				$expires_on_date_actual = $expires_on_date_actual - $this->timezone_offset - (date("I", $expires_on_date_actual)==1?3600:0);
-				$expired = $expires_on_date_actual < time();
-			}
-			if ($expired==true) { // check the expiration first
-				return array (false, "discount_expired");
-			}
-			if ($discount_obj[6]>0&&$discount_obj[5]>=$discount_obj[6]) { // check to see if there are any more slots
-				return array (false, "discount_maximum_uses_filled");
-			}
-			if (isset($discount_obj[8])&&$discount_obj[8]>$subtotal) { // check to see if the cart min has been fulfilled
-				return array (false, "discount_cart_minimum_not_fulfilled");
-			}
-			return array(true, implode("\t", $discount_obj));
-		}
-
-		public function applyDiscountCode ($puid, $code) {
-			// check to see if it's a local discount
-			$local = false;
-			$data;
-			$table = Flatfile::getSetTable("discount", $puid);
-			foreach ($table as $key => $arr) {
-				if ($arr[1]==$puid&&$arr[2]==$code) {
-					$local = true;
-					$data = $arr;
-					break;
-				}
-			}
-			if ($local==false) { // if here, no local discounts
-				$table = Flatfile::getSetTable("discount");
-				foreach ($table as $key => $arr) {
-					if ($arr[2]==$code) {
-						$data = $arr;
-						break;
-					}
-				}
-			}
-			if ($local==false) $puid = null;
-			$data[5] = $data[5]+1;
-			$table = Flatfile::updateSetTable("discount", $data, $puid);
-			Flatfile::saveSetTable($table, "discount", $puid);
+			return OrderRecords::stats($start, $end);
 		}
 
 		public function setAction ($str) {
@@ -301,14 +66,33 @@
 		public function process () {
 			if ($this->flag_type=="paypal") {
 				$this->doPaypalIPN();
+				if ($this->flag_success) {
+					$existing = OrderRecords::get((string) $this->prop("orderid"));
+					if ($existing!==null) {
+						if ($existing[1]!==$this->flag_setid || $existing[4]!==$this->prop("transactionid")) {
+							$this->flag_success = false;
+							$this->flag_error = "invalid_order";
+						}
+						$this->fileLog();
+						return;
+					}
+				}
 			}
-			if ($this->flag_type=="merchant") {
+			if ($this->flag_success) {
+				try {
+					OrderRecords::validateBeforePayment($this->flag_setid,
+						$this->flag_session_hash, $this->flag_order_array);
+				} catch (InvalidArgumentException $error) {
+					$this->flag_success = false;
+					$this->flag_error = "invalid_order";
+				}
+			}
+			if ($this->flag_success && $this->flag_type=="merchant") {
 				$this->processCreditCard();
 			}
 			$this->fileLog();
 			if ($this->flag_success==true) {
-				$this->createOrder();
-				$this->sendMails();
+				if ($this->createOrder()) $this->sendMails();
 			}
 		}
 
@@ -403,62 +187,6 @@
 			return $this->flag_order_array[$index];
 		}
 		
-		protected function getFuzzyOrderBasePath($oid, $msts){
-			$timestamp_ms = $msts/1000;
-			$timestamp = $timestamp_ms - $this->timezone_offset - (date("I", $timestamp_ms)==1?3600:0);
-			$order_year = date("Y", $timestamp);
-			$order_month = date("n", $timestamp);
-			$order_day = date("j", $timestamp);
-			$order_path = SA_DIR_STORAGE . "/orders/$order_year/$order_month/$order_day/set.$oid.table";
-			if (file_exists($order_path)==false) {
-				// check the day before
-				$order_path = SA_DIR_STORAGE . "/orders/$order_year/$order_month/" . ($order_day+1) . "/set.$oid.table";
-				if (file_exists($order_path)==false) {
-					// check the day after
-					$order_path = SA_DIR_STORAGE . "/orders/$order_year/$order_month/" . ($order_day-1) . "/set.$oid.table";
-					if (file_exists($order_path)==false) {
-						// ok still no file -- look within the month
-						$order_path = $this->getSessionPathById($oid, SA_DIR_STORAGE . "/orders/$order_year/$order_month");
-						if (file_exists($order_path)==false) {
-							// ok still no file -- look within the year
-							$order_path = $this->getSessionPathById($oid, SA_DIR_STORAGE . "/orders/$order_year");
-							if (file_exists($order_path)==false) {
-								// ok still no file -- full search
-								$order_path = $this->getSessionPathById($oid);
-							}
-						}
-					}
-				}
-			}
-			// get the order base path
-			$base_path = explode("/", $order_path);
-			array_pop($base_path);
-			return implode("/", $base_path);
-		}
-
-		protected function getSessionPathById($oid, $path=""){
-			if ($path=="") $path = SA_DIR_STORAGE . "/orders";
-			$handle = @opendir($path);
-			if ($handle) {
-				while (false !== ( $file = readdir($handle) )) {
-					$subpath = "$path/$file";
-					if (is_link($subpath) || $file == '.' || $file == '..') continue;
-					if (is_file($subpath)) {
-						if ($file=="set.$oid.table") {
-							return $subpath;
-						}
-					} else if (is_dir("$path/$file")) {
-						$result = $this->getSessionPathById($oid, $subpath);
-						if ($result!=null) {
-							return $result;
-						}
-					}
-				}
-				closedir($handle);
-			}
-			return null;
-		}
-
 		protected function sendMails () {
 			// get data stuff
 			$ordering = $this->ordering_data;
@@ -510,36 +238,18 @@
 		protected function fileLog () {
 			if (strlen($this->flag_logdata)>0) {
 				$logdata = date('r') . "\n-----------------------------------------------------\n" . $this->flag_logdata . "\n\n";
-				$path = SA_DIR_STORAGE . "/orders/" . implode("/", $this->flag_order_timestamp) . "/" . $this->prop("orderid") . ".payment.log";
-				Filesystem::makeFile($path, $logdata, "a");
+				OrderRecords::log($this->prop("orderid"), $logdata);
 			}
 		}
 
 		protected function createOrder () {
-			// set the time in the data
-			$timestamp_ms = time()*1000;
+			$timestamp_ms = time() * 1000;
 			$timestamp = $timestamp_ms - $this->timezone_offset - (date("I", $timestamp_ms)==1?3600:0);
 			$this->prop("timestamp", $timestamp);
-			// load the original session file
-			$path = SA_DIR_STORAGE . "/" . $this->flag_setid . "/set." . $this->flag_session_hash . ".table";
-			$finalpath = SA_DIR_STORAGE . "/orders/" . implode("/", $this->flag_order_timestamp) . "/set." . $this->prop("orderid") . ".table";
-			if ( file_exists($path)==true && file_exists($finalpath)==false ) {
-				// load the local original session file
-				$lineitems = Flatfile::getTableArray($path);
-				// create a copy of the user's favorites
-				$favorites = array();
-				foreach($lineitems as $hash => $lineitem) {
-					if (substr($hash, -2)=="-f") $favorites[$hash] = $lineitem;
-				}
-				// save only the favorites to the local session
-				Flatfile::saveTableArray($path, $favorites);
-				// save the original table to the final order path
-				Flatfile::saveTableArray($finalpath, $lineitems);
-			}
-			// create/add to the daily order table
-			$path = SA_DIR_STORAGE . "/orders/" . implode("/", $this->flag_order_timestamp) . "/set.order.table";
-			$table = Flatfile::updateTableRow($path, $this->flag_order_array);
-			Flatfile::saveTableArray($path, $table);
+			$currency = $this->ordering_data->getNodeVal("data.ordering.default_currency");
+			if ($currency==="") $currency = "USD";
+			return OrderRecords::create($this->flag_setid, $this->flag_session_hash,
+				$this->flag_order_array, $currency);
 		}
 
 		protected function processCreditCard () {

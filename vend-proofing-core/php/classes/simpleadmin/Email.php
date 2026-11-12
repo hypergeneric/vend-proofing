@@ -160,36 +160,25 @@
 		
 		protected function updateMessageLog () {
 			if ( $this->log_messages ) {
-				$suid = Flatfile::createUID();
-				// create our data entry
-				$timestamp = time()*1000;
-				$send_success = $this->flag_error=="send_success" || $this->flag_error=="partial_send_success" ? "true" : "false";
-				$sender_name = $this->sender_name;
-				$sender_email = $this->sender_email;
 				$recipient_name = $this->recipient_name;
 				$recipient_email = $this->recipient_email;
 				if ( $this->flag_bulk==true ) {
 					$recipient_name = "";
 					$recipient_email = implode(",", $this->recipient_list);
 				}
-				$email_subject = base64_encode($this->email_subject);
-				$email_message_body = base64_encode($this->email_message_body);
-				// add it to our messages table
-				$data = array($suid, $timestamp, $send_success, $sender_name, $sender_email, $recipient_name, $recipient_email, $email_subject, $email_message_body);
-				$tablepath = SA_DIR_STORAGE . "/set.messages.table";
-				$table = Flatfile::updateTableRow($tablepath, $data);
-				// loop through the messages and do two things:  1, check to see if it's the old format, 2, see if it's older than 90 days
-				foreach ($table as $key => $arr) {
-					if (count($arr)==5) {
-						$table[$key] = array($arr[0], $arr[1], "true", $arr[2], $arr[3], "", "", "", $arr[4]);
-					}
-					$timestamp = $arr[1]/1000;
-					$exipres = round(microtime(true)) - (90 * 86400);
-					if ( $timestamp<$exipres ) {
-						unset($table[$key]);
-					}
-				}
-				Flatfile::saveTableArray($tablepath, $table);
+				$status = "failed";
+				if ($this->flag_error==="send_success") $status = "sent";
+				if ($this->flag_error==="partial_send_success") $status = "partial";
+				Records::addMessage(array(
+					"gallery_suid" => (string) ($this->post_tags["SET_ID"] ?? ""),
+					"status" => $status,
+					"sender_name" => $this->sender_name,
+					"sender_email" => $this->sender_email,
+					"recipient_name" => $recipient_name,
+					"recipient_email" => $recipient_email,
+					"subject" => (string) ($this->email_subject ?? ""),
+					"body" => (string) ($this->email_message_body ?? "")
+				));
 				$this->flag_success = true;
 				$this->flag_error = "send_success";
 			}

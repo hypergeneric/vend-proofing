@@ -10,7 +10,7 @@
 	$contact_form_ml_checkbox = 	$this->getTypedValue("language", "contact", "contact_form_ml_checkbox");
 
 	/* --- Form Fields --- */
-	$formobjects = 					Flatfile::getSetTable("formobjects");
+	$formobjects = 					Records::getSetTable("formobjects");
 	if (count($formobjects)==0) {
 		$formobjects = array(
 			"0" => array ("", "YOUR_NAME", $LANG->lookup('Your Full Name'), "input", "1", "", "input"),

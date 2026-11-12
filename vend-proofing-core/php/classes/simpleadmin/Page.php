@@ -316,8 +316,8 @@
 				*/
 			$this->data_lookup["splash"] = Flatfile::getXmlArray("splash", null, true);
 			$this->data_lookup["contact"] = Flatfile::getXmlArray("contact", null, true);
-			$this->data_lookup["page"] = Catalog::pageRows();
-			$this->data_lookup["asset"] = Flatfile::getFileTable("asset");
+			$this->data_lookup["page"] = Records::getSetTable("page");
+			$this->data_lookup["asset"] = Records::getFileTable("asset");
 			/* find the site homepage
 				*/
 			$this->setHomePage();
@@ -585,7 +585,7 @@
 		protected function cachePage ($content) {
 			$filename = md5($this->query_original) . "." . $this->render_type;
 			$filepath = SA_DIR_CACHE . "/" . $filename;
-			Filesystem::makeFile($filepath, $content, "w", true);
+			Filesystem::makeFile($filepath, $content, "w");
 		}
 
 		protected function checkCachedPage () {

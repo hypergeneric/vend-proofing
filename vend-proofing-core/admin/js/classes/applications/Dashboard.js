@@ -34,9 +34,6 @@ classes.applications.Dashboard = function () {
 				},{
 					label: '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  ' + Lang.lookup("Clear Server Cache"),
 					key: "clear_cache"
-				},{
-					label: '<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>  ' + Lang.lookup("Update Now"),
-					key: "run_update"
 				}
 			]
 		});
@@ -53,12 +50,6 @@ classes.applications.Dashboard = function () {
 			init: {
 				uniquid: "global-asset-library"
 			},
-			options: []
-		});
-		_panel.appendApplication({
-			classid: classes.panels.ReleaseNotes,
-			label: Lang.lookup("Release Notes"),
-			key: "releasenotes",
 			options: []
 		});
 		_panel.parent($('#application'));

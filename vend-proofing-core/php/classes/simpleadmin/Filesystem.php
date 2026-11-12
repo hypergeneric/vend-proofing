@@ -13,8 +13,7 @@
 			return array();
 		}
 
-		public static function deleteFile ($path, $force=false) {
-			if (SA_DEMOMODE&&$force==false) return true;
+		public static function deleteFile ($path) {
 			$result = @unlink($path);
 			if ($result==false) {
 				$result = false;
@@ -24,8 +23,7 @@
 			return $result;
 		}
 
-		public static function deleteFolder ($path, $force=false) {
-			if (SA_DEMOMODE&&$force==false) return true;
+		public static function deleteFolder ($path) {
 			$result = @rmdir($path);
 			if ($result==false) {
 				$result = false;
@@ -35,8 +33,7 @@
 			return $result;
 		}
 
-		public static function purgeFolder ($path, $force=false) {
-			if (SA_DEMOMODE&&$force==false) return true;
+		public static function purgeFolder ($path) {
 			$result;
 			$handle = @opendir($path);
 			if (!$handle) {
@@ -52,8 +49,7 @@
 			return $result;
 		}
 
-		public static function makeFile ($path, $data="", $mode="wb", $force=false) {
-			if (SA_DEMOMODE&&$force==false) return true;
+		public static function makeFile ($path, $data="", $mode="wb") {
 			$folder = explode("/", $path);
 			array_pop($folder);
 			$folder = implode("/", $folder);
@@ -68,8 +64,7 @@
 			return true;
 		}
 
-		public static function makeFolder ($path, $force=false) {
-			if (SA_DEMOMODE&&$force==false) return true;
+		public static function makeFolder ($path) {
 			if (is_dir($path)) {
 				chmod($path, SA_PERMISSION_DIR);
 				return true;
@@ -90,8 +85,7 @@
 			return @mkdir($dir, $mode);
 		}
 
-		public static function moveUploadedFile ($from, $to, $force=false) {
-			if (SA_DEMOMODE&&$force==false) return true;
+		public static function moveUploadedFile ($from, $to) {
 			$result = move_uploaded_file($from, $to);
 			if ($result) chmod($to, SA_PERMISSION_FILE);
 			return $result;

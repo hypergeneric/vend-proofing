@@ -28,11 +28,7 @@
 		*/
 	$set_id = 				$orderobj[1];
 	$setid_uri = 			SA_DIR_INDEXPATH . "?/" . $LANG->lookup('uri_page_identifier') . "/" . $set_id . "/";
-	if (in_array(Catalog::pageType($set_id), array("UploadSet", "CategorySet"), true)) {
-		$fileindex = Catalog::imageRows($set_id);
-	} else {
-		$fileindex = Flatfile::getFileTable("image", $set_id);
-	}
+	$fileindex = Records::getFileTable("image", $set_id);
 
 	/* order info
 		*/

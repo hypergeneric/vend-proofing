@@ -84,58 +84,39 @@
 			if ( count($categories)>0 && count($images)>0 ) {
 				return array(false, "Both Folders and Images In Same Set", "");
 			}
-			// generate the index table strings and keep running tallies
-			$category_index = "";
-			$category_total = 0;
-			$image_index = "";
-			$image_total = 0;
+			// build category and image rows for one database replacement
+			$category_index = array();
+			$image_index = array();
 			if ( count($categories)>0 ) {
 				foreach ($categories as $folderhash => $obj) {
 					$image_count = count($obj["images"]);
 					if ($image_count==0) continue;
-					$image_total += $image_count;
-					$category_total += 1;
-					$category_index .= $folderhash . "\t" . $obj["category"] . "\t" . $image_count . "\n";
+					$category_index[$folderhash] = $obj["category"];
 					foreach ($obj["images"] as $path) {
 						$filename = basename($path);
 						$filename = explode(".", $filename);
 						$fileext = strtolower(array_pop($filename));
 						$filename = implode(".", $filename);
-						$filehash = Func::homogenize($filename) . "-" . Flatfile::createUID();
-						$image_index .= $filehash . "." . $fileext . "\t" . $path . "\t0x0\t\t0\t\t" . $folderhash . "\t" . $path . "\n";
+						$filehash = Func::homogenize($filename) . "-" . Database::allocateSuid();
+						$image_index[] = array($filehash . "." . $fileext, $path, "0x0", "", "0", "", $folderhash, $path);
 					}
 				}
 			} else {
-				$image_total = count($images);
 				foreach ($images as $path) {
 					$filename = basename($path);
 					$filename = explode(".", $filename);
 					$fileext = strtolower(array_pop($filename));
 					$filename = implode(".", $filename);
-					$filehash = Func::homogenize($filename) . "-" . Flatfile::createUID();
-					$image_index .= $filehash . "." . $fileext . "\t" . $path . "\t0x0\t\t0\t\t\t" . $path . "\n";
+					$filehash = Func::homogenize($filename) . "-" . Database::allocateSuid();
+					$image_index[] = array($filehash . "." . $fileext, $path, "0x0", "", "0", "", "", $path);
 				}
 			}
 			// delete any existing files in the image table
-			$existing = Flatfile::getFileTable("image", $suid);
+			$existing = Records::getFileTable("image", $suid);
+			Records::replaceDropboxImages($suid, $category_index, $image_index);
 			foreach ($existing as $filename => $object) {
 				@unlink(SA_DIR_STORAGE."/$suid/$filename");
 			}
-			// rewrite the image and category tables
-			$category_index = trim($category_index);
-			$image_index = trim($image_index);
-			if ( count($categories)>0 ) {
-				Filesystem::makeFile(SA_DIR_STORAGE."/$suid/set.category.table", $category_index);
-			}
-			Filesystem::makeFile(SA_DIR_STORAGE."/$suid/image.table", $image_index);
-			// update the page table with the image count
-			Catalog::setImageCount($suid, $image_total);
-			// delete the existing sessions and the session table
-			$session = Flatfile::getSetTable("session", $suid);
-			foreach ($session as $hash => $object) {
-				@unlink(SA_DIR_STORAGE."/$suid/set.$hash.table");
-			}
-			@unlink(SA_DIR_STORAGE."/$suid/set.session.table");
 			// complete
 			return array(true, "", "");
 		}
@@ -147,7 +128,7 @@
 			try {
 				$start = microtime(true);
 				// pull up the image table
-				$images = Flatfile::getFileTable("image", $suid);
+				$images = Records::getFileTable("image", $suid);
 				$complete = 0;
 				foreach ($images as $filename => $object) {
 					$filepath = SA_DIR_STORAGE."/$suid/$filename";
@@ -161,16 +142,13 @@
 					$image_width = $imagesize[0];
 					$image_height = $imagesize[1];
 					$filesize = filesize($filepath);
-					$images[$filename][1] = basename($object[1]);
-					$images[$filename][2] = $image_width . "x" . $image_height;
-					$images[$filename][4] = $filesize;
+					Records::updateDropboxThumbnail($suid, $filename, basename($object[1]), $image_width, $image_height, $filesize);
 					$complete += 1;
 					// check the timer
 					$current = microtime(true);
 					$elapsed = $current - $start;
 					if ($elapsed>=$this->max_time) break;
 				}
-				Flatfile::saveFileTable($images, "image", $suid);
 				// complete
 				return array(true, $complete / count($images), "");
 			} catch( Exception $e ) {
@@ -195,7 +173,7 @@
 			$imagelist_data = "";
 			// get the local set file list
 			$setid = $order_object[1];
-			$local_image_list = Flatfile::getFileTable("image", $setid);
+			$local_image_list = Records::getFileTable("image", $setid);
 			// get the remote file list
 			$filedata = $this->parseFolderMeta("flat", "/$setid");
 			// there is 1gb zip folde limit to dropbox

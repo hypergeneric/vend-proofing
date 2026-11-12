@@ -19,13 +19,11 @@
 	define("SA_DIR_DEFAULTS", SA_DIR_COREPATH."/defaults");
 	define("SA_PERMISSION_FILE", (strpos(PHP_SAPI, "apache")!==false?0666:0644));
 	define("SA_PERMISSION_DIR", (strpos(PHP_SAPI, "apache")!==false?0777:0755));
-	define("SA_DEMOMODE", false);
 
 	/* bring in any necessary classes
 		*/
 	require_once(SA_DIR_COREPATH."/php/classes/getid3/getid3/getid3.php");
 	require_once(SA_DIR_COREPATH."/php/classes/pclzip/pclzip.lib.php");
-	require_once(SA_DIR_COREPATH."/php/classes/gradient.php");
 	require_once(SA_DIR_COREPATH."/php/vendor/autoload.php");
 	spl_autoload_register(function ($class) {
 		include SA_DIR_COREPATH."/php/classes/simpleadmin/$class.php";

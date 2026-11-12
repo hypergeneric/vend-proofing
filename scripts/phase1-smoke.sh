@@ -17,11 +17,12 @@ mkdir -p "$fixture_dir/vend-proofing-data/storage/875c"
 cp "$project_dir/vend-proofing-core/defaults/uploadset.xml" "$fixture_dir/vend-proofing-data/storage/875c/uploadset.xml"
 cp "$project_dir/vend-proofing-core/defaults/contact.xml" "$fixture_dir/vend-proofing-data/storage/contact.xml"
 sed -i 's#<your_email href=""></your_email>#<your_email href="owner@example.invalid">Owner</your_email>#' "$fixture_dir/vend-proofing-data/storage/contact.xml"
+sed -i 's#<sendgrid_api_key private="true" encoded="true"></sendgrid_api_key>#<sendgrid_api_key private="true" encoded="true">synthetic-private-key</sendgrid_api_key>#' "$fixture_dir/vend-proofing-data/storage/contact.xml"
 cp "$project_dir/vend-proofing-core/defaults/cron.xml" "$fixture_dir/vend-proofing-data/storage/cron.xml"
 sed -i 's#<cron_enabled_bool>false</cron_enabled_bool>#<cron_enabled_bool>true</cron_enabled_bool>#; s#<expiring_notify_bool>false</expiring_notify_bool>#<expiring_notify_bool>true</expiring_notify_bool>#' "$fixture_dir/vend-proofing-data/storage/cron.xml"
 mkdir -p "$fixture_dir/vend-proofing-data/storage/asset"
 printf 'public asset' > "$fixture_dir/vend-proofing-data/storage/asset/test.png"
-printf 'test.png\ttest.png\t1x1\n' > "$fixture_dir/vend-proofing-data/storage/asset/asset.table"
+printf 'not listed' > "$fixture_dir/vend-proofing-data/storage/asset/unlisted.png"
 cp "$project_dir/scripts/phase1-storage.php" "$fixture_dir/phase1-storage.php"
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/admin-account.php" "$fixture_dir/scripts/admin-account.php"
@@ -42,7 +43,7 @@ php -d display_errors=1 -d error_reporting=24575 phase1-storage.php
 php scripts/install.php
 php scripts/migrate.php
 php scripts/foundation-test.php
-php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Catalog.php"; Catalog::savePage("875c", ["Test Gallery", "UploadSet", 0]); unlink("vend-proofing-data/storage/set.page.table");'\''
+php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Test Gallery", "UploadSet", 0]); Records::addMedia("asset", "asset", ["test.png", "test.png", "1x1"]); unlink("vend-proofing-data/storage/set.page.table");'\''
 php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-server.log 2>&1 &
 server_pid=$!
 trap "kill $server_pid" EXIT
@@ -68,13 +69,15 @@ done
 private_status="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8080/vend-proofing-data/auth/vend.sqlite")"
 [ "$private_status" = 403 ]
 gateway="http://127.0.0.1:8080/vend-proofing-gateway.php"
-for action in system_phpinfo get_xml get_files get_set; do
-  [ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=$action" --data-urlencode "type=setup" --data-urlencode "name=page" "$gateway")" = 403 ]
+for retired_action in get_xml get_files get_set; do
+  retired_response=$(curl -fsS --data-urlencode "action=$retired_action" --data-urlencode "type=contact" --data-urlencode "name=page" "$gateway")
+  case "$retired_response" in *"<error>"*"</error>"*) ;; *) echo "FAIL retired action remained public: $retired_action ($retired_response)"; exit 1 ;; esac
 done
 [ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=get_public_asset" --data-urlencode "folder=../auth" --data-urlencode "filename=vend.sqlite" "$gateway")" = 404 ]
 [ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=list_session_table" --data-urlencode "puid=../auth" --data-urlencode "name=admin" "$gateway")" = 400 ]
 [ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=validate_login" --data-urlencode "suid=../auth" "$gateway")" = 400 ]
 curl -fsS "$gateway?action=get_public_asset&folder=asset&filename=test.png" | grep -q "public asset"
+[ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=get_public_asset" --data-urlencode "folder=asset" --data-urlencode "filename=unlisted.png" "$gateway")" = 404 ]
 echo "PASS public Gateway and asset boundaries"
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies -d "action=auth_status" "$gateway" | grep -q "s=false"
 echo "PASS unauthenticated status"
@@ -92,8 +95,38 @@ forged_result="$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies -d "action=
 case "$forged_result" in *"s=true"*) echo "FAIL forged token accepted"; exit 1 ;; esac
 echo "PASS rejected token"
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=set_list" --data-urlencode "name=page" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=get_xml" --data-urlencode "type=setup" --data-urlencode "token=$csrf" "$gateway" | grep -q "<data"
+admin_xml=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=setup_load" --data-urlencode "type=contact" --data-urlencode "token=$csrf" "$gateway")
+case "$admin_xml" in *owner%40example.invalid*synthetic-private-key*) ;; *) echo "FAIL authenticated admin XML load"; exit 1 ;; esac
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=set_list" --data-urlencode "name=page" --data-urlencode "token=$csrf" "$gateway" | grep -q "Test%20Gallery"
+tax_data=$(printf "California\t\t7.25")
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=set_create" --data-urlencode "name=ustaxchart" --data-urlencode "suid=CA" --data-urlencode "data=$tax_data" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=set_list" --data-urlencode "name=ustaxchart" --data-urlencode "token=$csrf" "$gateway" | grep -q "California"
+for retired_action in get_xml get_files get_set; do
+  retired_response=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=$retired_action" --data-urlencode "token=$csrf" "$gateway")
+  case "$retired_response" in *"<error>"*"</error>"*) ;; *) echo "FAIL retired action remained authenticated: $retired_action ($retired_response)"; exit 1 ;; esac
+done
+system_info=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=system_getinfo" --data-urlencode "token=$csrf" "$gateway")
+case "$system_info" in *reseller_id*) echo "FAIL retired reseller property remained"; exit 1 ;; esac
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changepassword" --data-urlencode "username=testadmin" --data-urlencode "o_password=wrong" --data-urlencode "n_password=ReplacementPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=false"
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changeusername" --data-urlencode "o_username=testadmin" --data-urlencode "n_username=otheradmin" --data-urlencode "password=wrong" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=false"
 echo "PASS authorized Gateway"
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changeusername" --data-urlencode "o_username=testadmin" --data-urlencode "n_username=otheradmin" --data-urlencode "password=SyntheticAdminPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
+login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=otheradmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
+case "$login_result" in *"s=true"*) ;; *) echo "FAIL changed username login"; exit 1 ;; esac
+csrf="${login_result#*r=}"
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changeusername" --data-urlencode "o_username=otheradmin" --data-urlencode "n_username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
+login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
+case "$login_result" in *"s=true"*) ;; *) echo "FAIL restored username login"; exit 1 ;; esac
+csrf="${login_result#*r=}"
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changepassword" --data-urlencode "username=testadmin" --data-urlencode "o_password=SyntheticAdminPassword123!" --data-urlencode "n_password=TemporaryPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
+login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=TemporaryPassword123!" "$gateway")
+case "$login_result" in *"s=true"*) ;; *) echo "FAIL changed password login"; exit 1 ;; esac
+csrf="${login_result#*r=}"
+curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changepassword" --data-urlencode "username=testadmin" --data-urlencode "o_password=TemporaryPassword123!" --data-urlencode "n_password=SyntheticAdminPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
+login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
+case "$login_result" in *"s=true"*) ;; *) echo "FAIL restored password login"; exit 1 ;; esac
+csrf="${login_result#*r=}"
+echo "PASS administrator username and password changes"
 printf "%s\n" "ReplacementPassword123!" | php scripts/admin-account.php reset testadmin
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies -d "action=auth_status" "$gateway" | grep -q "s=false"
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies -d "action=login&username=testadmin&password=SyntheticAdminPassword123!" "$gateway" | grep -q "s=false"

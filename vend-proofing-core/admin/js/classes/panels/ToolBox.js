@@ -7,8 +7,6 @@ classes.panels.ToolBox = function () {
 	var Auth;
 	var Func;
 	var Dialog;
-	var Cookie;
-	var Admin;
 	var Lang;
 	/* private properites
 		*/	
@@ -36,39 +34,7 @@ classes.panels.ToolBox = function () {
 			case "change_password" :
 				changePassword();
 				break;
-			case "showPhpInfo" :
-				showPhpInfo();
-				break;
-			case "refreshTemplateFiles" :
-				refreshTemplateFiles();
-				break;
-			case "run_update" :
-				runUpdate();
-				break;
 		}
-	}
-	function runUpdate () {
-		if (Admin.config().setup.hub._value=="true") {
-			Dialog.create({
-				size: "420x*",
-				title: Lang.lookup("update_product_confirmation"),
-				content: Lang.lookup("update_product_confirmation_description"),
-				owner: this,
-				options: [{
-					label: Lang.lookup("yes update"),
-					func: runUpdateConfirm
-				},{
-					label: Lang.lookup("cancel")
-				}]
-			});
-		} else {
-			var update_uri = "https://" + Auth.provideruri() + "/installer/?l=" + (Admin.config().setup.language._value||"") + "&a=upgrade&k=" + (Admin.config().setup.product_key._value||"");
-			var popup = window.open(update_uri);
-		}
-	}
-	function runUpdateConfirm () {
-		var update_uri = "http://members." + Auth.provideruri() + "/login/" + (Admin.config().setup.install_id._value||"") + "/update.html";
-		window.location = update_uri;
 	}
 	function change_username_check () {
 		if (
@@ -132,43 +98,11 @@ classes.panels.ToolBox = function () {
 		new_username_field.val("");
 		password_field.val("");
 	}
-	function refreshTemplateFiles () {
-		Func.openWindowWithPost(Auth.basepath() + NAMESPACE + "-gateway.php", {
-			action: "system_refreshtemplates",
-			token: Auth.token()
-		});
-	}
-	function showPhpInfo () {
-		Func.openWindowWithPost(Auth.basepath() + NAMESPACE + "-gateway.php", {
-			action: "system_phpinfo",
-			token: Auth.token()
-		});
-	}
 	function render () {
 		_uniquid = "FO" + Func.uniquid();
-		var buttons = [{
-			label: Lang.lookup("Run Product Update"),
-			func: "run_update"
-		},{
-			label: Lang.lookup("View Php Info Sheet"),
-			func: "showPhpInfo"
-		},{
-			label: Lang.lookup("Refresh Template Files"),
-			func: "refreshTemplateFiles"
-		}]
-		if (Admin.config().setup.hub._value=="true") buttons.splice(1, 1);
-		if ( false ) buttons.pop();
 		var parent = _panel.body();
 		var xhtml = '';
 			xhtml += '<div id="' + _uniquid + '" class="ToolBox">';
-			xhtml += 	'<div class="ToolBoxGroup DialogForm">';
-			xhtml += 		'<h2>' + Lang.lookup("Utility Functions") + '</h2>';
-		for (var i=0; i<buttons.length; ++i) {
-			xhtml += 		'<div data-func="' + buttons[i].func + '" class="Button">' + buttons[i].label + '</div>';
-		}
-		if (Admin.config().setup.standalone._value=="true") {
-			xhtml += 		'<div class="Clear"></div>';
-			xhtml += 	'</div>';
 			xhtml += 	'<div class="ToolBoxGroup DialogForm">';
 			xhtml += 		'<h2>' + Lang.lookup("Change Password") + '</h2>';
 			xhtml += 		'<div class="Group Input">';
@@ -207,7 +141,6 @@ classes.panels.ToolBox = function () {
 			xhtml += 		'<div id="change_username" data-func="change_username" class="Button Disabled">' + Lang.lookup("Save Changes") + '</div>';
 			xhtml += 		'<div class="Clear"></div>';
 			xhtml += 	'</div>';
-		}
 			xhtml += '</div>';
 			
 		parent.html(xhtml);
@@ -256,8 +189,6 @@ classes.panels.ToolBox = function () {
 		_buttons.off();
 	};
 	this.initialize = function () {
-		Cookie = classes.helpers.Cookie;
-		Admin = classes.Admin;
 		Auth = classes.data.Auth;
 		Lang = classes.data.Lang;
 		Dialog = classes.components.Dialog;

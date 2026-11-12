@@ -53,7 +53,7 @@
 				$page_data = Flatfile::getXmlArray(strtolower($page_info[2]), $page_id, true);
 				if ($page_data!=false) {
 					$password = "";
-					$sessions = Flatfile::getSetTable("session", $page_id);
+					$sessions = Records::getSetTable("session", $page_id);
 						foreach ($sessions as $obj) {
 							$recipients .= "," . $obj[1];
 						}

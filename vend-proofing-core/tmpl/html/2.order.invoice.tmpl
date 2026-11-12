@@ -220,7 +220,7 @@
 				$obj_filename = 		implode(".", $obj_filename);
 				$obj_filename = 		htmlspecialchars($obj_filename);
 			$obj_quantity = 		$sessionitem[4];
-			$obj_price = 		$sessionitem[8] + $sessionitem[14] + $sessionitem[17];
+			$obj_price = 		(float) $sessionitem[8] + (float) $sessionitem[14] + (float) $sessionitem[17];
 			if ($purchase_price_includes_tax_bool) {
 				$obj_price = 	addSalesTax($obj_price, $taxrate);
 			}
@@ -284,7 +284,7 @@
 				$obj_filename = 		implode(".", $obj_filename);
 				$obj_filename = 		htmlspecialchars($obj_filename);
 			$obj_quantity = 		$sessionitem[4];
-			$obj_price = 		$sessionitem[8] + $sessionitem[14] + $sessionitem[17];
+			$obj_price = 		(float) $sessionitem[8] + (float) $sessionitem[14] + (float) $sessionitem[17];
 			if ($purchase_price_includes_tax_bool) {
 				$obj_price = 	addSalesTax($obj_price, $taxrate);
 			}

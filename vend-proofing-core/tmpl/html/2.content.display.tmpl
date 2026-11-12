@@ -16,19 +16,19 @@
 
 	switch ($this->info("class")) {
 		case "DropboxSet" :
-			$images = Flatfile::getFileTable("image", $this->info("id"));
-			$category = Flatfile::getSetTable("category", $this->info("id"));
+			$images = Records::getFileTable("image", $this->info("id"));
+			$category = Records::getSetTable("category", $this->info("id"));
 			if (count($category)==0) {
 				$category = array("page" => array("page", "", count($images)));
 			}
 			break;
 		case "UploadSet" :
-			$images = Catalog::imageRows($this->info("id"));
+			$images = Records::getFileTable("image", $this->info("id"));
 			$category = array("page" => array("page", "", count($images)));
 			break;
 		case "CategorySet" :
-			$images = Catalog::imageRows($this->info("id"));
-			$category = Catalog::categoryRows($this->info("id"));
+			$images = Records::getFileTable("image", $this->info("id"));
+			$category = Records::getSetTable("category", $this->info("id"));
 			break;
 	}
 	
@@ -88,7 +88,7 @@
 		array_shift($us_states);
 	$ca_province = 							$lang_table["data"]["_c"]["ca_province"]["_c"]["code"];
 		array_shift($ca_province);
-	$taxchart = 							Flatfile::getSetTable($default_country=="CA"||$default_country=="US" ? strtolower($default_country)."taxchart" : "vattaxchart");
+	$taxchart = 							Records::getSetTable($default_country=="CA"||$default_country=="US" ? strtolower($default_country)."taxchart" : "vattaxchart");
 
 	$icon_mail_asset_tag = 			"";
 	if ($show_in_navigation_bool==true) {
@@ -98,7 +98,7 @@
 	}
 
 	// music icon
-	$tracks = 								$use_global_soundtrack_bool ? Flatfile::getFileTable("audio") : Flatfile::getFileTable("track", $this->info("id"));
+	$tracks = 								$use_global_soundtrack_bool ? Records::getFileTable("audio") : Records::getFileTable("track", $this->info("id"));
 	$tracks = 								$detect->isMobile() ? array() : $tracks;
 	$icon_music_asset_tag = 				"";
 	if ( count($tracks)>0 ) {
@@ -108,11 +108,11 @@
 	}
 
 	// set options
-	$formats = 								Flatfile::getSetTable("format", $page_data->getNodeVal("data.settings.format_set"));
-	$papers = 								Flatfile::getSetTable("paper", $page_data->getNodeVal("data.settings.paper_set"));
-	$modifiers = 							Flatfile::getSetTable("modifier", $page_data->getNodeVal("data.settings.modifier_set"));
-	$packages = 							Flatfile::getSetTable("package", $page_data->getNodeVal("data.settings.package_set"));
-	$products = 							Flatfile::getSetTable("product", $page_data->getNodeVal("data.settings.product_set"));
+	$formats = 								Records::getSetTable("format", $page_data->getNodeVal("data.settings.format_set"));
+	$papers = 								Records::getSetTable("paper", $page_data->getNodeVal("data.settings.paper_set"));
+	$modifiers = 							Records::getSetTable("modifier", $page_data->getNodeVal("data.settings.modifier_set"));
+	$packages = 							Records::getSetTable("package", $page_data->getNodeVal("data.settings.package_set"));
+	$products = 							Records::getSetTable("product", $page_data->getNodeVal("data.settings.product_set"));
 	
 	// download options -- dropbox only
 	if ($this->info("class")=="DropboxSet") {
@@ -691,7 +691,7 @@
 			$filename = basename($row[2]);
 			$description = isset($row[5]) ? $this->doMarkdown($row[5]) : "";
 			$description = str_replace(array("\n", "\r", "'"), array("", "", "\'"), $description);
-			$lineitems = Flatfile::getSetTable("lineitem", $row[0]);
+			$lineitems = Records::getSetTable("lineitem", $row[0]);
 ?>
 						classes.overlay.Package.add("<?php echo $key; ?>", {
 							hash: "<?php echo md5(htmlspecialchars($row[0])); ?>",
@@ -734,7 +734,7 @@
 			$filename = basename($row[2]);
 			$description = isset($row[5]) ? $this->doMarkdown($row[5]) : "";
 			$description = str_replace(array("\n", "\r", "'"), array("", "", "\'"), $description);
-			$lineitems = Flatfile::getSetTable("lineitem", $row[0]);
+			$lineitems = Records::getSetTable("lineitem", $row[0]);
 ?>
 						classes.overlay.Package.add("<?php echo $key; ?>", {
 							hash: "<?php echo md5(htmlspecialchars($row[0])); ?>",

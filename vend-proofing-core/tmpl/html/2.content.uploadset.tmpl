@@ -15,7 +15,7 @@
 				ob_start();
 				include "2.content.display.tmpl";
 				$content = "<!-- cached on " . date(DATE_RFC822) . " -->\n" . ob_get_contents();
-				Filesystem::makeFile($filepath, $content, "w", true);
+				Filesystem::makeFile($filepath, $content, "w");
 			}
 		} else {
 			include "2.content.display.tmpl";

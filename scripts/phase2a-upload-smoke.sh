@@ -21,7 +21,7 @@ cp "$project_dir/scripts/dev-router.php" "$fixture_dir/scripts/dev-router.php"
 docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
 set -eu
 php scripts/install.php
-php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Catalog.php"; Catalog::savePage("875c", ["Upload Test", "CategorySet", 0]);'\''
+php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Upload Test", "CategorySet", 0]);'\''
 printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
 php -r '\''$image=imagecreatetruecolor(1200,800); imagefill($image,0,0,imagecolorallocate($image,32,96,160)); imagejpeg($image,"/tmp/upload-test.jpg",85);'\''
 php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-upload-server.log 2>&1 &

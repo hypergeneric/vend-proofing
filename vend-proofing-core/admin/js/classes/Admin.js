@@ -22,8 +22,6 @@ classes.Admin = (function () {
 		var _view = 			null;
 		var _state = 			null;
 		var _config = 			null;
-		var _productinfo = 		null;
-		var _update_required = 	false;
 		
 		/* private methods
 			*/
@@ -82,121 +80,6 @@ classes.Admin = (function () {
 				History.subscribe("history", history);
 				History.initialize(lastpage);
 			}
-			/* last but not least, let's check to see if there are any updates
-				*/
-			Auth.send(this, onProductInfo, {
-				action: "get_product_info"
-			});
-		}
-		function onProductInfo (success, data) {
-			// parse the xml data
-			var xmlobj = $.parseXML(data);
-			_productinfo = Func.xmlToJson(xmlobj);
-			// check if we need to update
-			var current_str = _productinfo.data.product.Version._value;
-				if (current_str=='') return;
-			var current = current_str.split(".");
-			for (var i=0; i<current.length; ++i) {
-				current[i] = parseInt(current[i], 10);
-			}
-			var installed_str = _config.setup.product_version._value;
-				if (installed_str=='') return;
-			var installed = installed_str.split(".");
-			for (var i=0; i<installed.length; ++i) {
-				installed[i] = parseInt(installed[i], 10);
-			}
-			var type = "none";
-			_update_required = false;
-			if (current[0]>installed[0]) {
-				_update_required = true;
-				type = "version";
-			} else if (current[0]==installed[0]) {
-				if (current[1]>installed[1]) {
-					_update_required = true;
-					type = "major";
-				} else if (current[1]==installed[1]) {
-					if (current[2]>installed[2]) {
-						_update_required = true;
-						type = "minor";
-					}
-				}
-			}
-			if (_update_required) {
-				callForUpdate(type, current_str, installed_str);
-			}
-		}
-		function callForUpdate (type, current, installed) {
-			var checkForUpdates = Cookie.get("checkForUpdates");
-			var updateTimeStamp = Cookie.get("updateTimeStamp");
-			if (checkForUpdates=="") {
-				checkForUpdates = true;
-			} else {
-				checkForUpdates = checkForUpdates=="true";
-			}
-			if (updateTimeStamp=="") {
-				updateTimeStamp = 0;
-			} else {
-				updateTimeStamp = parseInt(updateTimeStamp, 10);
-			}
-			if (checkForUpdates==false) {
-				var now = new Date().getTime();
-				if ( updateTimeStamp==0 || updateTimeStamp <= now ) checkForUpdates = true;
-			}
-			if (checkForUpdates) {
-				var description = Lang.lookup("Update Available Description");
-					description = description.split("{CURRENT}").join(current);
-					description = description.split("{INSTALLED}").join(installed);
-				Dialog.create({
-					size: "500x*",
-					title: Lang.lookup("Update Available"),
-					content: classes.dialogs.Update,
-					init: {
-						description: description
-					},
-					owner: this,
-					options: [{
-						label: Lang.lookup("Update Now"),
-						func: runUpdate,
-						param: true
-					},{
-						label: Lang.lookup("Update Later")
-					},{
-						label: Lang.lookup("Update Forget"),
-						func: runUpdate,
-						param: false
-					}]
-				});
-			}
-			return checkForUpdates;
-		}
-		function runUpdate (action) {
-			if (action==true) {
-				if (_config.setup.hub._value=="true") {
-					Dialog.create({
-						size: "420x*",
-						title: Lang.lookup("update_product_confirmation"),
-						content: Lang.lookup("update_product_confirmation_description"),
-						owner: this,
-						options: [{
-							label: Lang.lookup("yes update"),
-							func: runUpdateConfirm
-						},{
-							label: Lang.lookup("cancel")
-						}]
-					});
-				} else {
-					var update_uri = "https://intothedarkroom.com/installer/?l=" + (_config.setup.language._value) + "&a=upgrade&k=" + (_config.setup.product_key._value);
-					document.location = update_uri;
-				}
-				Cookie.set("checkForUpdates", "true");
-				Cookie.set("updateTimeStamp", 0);
-			} else {
-				Cookie.set("checkForUpdates", "false");
-				Cookie.set("updateTimeStamp", new Date().getTime() + 1209600000);
-			}
-		}
-		function runUpdateConfirm () {
-			document.location = "http://members.intothedarkroom.com/login/" + (_config.setup.install_id._value) + "/update.html";
 		}
 		function click (hash) {
 			/* we're gonna try and catch any user-error stuff by checking to see
@@ -364,12 +247,6 @@ classes.Admin = (function () {
 		}
 		this.config = function () {
 			return _config;
-		}
-		this.updateRequired = function () {
-			return _update_required;
-		}
-		this.productinfo = function () {
-			return _productinfo;
 		}
 		this.initialize = function () {
 			History = classes.helpers.History;

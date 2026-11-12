@@ -11,13 +11,13 @@ function check (bool $condition, string $message): void {
 }
 
 $db = Database::connection();
-check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 5, 'Schema migrations missing');
+check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 11, 'Schema migrations missing');
 $retired = $db->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name IN ('gallery_archives', 'archive_entries')")->fetchColumn();
 check((int) $retired === 0, 'Retired ZIP gallery tables are present');
 check((int) $db->query('SELECT COUNT(*) FROM administrators')->fetchColumn() === 0, 'Fresh install is not empty');
 check((int) $db->query('PRAGMA foreign_keys')->fetchColumn() === 1, 'Foreign keys are disabled');
 Database::migrate();
-check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 5, 'Migration ran twice');
+check((int) $db->query('SELECT COUNT(*) FROM schema_migrations')->fetchColumn() === 11, 'Migration ran twice');
 try {
 	Database::install();
 	throw new RuntimeException('Install overwrote an existing database');

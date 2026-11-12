@@ -314,6 +314,8 @@ A client is trying to download files for order {ORDER_ID} but there seems to be 
 		<checkout_invalid_email_address_description lines="3">The email addresses you supplied is invalid. It's vitally important we get it right, as it will be the primary form of notification.</checkout_invalid_email_address_description>
 		<checkout_discount_code_error_title>Discount Code Error!</checkout_discount_code_error_title>
 		<checkout_discount_code_error_description lines="3">Since you've started the checkout process, the discount code you've supplied is no longer valid.  Please contact us as soon as possible to investigate this.</checkout_discount_code_error_description>
+		<checkout_order_error_title>Unable to Continue Checkout</checkout_order_error_title>
+		<checkout_order_error_description lines="3">Please review your cart and try again. If the problem continues, contact the photographer. No payment has been taken.</checkout_order_error_description>
 		<checkout_paypal_order>Order</checkout_paypal_order>
 		<checkout_return_to_browsing>BACK TO BROWSING</checkout_return_to_browsing>
 		<checkout_purchase_now>PURCHASE NOW</checkout_purchase_now>

@@ -83,7 +83,6 @@ classes.overlay.Checkout = (function () {
 		var inited = 			false;
 		var cart_no_payment = 	false;
 		var ignore_ssl_warning = false;
-		var recheck = 			false;
 		var container = null;
 			var screen = null;
 			var blocks = null;
@@ -425,6 +424,9 @@ classes.overlay.Checkout = (function () {
 			updateTotals();
 			updatePaymentMethod();
 		}
+		function appliedDiscountCode () {
+			return discount[0]=="true" ? discount[3] : "";
+		}
 		function checkDiscountCode () {
 			// skip empty codes
 			var input = $("#checkout-discount input");
@@ -607,7 +609,6 @@ classes.overlay.Checkout = (function () {
 					description: L10N.get("checkout", "checkout_credit_card_"+data)
 				});
 				Dialog.draw();
-				recheck = true;
 				process_obj.click(click);
 			} else {
 				var form = '<form action="' + APP_ROOT + "?/order/" + order.id + "/invoice/" + '" method="post">';
@@ -644,7 +645,7 @@ classes.overlay.Checkout = (function () {
 				dataarr.push(order.payment_method);					// payment type
 				dataarr.push("");								// paypal id
 				dataarr.push(order.shipping_method);					// shipping type
-				dataarr.push($("#checkout-discount_code").val());		// discount applied
+				dataarr.push(appliedDiscountCode());				// discount applied
 				dataarr.push($("#checkout-fullname").val());			// full name
 				dataarr.push($("#checkout-email-address").val());			// email address
 				dataarr.push($("#checkout-phone-number").val());			// phone number
@@ -684,8 +685,7 @@ classes.overlay.Checkout = (function () {
 		function processPayment () {
 			if (order.payment_method=="paypal") {
 				if ( (order.final_value>order.discount_value) || order.final_shipping>0 || order.final_handling>0 || order.final_tax>0 ) {
-					var input = $("#checkout-discount input");
-					var codeval = input.val();
+					var codeval = appliedDiscountCode();
 					var comments = $("#checkout-comments textarea").val();
 						comments = comments.split("\t").join("     ").split("\r").join("<[[BR]]>").split("\n").join("<[[BR]]>");
 					var post = {};
@@ -763,7 +763,7 @@ classes.overlay.Checkout = (function () {
 					});
 					Dialog.draw();
 					process_obj.click(click);
-				} else { // it's a discount code error
+				} else if (data.indexOf("discount_")==0) {
 					var input = $("#checkout-discount input");
 					var button = $("#checkout-discount button");
 					input.removeAttr("disabled");
@@ -772,6 +772,14 @@ classes.overlay.Checkout = (function () {
 						modal: false,
 						title: L10N.get("checkout", "checkout_discount_code_error_title"),
 						description: L10N.get("checkout", "checkout_discount_code_error_description")
+					});
+					Dialog.draw();
+					process_obj.click(click);
+				} else {
+					Dialog.options({
+						modal: false,
+						title: L10N.get("checkout", "checkout_order_error_title"),
+						description: L10N.get("checkout", "checkout_order_error_description")
 					});
 					Dialog.draw();
 					process_obj.click(click);
@@ -875,15 +883,15 @@ classes.overlay.Checkout = (function () {
 			disable({open:true});
 			var input = $("#checkout-discount input");
 			var button = $("#checkout-discount button");
-			var codeval = input.val();
 			input.attr("disabled", "disabled");
 			button.off().addClass(".Disabled");
 			$.post( APP_ROOT + "vend-proofing-gateway.php", {
 				action: 	"prequalify_order",
 				puid: 	Overlay.pageid(),
+				name: 	Session.getHash(),
 				orderid: 	order.id,
 				subtotal: 	order.final_value,
-				code: 	( recheck ? codeval : "" ),
+				code: 	appliedDiscountCode(),
 				email: 	order.payment_method=="paypal" ? "" : $("#checkout-email-address").val()
 			}, function(str) {
 				var bits = str.split("\t");

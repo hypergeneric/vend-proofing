@@ -81,7 +81,7 @@
 			$cache = strlen($q[7])>0 ? $q[7] : 1; // optional
 			$watermark = strlen($q[8])>0 ? $q[8] : 0; // optional
 			$watermark_name = strlen($q[9])>0 ? $q[9] : ""; // optional
-			if ($watermark_name !== "" && !isset(Flatfile::getFileTable("asset", "asset")[$watermark_name])) {
+			if ($watermark_name !== "" && !isset(Records::getFileTable("asset", "asset")[$watermark_name])) {
 				$watermark = 0;
 				$watermark_name = "";
 			}
@@ -138,20 +138,20 @@
 		protected function isPublicSource (string $parent, string $child): bool {
 			if ($child === "" || $child[0] === '.' || !preg_match('/^[A-Za-z0-9._-]+$/', $child)) return false;
 			if (is_link(SA_DIR_STORAGE . "/" . $parent) || is_link(SA_DIR_STORAGE . "/" . $parent . "/" . $child)) return false;
-			$pages = Catalog::pageRows();
+			$pages = Records::getSetTable("page");
 			if (in_array($parent, array("asset", "audio", "track", "package", "product"), true)) {
 				$types = array($parent);
-			} elseif (preg_match('/^[a-f0-9]{1,16}$/i', $parent) && isset($pages[$parent])) {
-				$types = array("image", "asset", "track");
+			} elseif (isset($pages[$parent])) {
+				$types = array("asset", "track");
 			} else {
 				return false;
 			}
 			$lookup = str_ends_with($child, ".snapshot.jpg") ? substr($child, 0, -13) : $child;
-			if (isset($pages[$parent]) && in_array(Catalog::pageType($parent), array("UploadSet", "CategorySet"), true)) {
-				return isset(Catalog::imageRows($parent)[$lookup]);
+			if (isset($pages[$parent]) && isset(Records::getFileTable("image", $parent)[$lookup])) {
+				return true;
 			}
 			foreach ($types as $type) {
-				if (isset(Flatfile::getFileTable($type, $parent)[$lookup])) return true;
+				if (isset(Records::getFileTable($type, $parent)[$lookup])) return true;
 			}
 			return false;
 		}

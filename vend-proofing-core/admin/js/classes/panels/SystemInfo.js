@@ -5,8 +5,6 @@ classes.panels.SystemInfo = function () {
 	/* "imported" classes
 		*/
 	var Auth;
-	var Func;
-	var Dialog;
 	var Lang;
 	var Admin;
 	/* private properites
@@ -27,33 +25,7 @@ classes.panels.SystemInfo = function () {
 			case "clear_cache" :
 				clearServerCache();
 				break;
-			case "run_update" :
-				runUpdate();
-				break;
 		}
-	}
-	function runUpdate () {
-		if (Admin.config().setup.hub._value=="true") {
-			Dialog.create({
-				size: "420x*",
-				title: Lang.lookup("update_product_confirmation"),
-				content: Lang.lookup("update_product_confirmation_description"),
-				owner: this,
-				options: [{
-					label: Lang.lookup("yes update"),
-					func: runUpdateConfirm
-				},{
-					label: Lang.lookup("cancel")
-				}]
-			});
-		} else {
-			var update_uri = "https://" + Auth.provideruri() + "/installer/?l=" + (Admin.config().setup.language._value||"") + "&a=upgrade&k=" + (Admin.config().setup.product_key._value||"");
-			var popup = window.open(update_uri);
-		}
-	}
-	function runUpdateConfirm () {
-		var update_uri = "http://members." + Auth.provideruri() + "/login/" + (Admin.config().setup.install_id._value||"") + "/update.html";
-		window.location = update_uri;
 	}
 	function clearServerCache () {
 		_panel.screen(true);
@@ -114,11 +86,6 @@ classes.panels.SystemInfo = function () {
 		Auth.send(this, onSystemInfo, {
 			action: "system_getinfo"
 		});
-		/* manage buttons
-			*/
-		if (Admin.updateRequired()==false) {
-			_panel.disableOptions("run_update");
-		}
 	}
 	/* public methods
 		*/
@@ -137,8 +104,6 @@ classes.panels.SystemInfo = function () {
 		Admin = classes.Admin;
 		Auth = classes.data.Auth;
 		Lang = classes.data.Lang;
-		Dialog = classes.components.Dialog;
-		Func = classes.helpers.Func;
 		render();
 	};
 };

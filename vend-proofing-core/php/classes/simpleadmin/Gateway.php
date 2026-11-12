@@ -4,40 +4,11 @@
 
 		/* ---- Public Methods ---- */
 
-		public function demoMode ($bool) {
-			$this->demomode = $bool;
-		}
-
-		public function authenticate () {
-			global $CONFIG;
-			/* if we're in demo mode, just allow all calls like we're logged in
-				*/
-			if ($this->demomode) {
-				$this->authenticated = true;
-				return;
-			}
-			/* auth it up
-				*/
-			$auth = $this->auth;
-			$authentication = $auth->authenticate();
-			$this->authenticated = $authentication["authenticated"] == true;
-			if ($this->authenticated) {
-				return;
-			}
-		}
-
 		public function execute () {
+			$authentication = $this->auth->authenticate();
+			$this->authenticated = $authentication["authenticated"] == true;
 			if ($this->authenticated) $this->runPrivate();
 			$this->runPublic();
-		}
-
-		public function setUploadTypes ($arr) {
-			$this->file_control_types = $arr;
-		}
-		
-		public function invalidate () {
-			$auth = $this->auth;
-			return $auth->invalidate();
 		}
 
 		/* ---- Constructor ---- */
@@ -62,12 +33,11 @@
 
 		protected $post = array();
 		protected $authenticated = false;
-		protected $demomode = false;
-		protected $file_control_types = array("gallery", "track", "image", "audio", "asset"); // legacy
 		protected $action = "";
 		protected $control = "";
 		protected $command = "";
 		protected $auth = null;
+		protected $file_control_types = array("image", "asset", "audio", "track", "package", "product");
 
 		protected function getRequestVariable ($name, $default="") {
 			if (isset($this->post[$name])&&strlen($this->post[$name])>0) {
@@ -79,122 +49,10 @@
 			return $default;
 		}
 
-		protected function requireAdmin (): void {
-			if ($this->authenticated) return;
-			http_response_code(403);
-			$this->respond(array("type" => "xml", "errors" => array("Administrator access required")));
-		}
-
-		protected function changeSystemPassword () {
-			$username = $this->getRequestVariable("username");
-			$o_password = isset($_POST["o_password"]) && is_string($_POST["o_password"]) ? $_POST["o_password"] : "";
-			$n_password = isset($_POST["n_password"]) && is_string($_POST["n_password"]) ? $_POST["n_password"] : "";
-			$success = AdminAccount::changePassword($username, $o_password, $n_password);
-			$this->respond(array(
-				"success" => $success,
-				"data" => $success ? "Password Changed Successfully" : "Original Password Invalid"
-			));
-		}
-
-		protected function changeSystemUsername () {
-			$o_username = $this->getRequestVariable("o_username");
-			$n_username = $this->getRequestVariable("n_username");
-			$password = isset($_POST["password"]) && is_string($_POST["password"]) ? $_POST["password"] : "";
-			$success = AdminAccount::changeUsername($o_username, $n_username, $password);
-			$this->respond(array(
-				"success" => $success,
-				"data" => $success ? "Username Changed Successfully" : "Original Password Invalid"
-			));
-		}
-
-		protected function showPhpInfo () {
-			global $CONFIG;
-			if ($CONFIG->getNodeVal("setup.hub")=="true") exit();
-			phpinfo();
-			exit();
-		}
-
 		protected function clearSystemCache () {
 			Filesystem::purgeFolder(SA_DIR_TEMP);
 			Filesystem::purgeFolder(SA_DIR_CACHE);
 			$this->getSystemInfo();
-		}
-
-		protected function setResellerID () {
-			global $CONFIG;
-			$reseller_id = $this->getRequestVariable("reseller_id", $CONFIG->getNodeVal("setup.reseller_id"));
-			$config_filepath = SA_NAMESPACE."-config.xml";
-			$config_filedata = Filesystem::getFileData($config_filepath);
-			$config_filedata = Func::setTextBetween($config_filedata, "<reseller_id>", "</reseller_id>", $reseller_id);
-			Filesystem::makeFile($config_filepath, $config_filedata);
-			$this->getSystemInfo();
-		}
-
-		protected function refreshTemplateFiles () {
-			$response = "Updating Templates ... \n<br />";
-			if (file_exists(SA_DIR_STORAGE)) {
-				/* get a list of default xml files to cross reference
-					*/
-				$defaults = array();
-				$opendir = @opendir(SA_DIR_DEFAULTS);
-				while (false !== ( $file = readdir($opendir) )) {
-					if ($file == '.' || $file == '..' || is_dir(SA_DIR_DEFAULTS."/".$file) || is_link(SA_DIR_DEFAULTS."/".$file)) continue;
-					$defaults[$file] = array();
-				}
-				closedir($opendir);
-				$response .= "Base Templates: " . implode(", ", array_keys($defaults)) . "\n<br />";
-				/* find any matching files as we traverse through the file structure
-					*/
-				$opendir = @opendir(SA_DIR_STORAGE);
-				while (false !== ( $file = readdir($opendir) )) {
-					if ($file == '.' || $file == '..' || is_link(SA_DIR_STORAGE."/".$file)) continue;
-					if (isset($defaults[$file])) {
-						$defaults[$file][] = SA_DIR_STORAGE."/".$file;
-					}
-					if(is_dir(SA_DIR_STORAGE."/".$file)) {
-						$storage_sub_dir = SA_DIR_STORAGE."/".$file."/";
-						$opensubdir = @opendir(SA_DIR_STORAGE."/".$file);
-						while (false !== ( $subfile = readdir($opensubdir) )) {
-							if ($subfile == '.' || $subfile == '..' || is_link($storage_sub_dir.$subfile)) continue;
-							if (isset($defaults[$subfile])) {
-								$defaults[$subfile][] = $storage_sub_dir.$subfile;
-							}
-						}
-						closedir($opensubdir);
-					}
-				}
-				closedir($opendir);
-				foreach ($defaults as $template => $files) {
-					if (count($files)==0) continue;
-					$default = new SimpleXML4();
-					$default->load(SA_DIR_DEFAULTS."/".$template);
-					foreach($files as $file) {
-						$original = new SimpleXML4();
-						$original->load($file);
-						$original->merge($default);
-						$original->save();
-						$response .= "Updated: " . $file . "\n<br />";
-					}
-				}
-			}
-			$response .= "Done!";
-			$this->respond(array(
-				"type" => "raw",
-				"data" => $response
-			));
-		}
-
-		protected function getFileInfo () {
-			if ($CONFIG->getNodeVal("setup.hub")=="true") exit();
-			$suid = $this->getRequestVariable("suid");
-			$filename = $this->getRequestVariable("filename");
-			if ($suid==""||$filename=="") return;
-			$getID3 = new getID3;
-			$fileinfo = $getID3->analyze(SA_DIR_STORAGE."/".$suid."/".$filename);
-			print "<pre>";
-			print_r($fileinfo);
-			print "</pre>";
-			exit();
 		}
 
 		protected function getSystemInfo () {
@@ -218,13 +76,10 @@
 				$imagick_version = explode(" ", $imagick_version);
 				$imagick_version = $imagick_version[1];
 			}
-			$reseller_id = $this->getRequestVariable("reseller_id", $CONFIG->getNodeVal("setup.reseller_id"));
 			$last_updated = $CONFIG->getNodeVal("setup.last_updated");
-			if (SA_DEMOMODE) $reseller_id = $CONFIG->getNodeVal("setup.reseller_id");
 			$props = array(
 				"last_updated" => 				is_numeric( $last_updated ) ? @date("m/d/Y", $CONFIG->getNodeVal("setup.last_updated")/1000) : "N/A",
 				"product_version" => 			$CONFIG->getNodeVal("setup.product_version"),
-				"reseller_id" => 				$reseller_id,
 				"user_generated_storage" => 	Func::bytesToSize(Filesystem::getDirSize(SA_DIR_STORAGE)),
 				"temporary_storage" => 			Func::bytesToSize(Filesystem::getDirSize(SA_DIR_TEMP)),
 				"php_version" => 				preg_replace('/[a-z-]/', '', phpversion()),
@@ -253,50 +108,6 @@
 			));
 		}
 		
-		protected function backup () {
-			if (SA_DEMOMODE) {
-				$this->respond(array(
-					"success" => false
-				));
-			}
-			$name = time();
-			$archive = new PclZip(SA_DIR_TEMP."/$name.zip");
-			$list = $archive->create(SA_DIR_STORAGE);
-			$this->respond(array(
-				"data" => $name,
-				"success" => ($list==0?false:true)
-			));
-		}
-
-		protected function cleanXmlOutput (&$source) {
-			if (is_array($source)==false) return;
- 			foreach($source as $key => $obj) {
-				$key_fragments = explode("_", $key);
-				$key_type = array_pop($key_fragments);
-				if (isset($obj["_a"])) {
-					if (isset($obj["_a"]["private"])) {
-						unset($source[$key]);
-					}
-					$atts = array("access", "tags", "lines", "options", "toolbar", "min", "max", "increment", "encoded", "markdown", "action", "name", "suid", "extensions");
-					foreach($atts as $att) {
-						if (isset($obj["_a"][$att])) {
-							unset($source[$key]["_a"][$att]);
-						}
-					}
-				}
-				if (isset($obj["_c"])) {
-					$child = &$source[$key]["_c"];
-					$this->cleanXmlOutput($child);
-				}
-				if (isset($obj[0])) {
-					for ($i=0; $i<count($obj); ++$i) {
-						$child = &$source[$key][$i]["_c"];
-						$this->cleanXmlOutput($child);
-					}
-				}
-			}
-		}
-
 		protected function parseTableRowData ($str) {
 			$arr = explode("\t", $str);
 			$count = count($arr);
@@ -307,57 +118,12 @@
 			return $arr;
 		}
 
-		protected function parsePublicXmlOutput ($str, $type, $suid) {
-			$xmlobj = new SimpleXML4($str);
-			$this->cleanXmlOutput($xmlobj->xml_array);
-			return $xmlobj->toString();
-		}
-
-		protected function parsePublicFileOutput ($str, $name, $suid) {
-			return $str;
-		}
-
-		protected function parsePublicSetOutput ($str, $name, $suid) {
-			return $str;
-		}
-
-		protected function onUpdateSetTable ($table, $name, $suid, $puid) {
-			return $table;
-		}
-
-		protected function onDeleteSetTable ($table, $name, $suid, $puid) {
-			return $table;
-		}
-
-		protected function onDeleteFileTable ($table, $name, $suid, $type) {
-			return $table;
-		}
-
-		protected function onUpdateFileObject ($table, $name, $suid, $type) {
-			return $table;
-		}
-
-		protected function onUpdateFileTable ($table, $name, $suid, $type) {
-			return $table;
-		}
-
 		/* ---- Public Execution ---- */
 
 		protected function runPublic () {
 			global $CONFIG;
 			global $LANG;
 			switch ($this->action) {
-			 case "system_phpinfo" :
-				$this->requireAdmin();
-				$this->showPhpInfo();
-				break;
-			 case "create_gradient" :
-				$hex1 = strtolower($this->getRequestVariable("hex1", "ffffff"));
-				$hex2 = strtolower($this->getRequestVariable("hex2", "ffffff"));
-				$height = strtolower($this->getRequestVariable("height", "500"));
-				$image = new gd_gradient_fill(1, $height, 'vertical', $hex1, $hex2);
-				exit();
-				break;
 			 case "image_colorize" :
 				/* pull in the possible query values
 					*/
@@ -499,7 +265,7 @@
 					"data" => $token!=="" ? $token : "Username or password invalid"
 				));
 			 case "logout" :
-				if ($this->auth->authenticate()["authenticated"]) $this->invalidate();
+				if ($this->auth->authenticate()["authenticated"]) $this->auth->invalidate();
 				$this->respond(array(
 					"success" => true
 				));
@@ -510,108 +276,6 @@
 					"data" => $token
 				));
 				break;
-			 case "toggle_flash" :
-				$value = $this->getRequestVariable("value", "true");
-				setcookie("flash", $value, 0);
-				$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH;
-				$this->doRedirect($path);
-			 case "get_xml" :
-				$this->requireAdmin();
-				$type = $this->getRequestVariable("type", "");
-				$suid = $this->getRequestVariable("suid", null);
-				$required = $this->getRequestVariable("required", false);
-				/* do some error checking
-					a type is required
-					*/
-				$errors = array();
-				if ($type=="") {
-					$errors[] = $LANG->lookup('type is a required parameter');
-				}
-				/* if we're here, get the data
-					*/
-				$data = Flatfile::getXmlString($type, $suid, $required);
-				/* see if it's empty
-					*/
-				if (strlen($data)==0) {
-					$errors[] = $LANG->lookup('xml data set empty');
-				} else {
-					$data = $this->parsePublicXmlOutput($data, $type, $suid);
-				}
-				/* respond
-					*/
-				$this->respond(array(
-					"type" => "xml",
-					"errors" => $errors,
-					"data" => $data
-				));
-			 case "get_files" :
-				$this->requireAdmin();
-				$type = $this->getRequestVariable("type", "");
-				$suid = $this->getRequestVariable("suid", null);
-				/* do some error checking
-					a type is required
-					*/
-				$errors = array();
-				if ($type=="") {
-					$errors[] = $LANG->lookup('type is a required parameter');
-				}
-				/* if we're here, get the data
-					*/
-				$data = Flatfile::listFileTable($type, $suid);
-				/* see if it's empty
-					*/
-				if (strlen($data)==0) {
-					$errors[] = $LANG->lookup('file data set empty');
-				} else {
-					$data = $this->parsePublicFileOutput($data, $type, $suid);
-				}
-				/* return as xml if errors
-					*/
-				if (count($errors)>0) {
-					$this->respond(array(
-						"type" => "xml",
-						"errors" => $errors
-					));
-				}
-				/* otherwise, just spit out the data
-					*/
-				$this->respond(array(
-					"type" => "raw",
-					"data" => $data
-				));
-			 case "get_set" :
-				$this->requireAdmin();
-				$name = $this->getRequestVariable("name", "");
-				$suid = $this->getRequestVariable("suid", null);
-				/* do some error checking
-					a type is required
-					*/
-				$errors = array();
-				if ($name=="") {
-					$errors[] = $LANG->lookup('name is a required parameter');
-				}
-				/* if we're here, get the data
-					*/
-				$data = Flatfile::listSetTable($name, $suid);
-				if (strlen($data)==0) {
-					$errors[] = $LANG->lookup('set data set empty');
-				} else {
-					$data = $this->parsePublicSetOutput($data, $name, $suid);
-				}
-				/* return as xml if errors
-					*/
-				if (count($errors)>0) {
-					$this->respond(array(
-						"type" => "xml",
-						"errors" => $errors
-					));
-				}
-				/* otherwise, just spit out the data
-					*/
-				$this->respond(array(
-					"type" => "raw",
-					"data" => $data
-				));
 			 default :
 				$this->respond(array(
 					"type" => "xml",
@@ -624,59 +288,6 @@
 
 		protected function runPrivate () {
 			global $CONFIG;
-			switch ($this->action) {
-			 case "get_product_info" :
-				$data = Func::getRemotePage("https://intothedarkroom.com/installer/ci/en/get-product/" . SA_NAMESPACE.  "/");
-				$this->respond(array(
-					"success" => true,
-					"data" => $data
-				));
-				break;
-			 case "import_tsm" :
-				Filesystem::makeFolder(SA_DIR_TEMP);
-				$proxy = new SideLoad;
-				$proxy->setURL("https://intothedarkroom.com/internal/content/music/download.php?id=" . $CONFIG->getNodeVal("setup.install_id") . "&hub=" . $CONFIG->getNodeVal("setup.hub"));
-				$proxy->downloadTo(SA_DIR_TEMP."/tsm.zip");
-				$archive = new PclZip(SA_DIR_TEMP."/tsm.zip");
-				$contents = $archive->extract(
-					PCLZIP_OPT_PATH, SA_DIR_TEMP,
-					PCLZIP_OPT_REMOVE_ALL_PATH);
-				$folder = "track";
-				$directory = SA_DIR_STORAGE . "/$folder";
-				$tablepath = SA_DIR_STORAGE . "/$folder/$folder.table";
-				Filesystem::makeFolder($directory);
-				foreach ($contents as $file) {
-					$filename = $file['stored_filename'];
-					$filename = explode(".", $filename);
-					$fileext = strtolower(array_pop($filename));
-					$filename = implode(".", $filename);
-					$filehash = Func::homogenize($filename) . "-" . Flatfile::createUID();
-					$fileobject = array(
-						"file" => array (
-							"tmp" => $file['filename'],
-							"name" => $filename,
-							"basename" => $filename,
-							"ext" => $fileext,
-							"hash" => $filehash,
-							"final" => $filehash . "." . $fileext,
-							"path" => $directory . "/" . $filehash . "." . $fileext
-						)
-					);
-					@rename($file['filename'], $fileobject["file"]["path"]);
-					$fileobject = Flatfile::getFileAttributes($fileobject);
-					$fileobject = array($fileobject["file"]["final"], $fileobject["file"]["name"], $fileobject["dimensions"], $fileobject["duration"], $fileobject["size"], "");
-					$table = Flatfile::saveFile($fileobject, $folder);
-					Flatfile::saveFileTable($table, $folder);
-					@unlink($file['filename']);
-				}
-				@unlink(SA_DIR_TEMP."/tsm.zip");
-				$response = Flatfile::listFileTable($folder);
-				$this->respond(array(
-					"success" => true,
-					"data" => $response
-				));
-				break;
-			}
 			switch ($this->control) {
 			 case "upload" :
 				$cookie_name = md5($CONFIG->getNodeVal("setup.product"));
@@ -703,23 +314,29 @@
 				switch ($this->command) {
 				 case "clearcache" :
 					$this->clearSystemCache();
-				 case "setresellerid" :
-					$this->setResellerID();
 				 case "getinfo" :
 					$this->getSystemInfo();
-				 case "getfileinfo" :
-					$this->getFileInfo();
-				 case "backup" :
-					$this->backup();
-				 case "refreshtemplates" :
-					$this->refreshTemplateFiles();
 				}
 			 case "account" :
 				switch ($this->command) {
 				 case "changepassword" :
-					$this->changeSystemPassword();
+					$username = $this->getRequestVariable("username");
+					$oldPassword = isset($_POST["o_password"]) && is_string($_POST["o_password"]) ? $_POST["o_password"] : "";
+					$newPassword = isset($_POST["n_password"]) && is_string($_POST["n_password"]) ? $_POST["n_password"] : "";
+					$success = AdminAccount::changePassword($username, $oldPassword, $newPassword);
+					$this->respond(array(
+						"success" => $success,
+						"data" => $success ? "Password Changed Successfully" : "Original Password Invalid"
+					));
 				 case "changeusername" :
-					$this->changeSystemUsername();
+					$oldUsername = $this->getRequestVariable("o_username");
+					$newUsername = $this->getRequestVariable("n_username");
+					$password = isset($_POST["password"]) && is_string($_POST["password"]) ? $_POST["password"] : "";
+					$success = AdminAccount::changeUsername($oldUsername, $newUsername, $password);
+					$this->respond(array(
+						"success" => $success,
+						"data" => $success ? "Username Changed Successfully" : "Original Password Invalid"
+					));
 				}
 			 case "setup" :
 				$type = $this->getRequestVariable("type");
@@ -753,183 +370,178 @@
 				$name = $this->getRequestVariable("name");
 				$suid = $this->getRequestVariable("suid", null);
 				$puid = $this->getRequestVariable("puid", null);
-				switch ($this->command) {
-				 case "list" :
-					$response = Flatfile::listSetTable($name, $puid);
-					$this->respond(array(
-						"success" => true,
-						"data" => $response
-					));
-				 case "reindex" :
-					$from = $this->getRequestVariable("from");
-					$to = $this->getRequestVariable("to");
-					$response = Flatfile::sortSetTable($name, $from, $to, $puid);
-					$this->respond(array(
-						"success" => true,
-						"data" => $response,
-						"invalidate" => true
-					));
-				 case "delete" :
-					$table = Flatfile::deleteSetTable($name, $suid, $puid);
-					$table = $this->onDeleteSetTable($table, $name, $suid, $puid);
-					$response = Flatfile::saveSetTable($table, $name, $puid);
-					$this->respond(array(
-						"success" => true,
-						"data" => $response,
-						"invalidate" => true
-					));
-				 case "create" :
-					if ($suid==null) $suid = Flatfile::createUID();
-				 case "update" :
-					$data = $this->getRequestVariable("data");
-					$data = $this->parseTableRowData($data);
-						array_unshift($data, $suid);
-					$table = Flatfile::updateSetTable($name, $data, $puid);
-					$table = $this->onUpdateSetTable($table, $name, $suid, $puid);
-					$response = Flatfile::saveSetTable($table, $name, $puid);
-					$this->respond(array(
-						"success" => true,
-						"data" => $response,
-						"invalidate" => true
-					));
-				}
-			}
-			if (in_array($this->control, $this->file_control_types)) {
-				$name = $this->getRequestVariable("name");
-				$suid = $this->getRequestVariable("suid", null);
-				$type = $this->control;
-				if ($suid==null) $suid = $type;
-				switch ($this->command) {
-				 case "list" :
-					$response = Flatfile::listFileTable($type, $suid);
-					$this->respond(array(
-						"success" => true,
-						"data" => $response
-					));
-				 case "reindex" :
-					$from = $this->getRequestVariable("from");
-					$to = $this->getRequestVariable("to");
-					$indices = $this->getRequestVariable("indices");
-					if (strlen($indices)>0) {
-						$from = array();
-						$to = array();
-						$indices = explode(";", $indices);
-						for ($i=0; $i<count($indices); ++$i) {
-							$pair = $indices[$i];
-							$pair = explode(",", $pair);
-							$from[] = $pair[0];
-							$to[] = $pair[1];
-						}
+				if (preg_match('/^[a-f0-9]{32}$/i', $name)) {
+					if ($this->command==="list") {
+						$this->respond(array(
+							"success" => true,
+							"data" => Proofing::rowsText(Proofing::rows($puid ?? "", $name))
+						));
 					}
-					$response = Flatfile::sortFileTable($type, $suid, $from, $to);
+					throw new InvalidArgumentException("Unknown proofing action.");
+				}
+				if (Records::hasSetTable($name)) {
+					switch ($this->command) {
+					 case "list" :
+						$this->respond(array(
+							"success" => true,
+							"data" => Records::rowsText(Records::getSetTable($name, $puid))
+						));
+					 case "create" :
+					 case "update" :
+						$data = $this->parseTableRowData($this->getRequestVariable("data"));
+						Records::saveSetRow($name, $suid ?? "", $puid, $data);
+						$this->respond(array(
+							"success" => true,
+							"data" => Records::rowsText(Records::getSetTable($name, $puid)),
+							"invalidate" => true
+						));
+					 case "delete" :
+						$namedCode = in_array($name, array("category", "ustaxchart", "cataxchart", "vattaxchart"), true);
+						$validSuid = $name==="session"
+							? preg_match('/^[a-f0-9]{32}$/i', $suid ?? "")
+							: preg_match('/^[a-f0-9]{1,16}$/i', $suid ?? "");
+						if (!$namedCode && !$validSuid) {
+							throw new InvalidArgumentException("Invalid set identifier.");
+						}
+						Records::deleteSetRow($name, $suid ?? "", $puid);
+						if ($name==="page") {
+							$folder = SA_DIR_STORAGE . "/" . $suid;
+							if (is_dir($folder) && !is_link($folder)) {
+								Filesystem::purgeFolder($folder);
+								Filesystem::deleteFolder($folder);
+							}
+						}
+						$this->respond(array(
+							"success" => true,
+							"data" => Records::rowsText(Records::getSetTable($name, $puid)),
+							"invalidate" => true
+						));
+					 case "reindex" :
+						$from = (int) $this->getRequestVariable("from");
+						$to = (int) $this->getRequestVariable("to");
+						Records::reorderSetRows($name, $puid, $from, $to);
+						$this->respond(array(
+							"success" => true,
+							"data" => Records::rowsText(Records::getSetTable($name, $puid)),
+							"invalidate" => true
+						));
+					}
+				}
+				throw new InvalidArgumentException("Unknown set type.");
+			}
+			if (in_array($this->control, $this->file_control_types, true)) {
+				$type = $this->control;
+				$suid = $this->getRequestVariable("suid", null);
+				$folder = $suid ?? $type;
+				$pageType = null;
+				if ($type==="image") {
+					$pageType = Records::pageType($folder);
+					$name = $this->getRequestVariable("name");
+					if ($name!=="page" || !in_array($pageType, array("UploadSet", "CategorySet", "DropboxSet"), true)) {
+						throw new InvalidArgumentException("Unknown image gallery.");
+					}
+				} elseif ($folder!==$type && Records::pageType($folder)===null) {
+					throw new InvalidArgumentException("Unknown media gallery.");
+				}
+
+				switch ($this->command) {
+				 case "list" :
 					$this->respond(array(
 						"success" => true,
-						"data" => $response,
+						"data" => Records::rowsText(Records::getFileTable($type, $folder))
+					));
+				 case "reindex" :
+					$from = (int) $this->getRequestVariable("from");
+					$to = (int) $this->getRequestVariable("to");
+					$moves = MediaFiles::mediaOrderMoves($this->post);
+					if ($type==="image") {
+						Records::reorderImages($folder, $moves, $from, $to);
+					} else {
+						Records::reorderMedia($type, $folder, $moves, $from, $to);
+					}
+					$this->respond(array(
+						"success" => true,
+						"data" => Records::rowsText(Records::getFileTable($type, $folder)),
 						"invalidate" => true
 					));
 				 case "snapshot" :
-					$filename = $this->getRequestVariable("filename", null);
-					$data = $this->getRequestVariable("data", null);
-					$response = Flatfile::addSnapshot($type, $suid, $filename, $data);
-					$success = false;
-					switch ($response) {
-					 case -100 :
-						$response = "Operation Not Allowed";
-						break;
-					 case -200 :
-						$response = "Filename Required";
-						break;
-					 case -300 :
-						$response = "File Data Required";
-						break;
-					 default :
-						$success = true;
-					}
+					$result = MediaFiles::addSnapshot($type, $folder,
+						$this->getRequestVariable("filename"), $this->getRequestVariable("data"));
 					$this->respond(array(
-						"success" => $success,
-						"data" => $response,
+						"success" => $result===100,
+						"data" => MediaFiles::mediaSnapshotResult($result),
 						"invalidate" => true
 					));
-				 case "test" :
-					print_r($_POST);
-					print_r($_FILES);
-					exit;
 				 case "sideload" :
 				 case "upload" :
-					$service_uri = 		$this->getRequestVariable("uri", null);
-					$filename = 		$this->getRequestVariable("filename", null);
-					$process_video = 	$this->getRequestVariable("video", "false");
-					$is_snapshot = 		$this->getRequestVariable("snapshot", "false");
-					if ($service_uri!=null) {
-						if ($process_video=="false") {
-							$fileobject = Flatfile::sideloadFile($type, $suid, $service_uri, $filename);
-						} else {
-							$fileobject = Flatfile::addFileUrl($type, $suid, $service_uri, $filename);
-						}
-					} else {
-						$filename = $this->getRequestVariable("snapshot_id", $filename);
-						$fileobject = Flatfile::uploadFile($type, $suid, $is_snapshot, $filename);
+					if ($type==="image" && $pageType==="DropboxSet") {
+						$this->respond(array("success" => false, "data" => "Dropbox images are added by sync."));
 					}
-					$fileobject = $this->onUpdateFileObject($fileobject, $name, $suid, $type);
-					/* figure out what to output
-						*/
-					$response = is_array($fileobject) ? implode("\t", $fileobject) : $fileobject;
-					$success = false;
-					switch ($fileobject) {
-					 case -100 :
-						$response = "Cannot Import Uploaded File";
-						break;
-					 case -200 :
-						$response = "Cannot Copy Local File";
-						break;
-					 case -300 :
-						$response = "URL Does Not Exist";
-						break;
-					 case -400 :
-						$response = "Sideloader Class Unavailable";
-						break;
-					 case -500 :
-						$response = "Invalid File Type";
-						break;
-					 case -600 :
-						$response = "Image Too Large";
-						break;
-					 default :
-						$success = true;
-						if ($is_snapshot=="false") {
-							$table = Flatfile::saveFile($fileobject, $type, $suid);
-							$table = $this->onUpdateFileTable($table, $name, $suid, $type);
-							Flatfile::saveFileTable($table, $type, $suid);
+					$isSnapshot = $this->getRequestVariable("snapshot")==="true";
+					$row = MediaFiles::receiveMediaFile($type, $folder, $this->post);
+					if (!is_array($row)) {
+						$this->respond(array("success" => false, "data" => MediaFiles::mediaFileError($row)));
+					}
+					if (!$isSnapshot) {
+						$categoryName = "";
+						if ($type==="image") {
+							$path = trim($this->getRequestVariable("path"), "/");
+							$parts = explode("/", $path);
+							if (count($parts)>=2) {
+								array_pop($parts);
+								$categoryName = (string) array_pop($parts);
+							}
+						}
+						try {
+							if ($type==="image") {
+								Records::addImage($folder, $row, $categoryName);
+							} else {
+								Records::addMedia($type, $folder, $row);
+							}
+						} catch (Throwable $error) {
+							MediaFiles::delete($folder, array($row[0]));
+							throw $error;
+						}
+						if ($categoryName!=="" && $pageType==="CategorySet") {
+							$row[6] = md5($categoryName);
 						}
 					}
 					$this->respond(array(
-						"success" => $success,
-						"data" => $response,
+						"success" => true,
+						"data" => implode("\t", $row),
 						"invalidate" => true
 					));
 				 case "update" :
-					$data = $this->getRequestVariable("data");
-					$data = $this->parseTableRowData($data);
-					$table = Flatfile::updateFileTable($type, $suid, $data);
-					$table = $this->onUpdateFileTable($table, $name, $suid, $type);
-					$response = Flatfile::saveFileTable($table, $type, $suid);
+					$data = $this->parseTableRowData($this->getRequestVariable("data"));
+					if ($type==="image") {
+						Records::updateImage($folder, $data);
+					} else {
+						Records::updateMedia($type, $folder, $data);
+					}
 					$this->respond(array(
 						"success" => true,
-						"data" => $response,
+						"data" => Records::rowsText(Records::getFileTable($type, $folder)),
 						"invalidate" => true
 					));
 				 case "delete" :
-					$files = $this->getRequestVariable("files");
-					$files = explode(",", $files);
-					$table = Flatfile::deleteFileTable($type, $suid, $files);
-					$table = $this->onDeleteFileTable($table, $name, $suid, $type);
-					$response = Flatfile::saveFileTable($table, $type, $suid);
+					$existing = Records::getFileTable($type, $folder);
+					$keys = array();
+					foreach (explode(",", $this->getRequestVariable("files")) as $key) {
+						if (isset($existing[$key])) $keys[] = $key;
+					}
+					if ($type==="image") {
+						Records::deleteImages($folder, $keys);
+					} else {
+						Records::deleteMedia($type, $folder, $keys);
+					}
+					MediaFiles::delete($folder, $keys);
 					$this->respond(array(
 						"success" => true,
-						"data" => $response,
+						"data" => Records::rowsText(Records::getFileTable($type, $folder)),
 						"invalidate" => true
 					));
 				}
+				throw new InvalidArgumentException("Unknown media action.");
 			}
 		}
 

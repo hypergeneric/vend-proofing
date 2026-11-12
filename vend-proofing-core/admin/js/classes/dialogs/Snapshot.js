@@ -41,7 +41,7 @@ classes.dialogs.Snapshot = function () {
 			break;
 		 case "loaded" :
 			if (!data.success) {
-				message = Lang.lookup(data);
+				message = Lang.lookup(data.response);
 			} else {
 				response.addClass("Success");
 				message = Lang.lookup("Upload Complete");
