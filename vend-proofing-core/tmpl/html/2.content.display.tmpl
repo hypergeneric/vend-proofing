@@ -57,7 +57,7 @@
 	$default_currency = 					$this->getTypedValue("ordering", "ordering", "default_currency");
 	$allow_international_purchases_bool = 	$this->getTypedValue("ordering", "ordering", "allow_international_purchases_bool");
 	$allow_offline_payment_bool = 			$this->getTypedValue("ordering", "ordering", "allow_offline_payment_bool");
-	$allow_offsite_paypal_payments_bool = 	$this->getTypedValue("ordering", "ordering", "allow_offsite_paypal_payments_bool");
+	$allow_offsite_paypal_payments_bool = 	PaymentSettings::configured("paypal");
 	$calculate_and_display_shipping_bool = 	$this->getTypedValue("ordering", "ordering", "calculate_and_display_shipping_bool");
 	$calculate_and_display_sales_tax_bool = $this->getTypedValue("ordering", "ordering", "calculate_and_display_sales_tax_bool");	
 	$allow_local_pickup_bool = 				$this->getTypedValue("ordering", "ordering", "allow_local_pickup_bool");
@@ -72,8 +72,8 @@
 	$downloads_taxable_bool = 				$this->getTypedValue("ordering", "ordering", "downloads_taxable_bool");
 	$cart_minimum_value_num = 				$this->getTypedValue("ordering", "ordering", "cart_minimum_value_num");
 	$cart_minimum_count_num = 				$this->getTypedValue("ordering", "ordering", "cart_minimum_count_num");
-	$paypal_email_address = 				$this->getTypedValue("ordering", "payment_gateway", "paypal_email_address");
-	$enable_paypal_merchant_account_bool = 	$this->getTypedValue("ordering", "ordering", "enable_paypal_merchant_account_bool");
+	$paypal_email_address = 				array("value" => "");
+	$enable_paypal_merchant_account_bool = 	PaymentSettings::configured("stripe");
 
 	$postal_code_pattern = 					"";
 		if ($default_country=="US") $postal_code_pattern = "(\d{5}([\-]\d{4})?)";
@@ -385,7 +385,8 @@
 					included: <?php echo $purchase_price_includes_tax_bool ? "true" : "false"; ?> 
 				}, 
 				discount: <?php echo $allow_discount_codes_bool ? "true" : "false"; ?>, 
-				business: "<?php echo $paypal_email_address["value"]; ?>", 
+				paypalClientId: <?php echo json_encode(PaymentSettings::get("paypal_" . PaymentSettings::mode("paypal") . "_client_id")); ?>,
+				paypalMode: <?php echo json_encode(PaymentSettings::mode("paypal")); ?>,
 				minimum: { 
 					value: <?php echo $cart_minimum_value_num; ?>, 
 					count: <?php echo $cart_minimum_count_num; ?> 
@@ -914,27 +915,7 @@
 								</div>
 							</div>
 						</div>
-<?php if ($enable_paypal_merchant_account_bool) { ?>
-						<div class="Input" id="checkout-cc">
-							<div class="Block">
-								<input class="uiField" id="checkout-cc-number" pattern="[0-9]{13,16}" type="text" placeholder="<?php echo $checkout_cc_number["html"]; ?>" />
-								<input class="uiField" id="checkout-cvv-number" pattern="[0-9]{3,4}" type="text" placeholder="<?php echo $checkout_cc_cvv_number["html"]; ?>" />
-								<select class="uiField" id="checkout-cc-expiry-month">
-									<option value=""><?php echo $checkout_cc_expiry_month["html"]; ?></option>
-<?php 	for($i=1;$i<13;$i++){ ?>
-									<option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></option>
-<?php 	} ?>
-								</select>
-								<select class="uiField" id="checkout-cc-expiry-year">
-									<option value=""><?php echo $checkout_cc_expiry_year["html"]; ?></option>
-<?php 	for($i=0;$i<21;$i++){ ?>
-									<option value="<?php echo date('Y') + $i; ?>"><?php echo date('Y') + $i; ?></option>
-<?php 	} ?>
-								</select>
-								<input class="uiField" id="checkout-cc-billing-postal-code" pattern="<?php echo $postal_code_pattern; ?>" type="text" placeholder="<?php echo $checkout_cc_billing_postal_code["html"]; ?>" />
-							</div>
-						</div>
-<?php } if ($allow_discount_codes_bool) { ?>
+<?php if ($allow_discount_codes_bool) { ?>
 						<div class="Input" id="checkout-discount">
 							<div class="Block">
 								<input class="uiField" id="checkout-discount_code" type="text" placeholder="<?php echo $checkout_discount_code["html"]; ?>" />

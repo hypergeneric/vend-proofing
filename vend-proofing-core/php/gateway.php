@@ -111,7 +111,7 @@
 			 case "get_log_file" :
 				$orderid = $this->getRequestVariable("orderid");
 				$order = new Order();
-				$response = $order->getLogById($orderid);
+				$response = Payments::summary($orderid);
 				$this->respond(array(
 					"success" => true,
 					"data" => $response
@@ -382,30 +382,6 @@
 					header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
 					exit();
 				}
-			 case "validate_paypal_ipn" :
-			 case "process_credit_card" :
-			 case "finalize_order" :
-				// incoming
-				$puid = $this->getRequestVariable("puid");
-				$name = $this->getRequestVariable("name");
-				$data = $this->getRequestVariable("data");
-				$cc_num = $this->getRequestVariable("cc_num");
-				$cc_expiry = $this->getRequestVariable("cc_expiry");
-				$cc_cvv = $this->getRequestVariable("cc_cvv");
-				$cc_zip = $this->getRequestVariable("cc_zip");
-				// create order
-				$order = new Order();
-				$order->setAction($this->action);
-				$order->setOrderProps($puid, $name, $data);
-				$order->setCCProps($cc_num, $cc_expiry, $cc_cvv, $cc_zip);
-				$order->process();
-				// done
-				$success = $order->success() ? "true" : "false";
-				$error = $order->error();
-				$this->respond(array(
-					"data" => $success . "\t" . $error,
-					"type" => "raw"
-				));
 			 case "prequalify_order" :
 				$puid = $this->getRequestVariable("puid");
 				$name = $this->getRequestVariable("name");
@@ -674,6 +650,7 @@
 
 	/* init the gateway
 		*/
+	PaymentGateway::dispatch();
 	$gateway = new LocalGateway();
 	$gateway->execute();
 

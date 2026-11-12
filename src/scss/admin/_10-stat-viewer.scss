@@ -1,0 +1,178 @@
+/* --- Stat Viewer --*/
+
+.StatsPanel .GraphWrapper {
+}
+	.StatsPanel .DateSelect {
+		float: left;
+		margin-right: 15px;
+		margin-bottom: 15px;
+	}
+		.StatsPanel .DateSelect label {
+			color: #444;
+			display: block;
+			font-size: 11px;
+			font-weight: bold;
+			margin-bottom: 3px;
+		}
+		.StatsPanel .DateSelect input {
+			color: #444;
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+			border: 1px #ccc solid;
+			padding: 10px 15px;
+			-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			font-size: 16px;
+		}
+		.StatsPanel .Button {
+			position: relative;
+			cursor: pointer;
+			float: left;
+			font-size: 14px;
+			font-weight: bold;
+			color: #fff;
+			border-radius: 4px 4px 4px 4px;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			background: #337ab7;
+			border: 2px #2e6da4 solid;
+			padding: 10px 15px;
+			margin-top: 19px;
+			margin-right: 10px;
+			margin-bottom: 15px;
+		}
+			.StatsPanel .Button:hover {
+				color: #fff;
+				background: #2e6da4;
+			}
+			.StatsPanel .Secondary {
+				color: #333333 !important;
+				background: #f8f8f8 !important;
+				border: 2px #ccc solid !important;
+			}
+			.StatsPanel .Secondary:hover {
+				color: #000 !important;
+				background: #eee !important;
+			}
+			.StatsPanel .Disabled {
+				cursor: default !important;
+				opacity: .5 !important;
+				color: #333333 !important;
+				background: #f8f8f8 !important;
+				border: 2px #ccc solid !important;
+			}
+			.StatsPanel .Disabled:hover {
+				color: #333333 !important;
+				background: #f8f8f8 !important;
+				border: 2px #ccc solid !important;
+			}
+	.StatsPanel .Graph {
+		position: relative;
+		width: 100%;
+		height: 200px;
+		border: 1px #ccc solid;
+		box-sizing: border-box;
+	}
+	.StatsPanel .Graph .Underlay {
+		position: relative;
+		height: 100%;
+	}
+	.StatsPanel .Graph .Lines {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+	}
+	.StatsPanel .Graph canvas {
+		position: absolute;
+		top: 0;
+		left: 1px;
+		display: block;
+		width: 100%;
+		height: 197px;
+	}
+		.StatsPanel .Graph table {
+			width: 100%;
+			height: 100%;
+		}
+		.StatsPanel .Graph td {
+			vertical-align:bottom;
+			font-size: 10px;
+			margin: 0;
+			padding: 0 3px;
+			border: 1px #ccc solid;
+			width: 33%;
+		}
+		.StatsPanel .Options .Check {
+			float: left;
+			box-sizing: border-box;
+			padding: 10px 15px;
+		}
+
+.StatsPanel .Left {
+	float: left;
+	width: 50%;
+	padding-right: 20px;
+	box-sizing: border-box;
+}
+.StatsPanel .Right {
+	float: left;
+	width: 50%;
+	box-sizing: border-box;
+}
+.StatsPanel .Third {
+	float: left;
+	width: 33%;
+	padding-right: 20px;
+	box-sizing: border-box;
+}
+.StatsPanel .TwoThirds {
+	float: left;
+	width: 67%;
+	box-sizing: border-box;
+}
+@media screen and (max-width: 480px) {
+	.StatsPanel .Left ,
+	.StatsPanel .Third ,
+	.StatsPanel .Right ,
+	.StatsPanel .TwoThirds {
+		float: none;
+		width: 100%;
+		padding-right: 0px;
+	}
+}
+
+.SetPanel .Button {
+	margin-top: 0 !important;
+}
+
+.SetPanel .Directions {
+	margin: 15px;
+	padding: 15px;
+	border-radius: 4px 4px 4px 4px;
+	-moz-border-radius: 4px 4px 4px 4px;
+	-webkit-border-radius: 4px 4px 4px 4px;
+	border: 1px #ccc solid;
+	background: #f8f8f8;
+	display: none;
+	margin-bottom: 20px;
+}
+
+.SetPanel .Title {
+	margin-bottom: 20px;
+}
+.SetPanel .Title  span {
+	display: block;
+	margin-bottom: 3px;
+}
+.SetPanel .Title  div {
+	float: left;
+	border: 2px #ccc solid;
+	font-size: 24px;
+	font-weight: bold;
+	color: #000;
+	padding: 7px 15px;
+	margin-bottom: 15px;
+}

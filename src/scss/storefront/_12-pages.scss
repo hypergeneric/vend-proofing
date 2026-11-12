@@ -1,0 +1,14 @@
+/* ---- Pages ---- */
+
+.PageViews {
+	position: relative;
+	padding-top: 65px;
+}
+	.PageView {
+		display: none;
+	}
+@media screen and (max-width: 600px){
+	.PageViews {
+		padding-top: 0px;
+	}
+}

@@ -171,13 +171,13 @@
 	<meta property="og:locale" content="<?php echo $language_facebook; ?>" />
 	<?php echo $page_head_tags["value"]; ?>
 	<!-- CSS: implied media=all -->
-	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_INDEXPATH; ?>?/css/global/<?php echo SA_PRODUCT_VERSION; ?>/" media="all" />
-	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/js/extend/jquery-ui/jquery-ui.min.css" media="all" />
+	<?php include SA_DIR_COREPATH . "/tmpl/html/2.theme.tmpl"; ?>
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/storefront.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/storefront.css"); ?>" media="all" />
 	<!-- sitemap -->
 	<link rel="sitemap" type="application/xml" href="<?php echo $website_sitemap_uri; ?>" />
 	<!-- Javascript -->
-	<script type="text/javascript" src="<?php echo SA_DIR_INDEXPATH; ?>?/js/global/<?php echo SA_PRODUCT_VERSION; ?>/"></script>
-	<script type="text/javascript" src="<?php echo SA_DIR_COREPATH; ?>/js/extend/jquery-ui/jquery-ui.min.js"></script>
+	<?php include SA_DIR_COREPATH . "/tmpl/html/2.config-storefront.tmpl"; ?>
+	<script src="<?php echo SA_DIR_COREPATH; ?>/js/storefront.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/storefront.js"); ?>"></script>
 </head>
 <body>
 	<div id="body-inner">

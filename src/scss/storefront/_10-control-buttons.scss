@@ -1,0 +1,171 @@
+/* ---- Control Buttons ---- */
+
+.ControlBar {
+	text-align: center;
+}
+.ControlBar .TALeft { /* Text Action Left */
+	position: relative;
+	z-index: 2;
+	float: left;
+	height: 44px;
+	line-height: 44px;
+	font-size: var(--vend-font-size-16);
+	font-weight: bold;
+	white-space: nowrap;
+	color: var(--vend-foreground-color);
+	cursor: pointer;
+	padding: 0 20px;
+}
+	.ControlBar .TALeft.Enabled {
+		opacity: .75;
+		cursor: pointer;
+	}
+	.no-touch .ControlBar .TALeft.Enabled:hover {
+		opacity: 1;
+	}
+	.ControlBar .TALeft.Disabled {
+		opacity: .25;
+		cursor: default;
+	}
+	.no-touch .ControlBar .TALeft.Disabled:hover {
+		opacity: .25;
+	}
+.ControlBar .IBLeft { /* Icon Button Left */
+	overflow: hidden;
+	position: relative;
+	z-index: 2;
+	cursor: pointer;
+	float: left;
+	width: 40px;
+	height: 100%;
+	opacity: .75;
+}
+	.no-touch .ControlBar .IBLeft:hover {
+		opacity: 1;
+	}
+.ControlBar .Center { /* Center */
+	position: relative;
+	display: inline-block;
+	height: 100%;
+	font-size: var(--vend-font-size-13);
+	font-weight: bold;
+	line-height: 44px;
+	white-space: nowrap;
+	color: var(--vend-foreground-color);
+	cursor: default;
+	padding: 0 20px;
+}
+.ControlBar .TACenter { /* Text Action Center */
+	position: relative;
+	display: inline-block;
+	height: 44px;
+	line-height: 44px;
+	font-size: var(--vend-font-size-16);
+	font-weight: bold;
+	white-space: nowrap;
+	color: var(--vend-foreground-color);
+	cursor: pointer;
+	padding: 0 20px;
+}
+	.ControlBar .TACenter.Enabled {
+		opacity: .75;
+		cursor: pointer;
+	}
+	.no-touch .ControlBar .TACenter.Enabled:hover {
+		opacity: 1;
+	}
+	.ControlBar .TACenter.Disabled {
+		opacity: .25;
+		cursor: default;
+	}
+	.no-touch .ControlBar .TACenter.Disabled:hover {
+		opacity: .25;
+	}
+.ControlBar .TARight { /* Text Action Right */
+	position: relative;
+	z-index: 2;
+	float: right;
+	height: 44px;
+	line-height: 44px;
+	font-size: var(--vend-font-size-16);
+	font-weight: bold;
+	white-space: nowrap;
+	color: var(--vend-foreground-color);
+	cursor: pointer;
+	padding: 0 20px;
+}
+	.ControlBar .TARight.Enabled {
+		opacity: .75;
+		cursor: pointer;
+	}
+	.no-touch .ControlBar .TARight.Enabled:hover {
+		opacity: 1;
+	}
+	.ControlBar .TARight.Disabled {
+		opacity: .25;
+		cursor: default;
+	}
+	.no-touch .ControlBar .TARight.Disabled:hover {
+		opacity: .25;
+	}
+.ControlBar .IBRight {  /* Icon Button Right */
+	overflow: hidden;
+	position: relative;
+	z-index: 2;
+	cursor: pointer;
+	float: right;
+	width: 40px;
+	height: 100%;
+	opacity: .75;
+}
+	.no-touch .ControlBar .IBRight:hover {
+		opacity: 1;
+	}
+
+	#overview-controlbar-prev {
+		background: var(--vend-icon-sprite) no-repeat -280px 50%;
+		background-size: 500px 40px;
+	}
+	#overview-controlbar-next {
+		background: var(--vend-icon-sprite) no-repeat -120px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-prev {
+		background: var(--vend-icon-sprite) no-repeat -280px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fs {
+		background: var(--vend-icon-sprite) no-repeat -80px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fs.Active {
+		background: var(--vend-highlight-icon-sprite) no-repeat -40px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fs.Disabled {
+		cursor: progress;
+	}
+	#browse-controlbar-fs.Off {
+		cursor: default !important;
+		opacity: .25 !important;
+	}
+	#browse-controlbar-fav {
+		background: var(--vend-icon-sprite) no-repeat 0px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-next {
+		background: var(--vend-icon-sprite) no-repeat -120px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fav.Active {
+		background: var(--vend-highlight-icon-sprite) no-repeat 0px 50%;
+		background-size: 500px 40px;
+	}
+	#browse-controlbar-fav.Disabled {
+		cursor: progress;
+	}
+	#browse-controlbar-return-icon ,
+	#browse-controlbar-close {
+		background: var(--vend-icon-sprite) no-repeat -440px 50%;
+		background-size: 500px 40px;
+	}

@@ -1,0 +1,115 @@
+/* --- Dialog Specific --*/
+	
+	.ForgotLogin #panel_upper {
+		position: relative;
+		margin-bottom: 15px
+	}
+	.ForgotLogin #panel_lower {
+		position: relative;
+	}
+	
+	.Update .Changelog {
+		color: #444;
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px #ccc solid;
+		padding: 10px 15px;
+		-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		font-size: 12px;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+	.Update .Changelog h2 ,
+	.Update .Changelog ul ,
+	.Update .Changelog p {
+		margin: 0 0 10px 0;
+	}
+	
+	.Snapshot {
+		overflow: hidden;
+	}
+	.Snapshot .Video {
+		overflow: hidden;
+		box-sizing: border-box;
+	}
+	.Snapshot video {
+		display: block;
+		width: 100%;
+		height: inherit;
+		line-height: 0 !important;
+	}
+	
+	/* --- Upload --- */
+	
+	.UploadDialog .FileList {
+		height: 150px;
+		border: 2px #ccc solid;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		padding: 0;
+		margin: 0;
+		margin-bottom: 15px;
+	}
+	.UploadFileItem {
+		height: 25px;
+		line-height: 25px;
+	}
+	.UploadFileItem.Odd {
+		background: #f0f0f0;
+	}
+		.UploadFileItem .Index {
+			box-sizing: border-box;
+			float: left;
+			width: 25px;
+			height: 25px;
+			line-height: 25px;
+			text-align: center;
+			border-right: 1px #ccc solid;
+		}
+		.UploadFileItem .Label {
+			box-sizing: border-box;
+			position: relative;
+			float: left;
+			height: 25px;
+			line-height: 25px;
+			border-right: 1px #ccc solid;
+			overflow: hidden;
+		}
+			.UploadFileItem .Progress {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				left: 0;
+				width: 0;
+				height: 25px;
+				background: #eaeaea;
+			}
+			.UploadFileItem span {
+				position: relative;
+				z-index: 1;
+				padding: 0 5px;
+				white-space: nowrap;
+			}
+			.UploadFileItem span.Active {
+				color: #666;
+			}
+			.UploadFileItem span.Init {
+				color: #ccc;
+			}
+			.UploadFileItem span.FileError {
+				color: #996666;
+			}
+		.UploadFileItem .Action {
+			box-sizing: border-box;
+			float: right;
+			width: 25px;
+			height: 25px;
+			line-height: 25px;
+			text-align: center;
+			cursor: pointer;
+		}
+		.UploadFileItem .Action.Disabled {
+			cursor: default;
+		}

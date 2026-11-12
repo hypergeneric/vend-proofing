@@ -1,0 +1,336 @@
+/* --- XMLPanel --*/
+
+	.FormObject {
+		position: relative;
+		margin-bottom: 20px;
+	}
+		.FormObject .Screen {
+			display: none;
+		}
+	.FormObject .Label {
+		color: #444;
+		display: block;
+		font-size: 11px;
+		font-weight: bold;
+		margin-bottom: 3px;
+	}
+	.FormObject.Input {
+		max-width: 900px;
+	}
+	.FormObject.DateSelection input ,
+	.FormObject.Linkage input.Mid ,
+	.FormObject.Picker input.Right,
+	.FormObject.Numeric input.Left,
+	.FormObject.Input textarea,
+	.FormObject.Ratio input,
+	.FormObject.Email input,
+	.FormObject.Input input {
+		max-width: 600px;
+		color: #444;
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px #ccc solid;
+		padding: 10px 15px;
+		-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		font-size: 16px;
+	}
+	.FormObject.Input textarea {
+		max-width: 900px;
+		resize: none;
+	}
+	.FormObject.Input .TemplateTag {
+		cursor: pointer;
+		font-size: 12px;
+		color: #333333 !important;
+		border-radius: 4px 4px 4px 4px;
+		-moz-border-radius: 4px 4px 4px 4px;
+		-webkit-border-radius: 4px 4px 4px 4px;
+		background: #f8f8f8;
+		border: 2px #ccc solid;
+		padding: 5px 7px;
+		margin-right: 5px;
+		margin-bottom: 5px;
+	}
+	.FormObject.Input .TemplateTag:hover {
+		color: #000 !important;
+		background: #eee;
+	}
+	
+	.FormObject.Ratio  {
+		max-width: 300px;
+	}
+	.FormObject.Ratio input {
+		max-width: none;
+	}
+	.FormObject.Ratio .Delimiter ,
+	.FormObject.Ratio .Right ,
+	.FormObject.Ratio .Left {
+		font-weight: normal;
+		text-align: center;
+		box-sizing: border-box;
+		float: left;
+	}
+	.FormObject.Ratio .Delimiter {
+		width: 40px;
+		color: #444;
+		padding: 10px 15px;
+		font-size: 16px;
+	}
+	
+	.FormObject.Email  {
+		max-width: 600px;
+	}
+	.FormObject.Email .Left  {
+		width: 49%;
+		margin-right: 10px;
+		display: inline-block;
+	}
+	.FormObject.Email .Right  {
+		display: inline-block;
+	}
+	
+	.FormObject.Numeric  {
+		max-width: 600px;
+	}
+	.FormObject.Numeric .ui-spinner ,
+	.FormObject.Numeric .Right ,
+	.FormObject.Numeric .Left {
+		font-weight: normal;
+		box-sizing: border-box;
+		float: left;
+	}
+	.FormObject.Numeric .Spinner {
+		margin: 0 0 0 0 !important;
+	}
+	.FormObject.Numeric .Left {
+		width: 125px !important;
+	}
+	.FormObject.Numeric .Right {
+		margin-left: 10px;
+	}
+	
+	.FormObject.Picker  {
+		max-width: 600px;
+	}
+	.FormObject.Picker .sp-replacer ,
+	.FormObject.Picker .Right ,
+	.FormObject.Picker .Left {
+		font-weight: normal;
+		box-sizing: border-box;
+		float: left;
+	}
+		input[type="color"]::-webkit-color-swatch-wrapper {
+		padding: 0;
+		}
+		input[type="color"]::-webkit-color-swatch {
+			border: none;
+		}
+	.sp-preview {
+		width: 100% !important;
+		height: 100% !important;
+		border: none !important;
+		margin: 0 !important;
+	}
+	.sp-dd {
+		display: none;
+	}
+	.FormObject.Picker .sp-replacer  ,
+	.FormObject.Picker .Left  {
+		display: block;
+		padding: 0 !important;
+		margin: 0 !important;
+		border: 1px #ccc solid !important;
+		background: #fff !important;
+		width: 125px !important;
+	}
+	.FormObject.Picker .Right {
+		margin-left: 10px;
+	}
+	
+	.toggle-modern .toggle-on,
+	.toggle-modern .toggle-off {
+	  font-size: 16px !important;
+	}
+	
+	.FormObject.Linkage select ,
+	.FormObject.Combo select {
+		max-width: 600px;
+		color: #444;
+		background: #fff;
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px #ccc solid;
+		padding: 10px 15px;
+		-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		font-size: 16px;
+	}
+	
+	.FormObject.DateSelection  {
+		max-width: 600px;
+	}
+	.FormObject.DateSelection input  {
+		height: 40px;
+		line-height: 40px;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+	.FormObject.DateSelection .toggle {
+		float: left;
+		margin-right: 10px;
+	}
+	.FormObject.DateSelection select {
+		box-sizing: border-box;
+		color: #444;
+		background: #fff;
+		border: 1px #ccc solid;
+		padding: 10px 15px;
+		-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+		font-size: 16px;
+		margin-top: 10px;
+	}
+	.FormObject.DateSelection select option {
+		text-align: center;
+	}
+	.FormObject.DateSelection .Timezone option {
+		text-align: left;
+	}
+
+	.FormObject.DateSelection .Meridian ,
+	.FormObject.DateSelection .Minute {
+		margin-right: 10px;
+	}
+	.FormObject.DateSelection .Hour {
+		border-right: none;
+	}
+	.FormObject.DateSelection .Minute {
+		border-left: none;
+	}
+@media screen and (max-width: 480px) {
+	.FormObject.DateSelection .Timezone {
+		margin-top: 10px;
+	}
+}
+	
+	.FormObject.Linkage  {
+		max-width: 600px;
+	}
+	.FormObject.Linkage .Mid {
+		font-weight: normal;
+	}
+	.FormObject.Linkage .Left {
+		text-align: center;
+		box-sizing: border-box;
+		cursor: pointer;
+		float: left;
+		font-size: 14px;
+		font-weight: bold;
+		color: #333333;
+		border-radius: 4px 4px 4px 4px;
+		-moz-border-radius: 4px 4px 4px 4px;
+		-webkit-border-radius: 4px 4px 4px 4px;
+		background: #f8f8f8;
+		border: 2px #ccc solid;
+		padding: 12px 15px;
+		margin-right: 10px;
+	}
+	.FormObject.Linkage .Left:hover {
+		color: #000;
+		background: #eee;
+	}
+	.FormObject.Linkage .Right {
+		width: auto;
+	}
+@media screen and (max-width: 480px) {
+	.FormObject.Linkage .Left {
+		float: none;
+		margin-bottom: 5px;
+		width: 100%;
+	}
+	.FormObject.Linkage .Right {
+		width: 100% !important;
+	}
+}
+
+	.FormObject.Asset {
+		max-width: 600px;
+		margin-bottom: 10px;
+	}
+			.FormObject.Asset .Preview iframe {
+				width: 100%;
+				height: 120px;
+				border: none;
+				outline: none;
+				border: 1px #ccc solid;
+			}
+			.FormObject.Asset .Preview .ImageObject {
+				position: relative;
+				margin-bottom: 10px;
+				border: 1px #ccc solid;
+				float: left;
+				min-height: 150px;
+				min-width: 150px;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGklEQVQYlWN49+7df3TMgA0MBYWDzDkUKQQAk1K9Q/gj5hYAAAAASUVORK5CYII=) repeat;
+			}
+			.FormObject.Asset .Preview .ImageObject img {
+				position: relative;
+				display: block;
+			}
+			.FormObject.Asset .Preview .ImageObject img.Loaded {
+				cursor: pointer;
+			}
+			.FormObject.Asset .Preview .ImageObject button {
+				position: absolute;
+				right: 5px;
+				bottom: 5px;
+			}
+		.FormObject.Asset .Fileinfo {
+			color: #444;
+			display: block;
+			border: 1px #ccc solid;
+			padding: 10px 15px;
+			font-size: 16px;
+			margin-bottom: 10px;
+		}
+		.FormObject.Asset .Fileinfo.Inactive {
+			border: 1px #eee solid;
+			color: #ccc;
+		}
+		.FormObject.Asset .Fileinfo.Error {
+			border: 1px #996666 solid;
+			color: #996666;
+		}
+	
+	.FormObject.Asset .Actions {
+	}
+		.FormObject.Asset .Actions input {
+			display: block;
+			cursor: pointer;
+			float: left;
+			font-size: 14px;
+			font-weight: bold;
+			color: #333333;
+			border-radius: 4px 4px 4px 4px;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			background: #f8f8f8;
+			border: 2px #ccc solid;
+			padding: 10px 15px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+		}
+			.FormObject.Asset .Actions input:hover {
+				color: #000;
+				background: #eee;
+			}
+			.FormObject.Asset .Actions input:disabled {
+				cursor: default !important;
+				opacity: .5 !important;
+			}

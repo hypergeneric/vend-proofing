@@ -1,0 +1,328 @@
+/* ---- Control Bar ---- */
+
+#controlbar {
+	height: var(--vend-nav-height);
+	width: 100%;
+	background: var(--vend-application-background-color);
+	border-bottom: 1px var(--vend-stroke-color) solid;
+	position: fixed;
+	z-index: 4;
+}
+	#controlbar-left {
+		position: relative;
+		float: left;
+	}
+	#controlbar-left span {
+		padding: 0 20px 0 20px;
+		height: var(--vend-nav-height);
+		line-height: var(--vend-nav-height);
+		font-weight: bold;
+		font-size: var(--vend-font-size-14);
+	}
+	#controlbar-inner {
+		display: none;
+		position: absolute;
+		float: left;
+	}
+	#controlbar-right {
+		position: relative;
+		float: right;
+	}
+	#controlbar.Compact #controlbar-left {
+		display: none;
+	}
+	#controlbar.Compact #controlbar-inner {
+		left: 0px !important;
+	}
+	#controlbar a {
+		outline: none;
+	}
+	#controlbar .Icon {
+		background-repeat: no-repeat;
+		background-image: var(--vend-icon-sprite);
+		background-size: 500px 40px;
+	}
+	#controlbar .Graphic {
+		float: left;
+	}
+	#icon-mail {
+		cursor: pointer;
+		float: left;
+		width: 40px;
+		height: var(--vend-nav-height);
+		opacity: .75;
+		background-position: -240px 50%;
+	}
+	.no-touch #icon-mail:hover {
+		opacity: 1;
+	}
+	#icon-music {
+		cursor: pointer;
+		float: left;
+		width: 40px;
+		height: var(--vend-nav-height);
+		background-position: -200px 50%;
+		opacity: .75;
+	}
+	#icon-music.Paused {
+		background-position: -160px 50%;
+	}
+	.no-touch #icon-music:hover {
+		opacity: 1;
+	}
+	#jp-player,
+	#jp-container {
+		display: none;
+	}
+	#controlbar-view {
+		float: left;
+	}
+	.SuperNavSelect {
+		-webkit-appearance: none;
+		-webkit-box-shadow: none;
+		-webkit-border-radius: 0;
+		-moz-appearance: none;
+		appearance: none;
+		text-align: center;
+		float: left;
+		height: var(--vend-nav-height);
+		line-height: var(--vend-nav-height);
+		border: none;
+		background: var(--vend-application-background-color);
+		color: var(--vend-foreground-color);
+		font-size: var(--vend-font-size-14);
+		display: block;
+		outline: none;
+		padding: 0 20px 0 20px;
+	}
+	select:-moz-focusring {
+		color: transparent;
+		text-shadow: 0 0 0 #000;
+	}
+		.SuperNavSelect option {
+			padding: 0 20px 0 20px;
+		}
+	.SuperNav {
+		float: left;
+		position: relative;
+		height: var(--vend-nav-height);
+		line-height: var(--vend-nav-height);
+		background: var(--vend-application-background-color);
+		margin: 0;
+	}
+	.SuperNavLine {
+		float: left;
+		position: relative;
+		height: var(--vend-nav-height);
+		line-height: var(--vend-nav-height);
+		border-left: 1px var(--vend-stroke-color) solid;
+	}
+	.SuperNav span {
+		display: inline-block;
+		color: var(--vend-foreground-color);
+		font-size: var(--vend-font-size-14);
+		height: var(--vend-nav-height);
+	}
+	.SuperNav .label {
+		font-weight: bold;
+	}
+	.SuperNav .icon {
+		display: inline-block;
+		width: 40px;
+		height: var(--vend-nav-height);
+		background-repeat: no-repeat;
+		background-image: var(--vend-icon-sprite);
+		background-size: 500px 40px;
+	}
+	.SuperNav .count {
+	}
+	#controlbar-set .icon {
+		background-position: -400px 50% !important;
+	}
+	#controlbar-favorites .icon {
+		background-position: 0px 50% !important;
+	}
+	#controlbar-cart .icon {
+		background-position: -360px 50% !important;
+	}
+	.SuperNav div {
+		position: relative;
+		z-index: 1;
+		height: 100%;
+		padding: 0 15px 0 5px;
+		background: var(--vend-application-background-color);
+		cursor: pointer;
+		white-space: nowrap;
+		text-align: center;
+		background-image: var(--vend-navigation-arrow);
+		background-repeat: no-repeat;
+		background-position: center var(--vend-nav-height-minus-14);
+	}
+	.SuperNav ul {
+		list-style-type: none;
+		background-color: var(--vend-application-background-color);
+		position: absolute;
+		bottom: -1px;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		z-index: 0;
+		border: 1px var(--vend-stroke-color) solid;
+		box-sizing: border-box;
+	}
+	.SuperNav li {
+		text-align: center;
+		height: 30px;
+		line-height: 30px;
+		margin: 0px 10px;
+		padding: 3px 0;
+		cursor: default;
+		white-space:nowrap;
+		color: var(--vend-foreground-color);
+		font-size: var(--vend-font-size-12);
+	}
+	.no-touch .SuperNav li:hover,
+	.SuperNav li.Active {
+		color: var(--vend-highlight-color);
+		cursor: pointer;
+	}
+	.SuperNav li.Disabled {
+		color: var(--vend-foreground-color) !important;
+		cursor: default;
+	}
+	.SuperNav li.BreakLine {
+		border-bottom: 1px var(--vend-stroke-color) solid;
+		height: 0;
+	}
+	#controlbar .Disabled div {
+		opacity: .5;
+		cursor: default;
+	}
+@media screen and (max-width: 480px){
+	#controlbar {
+		position: relative !important;
+	}
+	.SuperNav  ,
+	.SuperNavSelect {
+		margin: 0;
+		width: 40px !important;
+		color: rgba(0, 0, 0, 0);
+		background-repeat: no-repeat;
+		background-image: var(--vend-icon-sprite);
+		background-size: 500px 40px;
+	}
+	.SuperNavSelect[disabled="disabled"] {
+		opacity: .5;
+	}
+	#controlbar-set {
+		background-position: -400px 50% !important;
+	}
+	#controlbar-favorites {
+		background-position: 0px 50% !important;
+	}
+	#controlbar-cart {
+		background-position: -360px 50% !important;
+	}
+}
+
+
+
+
+/* --- Image Wall --- */
+
+#image-wall-wrapper  {
+	display: none;
+	position: relative;
+	padding-top: 65px;
+	z-index: 2;
+	margin-bottom: -65px;
+}
+
+#image-wall-wrapper .ControlBar {
+	display: none;
+	position: relative;
+	height: 45px;
+	z-index: 2;
+}
+	#imagewall-controlbar-more {
+		background-color: var(--vend-foreground-color) !important;
+		color: var(--vend-background-color) !important;
+		opacity: 1;
+		cursor: pointer;
+	}
+	.no-touch #imagewall-controlbar-more:hover {
+		opacity: .8;
+	}
+	#imagewall-controlbar-top {
+		cursor: pointer;
+	}
+#image-wall {
+	position: relative;
+	z-index: 1;
+}
+#image-wall .Graphic {
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	left: 0;
+	float: left;
+	background: var(--vend-application-background-color);
+	border: var(--vend-tile-gutter) var(--vend-background-color) solid;
+}
+	#image-wall .Graphic .Wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+		#image-wall .Graphic .Wrapper img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		#image-wall .Graphic .Highlight {
+			display: none;
+		}
+		#image-wall .Active .Highlight {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			border: 5px var(--vend-highlight-color) solid;
+		}
+		#image-wall .Graphic .FavoriteButton {
+			display: none;
+			position: absolute;
+			left: 0px;
+			bottom: 0px;
+			width: 32px;
+			height: 32px;
+			opacity: .5;
+			background: var(--vend-application-background-color) var(--vend-icon-sprite) no-repeat -3px 50%;
+			background-size: 500px 40px;
+			margin: 9px;
+			border: 1px var(--vend-stroke-color) solid;
+		}
+		.no-touch #image-wall .Graphic .FavoriteButton:hover {
+			background-image: var(--vend-highlight-icon-sprite);
+			background-size: 500px 40px;
+			opacity: 1;
+		}
+		#image-wall .Graphic .Favorited {
+			background-image: var(--vend-highlight-icon-sprite);
+			background-size: 500px 40px;
+			opacity: 1 !important;
+		}
+		.no-touch #image-wall .Graphic .Favorited:hover {
+			background-image: var(--vend-icon-sprite) !important;
+			background-size: 500px 40px;
+			opacity: 1 !important;
+		}
+@media screen and (max-width: 600px){
+	#image-wall-wrapper {
+		padding-top: 0px;
+		margin-bottom: 0px;
+	}
+}

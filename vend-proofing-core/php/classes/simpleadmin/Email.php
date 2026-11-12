@@ -179,8 +179,6 @@
 					"subject" => (string) ($this->email_subject ?? ""),
 					"body" => (string) ($this->email_message_body ?? "")
 				));
-				$this->flag_success = true;
-				$this->flag_error = "send_success";
 			}
 		}
 		

@@ -1,0 +1,27 @@
+{
+  "name": "vend-proofing-assets",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "build:css": "gulp css",
+    "dev": "gulp",
+    "watch:css": "gulp watchCss",
+    "test:css": "bash scripts/css-smoke.sh",
+    "check:css": "node scripts/build-css.js --check",
+    "build:js": "gulp js",
+    "watch:js": "gulp watchJs",
+    "check:js": "node scripts/build-js.js --check",
+    "test:js": "bash scripts/js-smoke.sh"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.0",
+    "gulp": "^5.0.0",
+    "magic-string": "^1.4.5",
+    "postcss": "^8.5.32",
+    "postcss-url": "^10.1.4",
+    "sass": "^1.0.0"
+  }
+}

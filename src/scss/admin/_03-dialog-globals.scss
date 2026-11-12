@@ -1,0 +1,310 @@
+/* --- Dialog Globals --*/
+
+#dialog {
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+	#dialog .Screen {
+		z-index: 1;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: #FFFFFF;
+		opacity: .5;
+	}
+	#dialog .Stack {
+		z-index: 2;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	.Dialog {
+		position: absolute;
+		-webkit-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+		-moz-box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+		box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.1);
+		border: 1px #ccc solid;
+		background: #fff;
+		box-sizing: border-box;
+	}
+		.Dialog .Header {
+			background: #444;
+			height: 39px;
+			line-height: 39px;
+			border-bottom: 1px #dedede solid;
+			font-size: 14px;
+			font-weight: bold;
+			color: #fff;
+			padding: 0 15px;
+		}
+		.Dialog .Content {
+			color: #333333;
+			font-size: 14px;
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+		.Dialog .Markdown {
+			padding: 20px;
+			font-size: 14px;
+		}
+		.Dialog .Error {
+			font-size: 14px;
+			color: #dc3232;
+			padding: 15px;
+			background: #fff7f7;
+			border: 1px #ffc6c6 solid;
+			border-left: 4px #dc3232 solid;
+			font-weight: bold;
+			margin: 20px;
+			margin-bottom: 0;
+		}
+		.Dialog .Footer {
+			position: relative;
+			background: rgba(242,242,242,1);
+			background: -moz-linear-gradient(top, rgba(242,242,242,1) 0%, rgba(253,253,253,1) 100%);
+			background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(242,242,242,1)), color-stop(100%, rgba(253,253,253,1)));
+			background: -webkit-linear-gradient(top, rgba(242,242,242,1) 0%, rgba(253,253,253,1) 100%);
+			background: -o-linear-gradient(top, rgba(242,242,242,1) 0%, rgba(253,253,253,1) 100%);
+			background: -ms-linear-gradient(top, rgba(242,242,242,1) 0%, rgba(253,253,253,1) 100%);
+			background: linear-gradient(to bottom, rgba(242,242,242,1) 0%, rgba(253,253,253,1) 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f2f2', endColorstr='#fdfdfd', GradientType=0 );
+			height: 39px;
+			border-top: 1px #dedede solid;
+		}
+		.Dialog .Footer .MobileFooter {
+			z-index: 0;
+			background: #ffffff;
+			position: absolute;
+			top: 39px;
+			left: 0;
+			width: 100%;
+			height: 100px;
+		}
+		
+			.Dialog .Button {
+				text-decoration: none;
+				cursor: pointer;
+				float: left;
+				background: #fbfbfb;
+				height: 38px;
+				line-height: 38px;
+				border-right:  1px #dedede solid;
+				padding: 0 15px;
+				font-size: 14px;
+				color: #666666;
+			}
+			.Dialog .Button:hover {
+				color: #333333;
+			}
+			.Dialog .Button.Disabled {
+				cursor: default !important;
+				background: #fff !important;
+				color: #ccc !important;
+			}
+			.Dialog .Button.Disabled:hover {
+				cursor: default !important;
+				background: #fff !important;
+				color: #ccc !important;
+			}
+			
+			
+.DialogInfo {
+	padding: 20px;
+	font-size: 16px;	
+}
+			
+.DialogForm {
+	position: relative;
+	padding: 20px;
+}
+	.DialogForm .Screen {
+		display: none;
+	}
+	.DialogForm .Group {
+		border-bottom: 1px #eee solid;
+		margin-bottom: 15px;
+	}
+	.DialogForm h3 {
+		margin: 0;
+		padding: 0;
+	}
+	.DialogForm .Text {
+		margin-bottom: 15px;
+	}
+		.DialogForm .Group label {
+			color: #444;
+			display: block;
+			font-size: 11px;
+			font-weight: bold;
+			margin-bottom: 3px;
+		}
+		.DialogForm .Group textarea,
+		.DialogForm .Group input {
+			color: #444;
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+			border: 1px #ccc solid;
+			padding: 10px 15px;
+			-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			font-size: 16px;
+		}
+		.DialogForm .Group textarea {
+			height: 150px;
+			resize: none;
+		}
+		.DialogForm .Group select {
+			color: #444;
+			background: #fff;
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+			border: 1px #ccc solid;
+			padding: 10px 15px;
+			-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.05);
+			font-size: 16px;
+		}
+	.DialogForm .Checkbox {
+		color: #444;
+		border: 1px #ddd solid;
+		padding: 10px 15px;
+		font-size: 12px;
+		font-weight: bold;
+		margin-bottom: 15px;
+	}
+	.DialogForm .Submit {
+		float: left;
+		margin-right: 15px;
+		margin-bottom: 15px;
+	}
+		.DialogForm .Submit input {
+			font-size: 14px;
+			font-weight: bold;
+			color: #333333;
+			border-radius: 4px 4px 4px 4px;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			background: #f8f8f8;
+			border: 2px #ccc solid;
+			padding: 10px 15px;
+		}
+		.DialogForm .Submit input:hover {
+			color: #000;
+			background: #eee;
+		}
+		.DialogForm .Submit.Secondary input {
+			font-size: 14px;
+			font-weight: normal;
+			border: 2px #fff solid;
+			background: #fff;
+			padding: 10px 0px;
+		}
+		.DialogForm .Submit.Secondary input:hover {
+			color: #000;
+			background: #fff;
+			text-decoration: underline;
+		}
+	.DialogForm .Response {
+		position: relative;
+		visibility: hidden;
+		font-size: 12px;
+		color: #dc3232;
+		padding: 12px 15px;
+		background: #fff7f7;
+		border: 1px #ffc6c6 solid;
+		border-left: 4px #dc3232 solid;
+		font-weight: bold;
+	}
+	.DialogForm .Response.Success {
+		color: #34b834;
+		background: #e4fce4;
+		border: 1px #a7f4a7 solid;
+		border-left: 4px #34b834 solid;
+	}
+	
+	#admin {
+		padding: 30px;
+	}
+	#admin .Dialog {
+		position: relative;
+		max-width: 600px;
+		margin: 0 auto;
+	}
+@media screen and (max-width: 480px) {
+	#admin {
+		padding: 15px;
+	}
+}
+@media screen and (max-width: 320px) {
+	#admin {
+		padding: 0px;
+	}
+}
+
+.Group2 {
+		margin-right: -20px;
+	}
+	.Group2 .Col {
+		float: left;
+		width: 50%;
+	}
+	.Group2 .Col .Group {
+		margin-right: 20px;
+	}
+.Group3 {
+	margin-right: -20px;
+}
+	.Group3 .Col {
+		float: left;
+		width: 33.33%;
+	}
+	.Group3 .Col .Group {
+		margin-right: 20px;
+	}
+.Group4 {
+	margin-right: -20px;
+}
+	.Group4 .Col {
+		float: left;
+		width: 25%;
+	}
+	.Group4 .Col .Group {
+		margin-right: 20px;
+	}
+@media screen and (max-width: 600px) {
+	.Group2 {
+		margin-right: 0px;
+	}
+	.Group2 .Col {
+		float: none;
+		width: 100%;
+	}
+	.Group2 .Col .Group {
+		margin-right: 0px;
+	}
+	.Group3 {
+		margin-right: 0px;
+	}
+	.Group3 .Col {
+		float: none;
+		width: 100%;
+	}
+	.Group3 .Col .Group {
+		margin-right: 0px;
+	}
+	.Group4 .Col {
+		float: left;
+		width: 50%;
+	}
+}

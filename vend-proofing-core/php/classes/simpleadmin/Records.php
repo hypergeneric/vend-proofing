@@ -504,7 +504,7 @@
 				$query = $db->prepare("SELECT * FROM discounts WHERE suid = ? AND gallery_id IS ?");
 				$query->execute(array($suid, $galleryId));
 				$existing = $query->fetch();
-				$code = (string) ($values[1] ?? $existing["code"] ?? "");
+				$code = trim((string) ($values[1] ?? $existing["code"] ?? ""));
 				$amount = (string) ($values[2] ?? $existing["value_text"] ?? "0");
 				$kind = (string) ($values[3] ?? $existing["kind"] ?? "percentage");
 				$uses = (int) ($values[4] ?? $existing["use_count"] ?? 0);

@@ -1,0 +1,25 @@
+/* ---- Checkout ---- */
+
+	#clickwrap-context h2 {
+		margin-top: 0;
+		padding-top: 0;
+	}
+	#clickwrap-context .Inner {
+		padding: 25px;
+	}
+	#clickwrap-context .Description {
+		-webkit-columns: 2 400px;
+		-moz-columns: 2 400px;
+		columns: 2 400px;
+	}
+	#clickwrap-controlbar-back {
+		background-color: var(--vend-foreground-color) !important;
+		color: var(--vend-background-color) !important;
+		opacity: 1;
+		cursor: pointer;
+		margin: 25px;
+		margin-top: 0px;
+	}
+	.no-touch #clickwrap-controlbar-back:hover {
+		opacity: .8;
+	}

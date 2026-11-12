@@ -282,7 +282,7 @@
 			if (!$images) return self::responseRows($gallery, $session, "download");
 			$each = $flat ? floor($price / count($images) * 100) / 100 : $price;
 			$remainder = $flat ? $price - $each * count($images) : 0;
-			Database::transaction(function (PDO $db) use ($gallery, $session, $quality, $images, $each, $remainder): void {
+			Database::transaction(function (PDO $db) use ($gallery, $session, $quality, $images, $each, $remainder, $group): void {
 				$galleryId = self::galleryId($db, $gallery);
 				$sessionId = self::sessionId($db, $gallery, $session);
 				if ($sessionId===null) throw new InvalidArgumentException("Unknown proofing session.");
@@ -307,6 +307,7 @@
 					$row = array($key, $gallery, $image[0], $image[1], $image[2], $quality,
 						(string) $amount, "1");
 					$values = self::values("download", $row);
+					$values["_bulk_group"] = $group;
 					$imageId = self::imageId($db, $galleryId, $image[0]);
 					$insert->execute(array($cartId, $imageId, json_encode($values, JSON_THROW_ON_ERROR),
 						(int) round($amount * 100), $position++, $key));

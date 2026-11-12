@@ -106,6 +106,12 @@
 	
 	/* ---- If we're processing dropbox files, there is no need for the overhead below, do it now --- */
 	if ( $view=="process" ) {
+		if (($_SESSION["authorized_order"] ?? "")!==$orderid || !Payments::canDownload($orderid)) {
+			http_response_code(403);
+			exit("-1");
+		}
+		$_SESSION["order_object"] = OrderRecords::get($orderid);
+		$_SESSION["session_object"] = OrderRecords::items($orderid);
 		$action = $email_hash;
 		if ($action=="start") {
 			$dropboxer = new Dropboxer();
@@ -162,7 +168,7 @@
 				}
 			}
 			$pre = array (
-				"RESET_URL" => Func::getBaseUrl() . "/?/order/$orderid/process/reset/" . md5($orderid) . "/",
+				"RESET_URL" => Func::getBaseUrl() . "/?/order/$orderid/process/reset/" . hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret()) . "/",
 				"INVOICE_URL" => Func::getBaseUrl() . "/?/order/$orderid/invoice/" . md5($post["PURCHASER_EMAIL"]) . "/"
 			);
 			if ($action=="notify") {
@@ -177,7 +183,7 @@
 				print "1";
 				exit;
 			}
-			if ($checkhash==md5($orderid)) {
+			if ($checkhash==hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret())) {
 				$dropboxer = new Dropboxer();
 				list($success, $data, $error) = $dropboxer->connect();
 				if ($success) {
@@ -257,6 +263,11 @@
 		}
 	}
 	
+	if ($view!=="login" && $orderobj && $email_hash===md5($orderobj[8])) {
+		$_SESSION["authorized_order"] = $orderid;
+	} else {
+		unset($_SESSION["authorized_order"]);
+	}
 	// save order objects for dropbox processing so that we don't need to chew up the file system
 	$_SESSION["order_object"] = $orderobj;
 	$_SESSION["session_object"] = $sessionobj;
@@ -330,7 +341,7 @@
 		}
 
 	/* ----  Page Properties --- */
-	
+
 
 ?>
 <!doctype html>
@@ -343,10 +354,11 @@
 	<!-- Icons, favicons, facebook, etc. -->
 	<?php echo $website_favicon_tag; ?>
 	<!-- CSS: implied media=all -->
-	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_INDEXPATH; ?>?/css/invoice/" media="all" />
-	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_INDEXPATH; ?>?/css/invoice-print/" media="print" />
+	<?php include SA_DIR_COREPATH . "/tmpl/html/2.theme.tmpl"; ?>
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/invoice.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/invoice.css"); ?>" media="all" />
+	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/invoice-print.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/invoice-print.css"); ?>" media="print" />
 	<!-- Javascript -->
-	<script type="text/javascript" src="<?php echo SA_DIR_COREPATH; ?>/js/jquery.js"></script>
+	<script type="text/javascript" src="<?php echo SA_DIR_COREPATH; ?>/js/jquery.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/jquery.js"); ?>"></script>
 </head>
 <body>
 	<div id="container">
@@ -359,5 +371,31 @@
 	<!-- Page Tracking Code Start -->
 <?php echo $page_tracking_script; ?>
 	<!-- Page Tracking Code End -->
+
+<?php if ($view!=="login" && $orderobj && $email_hash===md5($orderobj[8])) {
+	$payment = Payments::get($orderid);
+?>
+<div id="vend-payment-state" style="padding:1em;text-align:center">
+	<?php echo htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_status")); ?>:
+	<?php echo htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_" . $payment["status"])); ?>
+<?php if ($payment["error_code"]!=="") { ?><p><?php echo htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_" . $payment["error_code"])); ?></p><?php } ?>
+<?php if ($payment["provider"]!=="offline" && !in_array($payment["status"], array("paid", "refunded"), true)) { ?>
+	<button type="button" id="vend-payment-retry"><?php echo htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_retry")); ?></button>
+	<script>
+	document.getElementById("vend-payment-retry").onclick = function () {
+		this.disabled = true;
+		var fields = new URLSearchParams(<?php echo json_encode(array("action" => "payment_start", "order" => $orderid, "access" => $payment["access_token"]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
+		fetch(<?php echo json_encode(PaymentSettings::baseUrl(false) . "/vend-proofing-gateway.php"); ?>, {method:"POST",body:fields}).then(function (response) { return response.json(); }).then(function (result) {
+			if (result.url) { window.location.href = result.url; return; }
+			if (result.providerOrder) { window.location.href = <?php echo json_encode(PaymentSettings::baseUrl(false) . "/vend-proofing-gateway.php?action=payment_approve&order=" . $orderid . "&access=" . $payment["access_token"]); ?>; return; }
+			document.getElementById("vend-payment-state").appendChild(document.createTextNode(<?php echo json_encode($data_language->getNodeVal("data.invoice.invoice_payment_retry_failed"), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>));
+			document.getElementById("vend-payment-retry").disabled = false;
+		});
+	};
+	</script>
+<?php } ?>
+</div>
+<?php } ?>
+
 </body>
 </html>

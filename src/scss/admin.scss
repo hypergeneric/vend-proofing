@@ -1,0 +1,17 @@
+// Component order preserves the existing cascade.
+@use "shared/reset";
+@use "admin/01-base" as component1;
+@use "admin/02-navigation" as component2;
+@use "admin/03-dialog-globals" as component3;
+@use "admin/04-dialog-specific" as component4;
+@use "admin/05-application-globals" as component5;
+@use "admin/06-tabpanel" as component6;
+@use "admin/07-tablepanel" as component7;
+@use "admin/08-xmlpanel" as component8;
+@use "admin/09-form-editor" as component9;
+@use "admin/10-stat-viewer" as component10;
+
+#container {
+	background: url("../graphics/admin/ajax-loader.gif") no-repeat center center;
+	height: 100%;
+}

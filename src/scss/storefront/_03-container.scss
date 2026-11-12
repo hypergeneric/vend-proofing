@@ -1,0 +1,27 @@
+/* ---- Container ---- */
+
+#title {
+	display: none;
+}
+
+#container {
+	position: relative;
+	z-index: 2;
+}
+
+#tooltip {
+	display: none;
+	position: absolute;
+	padding: 10px;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, .2);
+	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, .2);
+	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, .2);
+	color: var(--vend-foreground-color);
+	font-size: var(--vend-font-size-14);
+	border: 1px solid var(--vend-stroke-color);
+	background: var(--vend-application-background-color);
+}

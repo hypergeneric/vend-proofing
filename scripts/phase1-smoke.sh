@@ -47,7 +47,7 @@ curl -fsS "http://127.0.0.1:8080/?/admin/" | grep -q "scripts/admin-account.php 
 echo "PASS existing init template before administrator creation"
 printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
 php scripts/foundation-auth-test.php
-for route in / /?/admin/ /?/set/875c/test-gallery/ /?/order/ /?/js/admin/1.0.00/ /?/xml/cronjob/ /?/xml/sitemap/; do
+for route in / /?/admin/ /?/set/875c/test-gallery/ /?/order/ /vend-proofing-core/js/admin.js /?/xml/cronjob/ /?/xml/sitemap/; do
   curl -fsS -o /tmp/vend-response.html -w "%{http_code} %{size_download} bytes $route\n" "http://127.0.0.1:8080$route"
   if grep -Eiq "(<b>(Fatal error|Parse error|Uncaught|Deprecated|Warning)</b>|^(Fatal error|Parse error|Deprecated:|Warning:))" /tmp/vend-response.html; then
     head -c 600 /tmp/vend-response.html
@@ -57,12 +57,17 @@ for route in / /?/admin/ /?/set/875c/test-gallery/ /?/order/ /?/js/admin/1.0.00/
     /) grep -q "<html" /tmp/vend-response.html ;;
     /?/admin/) grep -q "classes.Admin.initialize" /tmp/vend-response.html || { head -c 725 /tmp/vend-response.html; exit 1; } ;;
     /?/set/*) grep -q "data-suid=\"875c\"" /tmp/vend-response.html || { head -c 500 /tmp/vend-response.html; exit 1; } ;;
-    /?/js/admin/*) grep -q "classes.Admin" /tmp/vend-response.html; grep -q "VEND_ADMIN_CONFIG" /tmp/vend-response.html ;;
+    /vend-proofing-core/js/admin.js) grep -q "classes.Admin" /tmp/vend-response.html; grep -q "VEND_ADMIN_CONFIG" /tmp/vend-response.html ;;
     /?/xml/cronjob/) grep -q "recipients=\"0\"" /tmp/vend-response.html ;;
   esac
 done
-curl -fsS "http://127.0.0.1:8080/?/js/global/1.0.00/" -o /app/global-check.js
-curl -fsS "http://127.0.0.1:8080/?/js/admin/1.0.00/" -o /app/admin-check.js
+curl -fsS "http://127.0.0.1:8080/vend-proofing-core/js/storefront.js" -o /app/global-check.js
+curl -fsS "http://127.0.0.1:8080/vend-proofing-core/js/admin.js" -o /app/admin-check.js
+for retired_route in css/global css/admin js/global js/admin js/vend; do
+  [ "$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8080/?/$retired_route/")" = 404 ]
+done
+curl -fsS "http://127.0.0.1:8080/" -o /app/storefront-check.html
+curl -fsS "http://127.0.0.1:8080/?/admin/" -o /app/admin-check.html
 private_status="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8080/vend-proofing-data/auth/vend.sqlite")"
 [ "$private_status" = 403 ]
 curl -fsS "http://127.0.0.1:8080/vend-proofing-core/defaults/en.json" -o /tmp/vend-admin-lang.json
@@ -168,4 +173,5 @@ echo "HTTP smoke and storage contract assertions passed"
 '
 node --check "$fixture_dir/global-check.js"
 node --check "$fixture_dir/admin-check.js"
-echo "Generated storefront and admin JavaScript syntax passed"
+node "$project_dir/scripts/js-page-check.js" "$fixture_dir/storefront-check.html" "$fixture_dir/admin-check.html"
+echo "Static bundles and inline page configuration syntax passed"

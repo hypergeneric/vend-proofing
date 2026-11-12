@@ -1,0 +1,87 @@
+<style id="vend-theme">
+<?php
+
+	$color_theme = 					$this->getTypedValue("design", "design", "color_theme");
+	$splash_logo_margin_num = 		$this->getTypedValue("design", "design", "splash_logo_margin_num");
+	$invoice_logo_asset = 			$this->getTypedValue("design", "design", "invoice_logo_asset");
+	$font_style = 					$this->getTypedValue("design", "design", "font_style");
+	$font_asset = 					$this->getTypedValue("design", "design", "font_asset");
+	$font_size_scale_num = 			$this->getTypedValue("design", "design", "font_size_scale_num");
+	$tile_gutter_width_num = 		$this->getTypedValue("design", "design", "tile_gutter_width_num");
+	$highlight_color = 				$this->getTypedValue("design", "design", "highlight_color");
+
+	$font_family = 					$font_style=="sans" ? 'Arial, sans-serif' : '"Times New Roman", Times, serif';
+	ob_start();
+	$font_family =					$this->unpackFont($font_asset, $font_family);
+	
+	$font_faces = ob_get_clean();
+	$escape_theme_css = static function ($value) {
+		return str_replace(["<", ">"], ["\\3c ", "\\3e "], (string) $value);
+	};
+
+	$font_size_scale_num /= 2;
+	$font_size_scale_num += 100;
+	$font_size_scale_num /= 100;
+	
+	$nav_height = 					65;
+	
+	if ($color_theme=="light") {
+		$background_color = 			"#FFF";
+		$foreground_color_light = 		"#999";
+		$foreground_color = 			"#444";
+		$stroke_color = 				"#CCC";
+		$application_background_color = "#FFF";
+		$application_background_alt = 	"#FFF";
+		$form_background_color = 		"#FFF";
+	} else {
+		$background_color = 			"#000";
+		$foreground_color = 			"#999";
+		$foreground_color_light = 		"#444";
+		$stroke_color = 				"#444";
+		$application_background_color = "#000";
+		$application_background_alt = 	"#000";
+		$form_background_color = 		"#000";
+	}
+
+
+	$invoice_logo_asset_width = (float) $invoice_logo_asset["width"];
+	$invoice_logo_asset_height = (float) $invoice_logo_asset["height"];
+	$orderview_print_images_bool = $this->getTypedValue("setup", "settings", "orderview_print_images_bool");
+
+	$theme_properties = [
+		'--vend-foreground-color' => ($foreground_color),
+		'--vend-application-background-color' => ($application_background_color),
+		'--vend-font-family' => ($font_family),
+		'--vend-background-color' => ($background_color),
+		'--vend-error-sprite' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-error-sprite.png&effect=overlay&color=444444", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-font-size-14' => (14*$font_size_scale_num) . 'px',
+		'--vend-stroke-color' => ($stroke_color),
+		'--vend-font-size-18' => (18*$font_size_scale_num) . 'px',
+		'--vend-font-size-12' => (12*$font_size_scale_num) . 'px',
+		'--vend-font-size-16' => (16*$font_size_scale_num) . 'px',
+		'--vend-form-background-color' => ($form_background_color),
+		'--vend-highlight-color' => ($highlight_color["css"]),
+		'--vend-foreground-color-light' => ($foreground_color_light),
+		'--vend-font-size-30' => (30*$font_size_scale_num) . 'px',
+		'--vend-font-size-22' => (22*$font_size_scale_num) . 'px',
+		'--vend-icon-sprite' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-navigation-arrow' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-highlight-icon-sprite' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-nav-height' => ($nav_height) . 'px',
+		'--vend-nav-height-minus-14' => ($nav_height - 14) . 'px',
+		'--vend-tile-gutter' => ($tile_gutter_width_num) . 'px',
+		'--vend-font-size-13' => (13*$font_size_scale_num) . 'px',
+		'--vend-application-background-alt' => ($application_background_alt),
+		'--vend-splash-logo-margin' => ($splash_logo_margin_num) . 'px',
+		'--vend-invoice-logo-width' => ($invoice_logo_asset_width/3) . 'px',
+		'--vend-invoice-logo-height' => ($invoice_logo_asset_height/3) . 'px',
+		'--vend-print-images-display' => ($orderview_print_images_bool?"block":"none"),
+	];
+?>
+<?php echo $escape_theme_css($font_faces); ?>
+:root {
+<?php foreach ($theme_properties as $property => $value) { ?>
+	<?php echo $property; ?>: <?php echo $escape_theme_css($value); ?>;
+<?php } ?>
+}
+</style>

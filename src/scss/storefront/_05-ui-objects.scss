@@ -1,0 +1,81 @@
+/* ---- UI Objects ---- */
+
+.uiField {
+	-webkit-appearance:none;
+	border-radius: 0;
+	background: var(--vend-form-background-color);
+	border: 1px solid var(--vend-stroke-color);
+	position: relative;
+	margin: 0 0 10px 0;
+	padding: 10px;
+	font-size: var(--vend-font-size-18);
+	font-family: var(--vend-font-family);
+	color: var(--vend-foreground-color);
+	width: 100%;
+	box-sizing: border-box;
+}
+.uiField:focus {
+	outline: none;
+}
+.uiField:valid {
+}
+.uiField:hover {
+}
+.uiField:invalid {
+	background: var(--vend-form-background-color);
+	border: 1px solid var(--vend-highlight-color);
+}
+.uiField.Highlight {
+	border: 1px solid var(--vend-highlight-color);
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    var(--vend-foreground-color-light) !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    var(--vend-foreground-color-light) !important;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    var(--vend-foreground-color-light) !important;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    var(--vend-foreground-color-light) !important;
+}
+:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
+  color:    var(--vend-foreground-color-light) !important;
+}
+
+.uiPushButton {
+	-moz-outline-style: none;
+	outline: none;
+	text-decoration: none;
+	-webkit-appearance:none;
+	display: inline-block;
+	padding: 10px 20px;
+	font-size: var(--vend-font-size-14);
+	font-family: var(--vend-font-family);
+	color: var(--vend-foreground-color);
+	background: var(--vend-form-background-color);
+	border: 1px solid var(--vend-stroke-color);
+	margin-right: 7px;
+	opacity: .75;
+	cursor: pointer;
+}
+.uiPushButton:hover {
+	opacity: 1;
+}
+.uiPushButton:focus,
+.uiPushButton:visited,
+.uiPushButton:active {
+	-moz-outline-style: none;
+	outline: none;
+	color: var(--vend-foreground-color);
+	opacity: .75;
+}
+.uiPushButton:disabled,
+.uiPushButton.Disabled {
+	color: var(--vend-foreground-color);
+	opacity: .25;
+	cursor: default;
+}

@@ -369,7 +369,16 @@
 			"checkout_cart_insecure_description": {
 				"_value": "You are about to send your sensitive credit card information over an insecure connection that any hacker with a sniffer can listen in on.  Doing so is a security risk that exposes you to security vulnerabilities.  It's really not recommended ... you've been warned!",
 				"_attributes": {"lines": "3"}
-			}
+			},
+			"checkout_quote_changed": {"_value": "Prices have changed or the cart could not be verified. Return to the cart and check your selections."},
+			"checkout_invalid_pricing_formula": {"_value": "A configured price could not be verified. Please contact the photographer."},
+			"checkout_payment_unavailable": {"_value": "This payment method is not configured or available for this order."},
+			"checkout_payment_connection_failed": {"_value": "Payment could not be confirmed. Your order is saved; retry from its invoice or try again here."},
+			"checkout_payment_requires_review": {"_value": "This payment needs review by the photographer before it can be retried."},
+			"checkout_invalid_currency_precision": {"_value": "This currency cannot use fractional amounts for this payment method."},
+			"checkout_payment_cancelled": {"_value": "Payment was cancelled. Your order is saved and can be retried."},
+			"checkout_invalid_order": {"_value": "This order could not be verified. Please check the cart."},
+			"checkout_invalid_email_address": {"_value": "Please enter a valid email address."}
 		},
 		"invoice": {
 			"invoice_please_login": {"_value": "Invoice View"},
@@ -388,6 +397,15 @@
 			"invoice_payment_method": {"_value": "Payment Method:"},
 			"invoice_payment_offline": {"_value": "Offline"},
 			"invoice_payment_paypal": {"_value": "Paypal"},
+			"invoice_payment_stripe": {"_value": "Stripe"},
+			"invoice_payment_status": {"_value": "Payment"},
+			"invoice_payment_pending": {"_value": "Pending"},
+			"invoice_payment_paid": {"_value": "Paid"},
+			"invoice_payment_failed": {"_value": "Failed"},
+			"invoice_payment_cancelled": {"_value": "Cancelled"},
+			"invoice_payment_refunded": {"_value": "Refunded"},
+			"invoice_payment_retry": {"_value": "Retry payment"},
+			"invoice_payment_retry_failed": {"_value": "Payment could not be started. Please contact the photographer."},
 			"invoice_payment_merchant": {"_value": "Credit Card"},
 			"invoice_phone_prefix": {"_value": "Phone:"},
 			"invoice_email_prefix": {"_value": "Email:"},

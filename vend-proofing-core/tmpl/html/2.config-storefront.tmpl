@@ -1,0 +1,50 @@
+<?php
+	$data_setup = $this->getData('setup');
+	$language_groups = $this->getData('language')->toArray()['data'];
+	$script_language = [];
+	foreach ($language_groups as $group_name => $nodes) {
+		if ($group_name === '_value' || $group_name === '_attributes') continue;
+		$script_language[$group_name] = [];
+		foreach ($nodes as $node_name => $node) {
+			if ($node_name === '_value' || $node_name === '_attributes') continue;
+			$value = (string) $node['_value'];
+			if (isset($node['_attributes']['markdown'])) {
+				$value = str_replace(["\n", "\r"], '', $this->doMarkdown($value));
+			} elseif (isset($node['_attributes']['lines'])) {
+				$value = str_replace(["\n", "\r"], ['<br />', ''], htmlspecialchars($value, ENT_QUOTES));
+			} else {
+				$value = htmlspecialchars($value, ENT_QUOTES);
+			}
+			$script_language[$group_name][$node_name] = $value;
+		}
+		$script_language[$group_name]['_'] = '';
+	}
+	$script_language['_'] = new stdClass();
+	$script_config = [
+		'namespace' => SA_NAMESPACE,
+		'baseUrl' => Func::getBaseUrl(),
+		'uri' => [
+			'page' => $LANG->lookup('uri_page_identifier'),
+			'special' => $LANG->lookup('uri_special_identifier'),
+			'splash' => $LANG->lookup('uri_splash_identifier'),
+			'contact' => $LANG->lookup('uri_contact_identifier'),
+		],
+		'graphics' => [
+			'quality' => (float) $data_setup->getNodeVal('data.settings.resampling_quality_num'),
+			'sharpen' => $data_setup->getNodeVal('data.settings.resample_sharpen_bool') === 'true',
+			'imagick' => $data_setup->getNodeVal('data.settings.resample_use_imagick_bool') === 'true',
+			'watermark' => $data_setup->getNodeVal('data.watermarking.watermark_bool') === 'true',
+			'watermarkAsset' => basename($data_setup->getNodeVal('data.watermarking.watermark_asset')),
+			'watermarkX' => (float) $data_setup->getNodeVal('data.watermarking.watermark_x_num'),
+			'watermarkY' => (float) $data_setup->getNodeVal('data.watermarking.watermark_y_num'),
+			'watermarkAlpha' => (float) $data_setup->getNodeVal('data.watermarking.watermark_alpha_num'),
+			'crosshairs' => $data_setup->getNodeVal('data.watermarking.crosshairs_bool') === 'true',
+			'crosshairsColor' => str_replace('0x', '', strtolower($data_setup->getNodeVal('data.watermarking.crosshairs_color'))),
+			'crosshairsAlpha' => (float) $data_setup->getNodeVal('data.watermarking.crosshairs_alpha_num'),
+		],
+		'language' => $script_language,
+	];
+?>
+<script id="vend-config">
+	window.VEND_CONFIG = <?php echo json_encode($script_config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR); ?>;
+</script>

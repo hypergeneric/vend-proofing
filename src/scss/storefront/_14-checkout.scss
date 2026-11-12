@@ -1,0 +1,205 @@
+/* ---- Checkout ---- */
+
+#overlay-checkout .Column1 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: right;
+	width: 60%;
+}
+#overlay-checkout .Column2 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: left;
+	width: 40%;
+}
+	#checkout-screen {
+		display: none;
+		position: absolute;
+		z-index: 20;
+		top: 0;
+		left: 0;
+		background-color: var(--vend-application-background-color);
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#checkout-blocks {
+		padding: 20px;
+		background: var(--vend-application-background-alt);
+		border-right: 1px var(--vend-stroke-color) solid;
+	}
+		#checkout-blocks .Input{
+			margin-bottom: 10px;
+		}
+		#checkout-blocks .Input h3 {
+			display: none;
+		}
+		#checkout-blocks h2 {
+			display: block;
+			color: var(--vend-foreground-color);
+			margin: 0 0 5px 0;
+			padding: 0 0 0 0;
+			cursor: default;
+			font-size: var(--vend-font-size-14);
+			font-weight: bold;
+		}
+		#checkout-blocks .Wrapper {
+			padding: 10px;
+			background: var(--vend-application-background-color);
+			border-top: 1px solid var(--vend-stroke-color);
+			margin-bottom: 15px !important;
+		}
+		#checkout-blocks .uiField {
+			font-size: var(--vend-font-size-14);
+		}
+		#checkout-blocks .Wrapper input {
+			display: inline-block;
+			color: var(--vend-foreground-color);
+			font-size: var(--vend-font-size-14);
+			clear: both;
+			padding: 3px;
+		}
+		#checkout-blocks .Wrapper label {
+			display: inline-block;
+			color: var(--vend-foreground-color);
+			font-size: var(--vend-font-size-14);
+			padding: 3px;
+		}
+		#checkout-blocks select {
+			-moz-appearance: none;
+			width: 100%;
+			box-sizing: border-box;
+			font-size: var(--vend-font-size-14);
+			padding: 7px;
+			background-image: var(--vend-navigation-arrow);
+			background-repeat: no-repeat;
+			background-position: 98% center;
+		}
+		#checkout-blocks label.Disabled {
+			opacity: .5;
+		}
+		textarea.INTL {
+			resize: none;
+			height: 150px;
+		}
+		#checkout-comments textarea {
+			height: 80px;
+			font-size: var(--vend-font-size-14);
+			resize: none;
+			box-sizing: border-box;
+			width: 100%;
+		}
+		#checkout-discount input {
+			width: auto;
+			display: inline-block;
+		}
+		#checkout-discount button {
+			width: auto;
+			display: inline-block;
+			background-color: var(--vend-foreground-color) !important;
+			color: var(--vend-background-color) !important;
+			opacity: 1;
+			cursor: pointer;
+		}
+		.no-touch #checkout-discount button:hover {
+			opacity: .8;
+		}
+	#checkout-summary .Inner {
+		padding: 20px;
+	}
+		#summary-table {
+			background: var(--vend-form-background-color);
+			width: 100%;
+			max-width: 700px;
+			margin: 0 0 10px 0;
+		}
+			#summary-table tr td:first-child {
+			}
+			#summary-table .Label {
+				color: var(--vend-foreground-color);
+				font-weight: bold;
+			}
+			#summary-table .Value {
+				color: var(--vend-foreground-color);
+				text-align: right;
+			}
+			#summary-table td {
+				padding: 0px 10px 0px 10px;
+				font-size: var(--vend-font-size-12);
+				color: var(--vend-foreground-color);
+				padding: 5px 10px 5px 20px;
+				font-weight: normal;
+			}
+			#cart-total td {
+				padding: 5px 10px 5px 10px;
+				font-size: var(--vend-font-size-18);
+				color: var(--vend-foreground-color);
+				padding: 10px;
+				font-weight: bold;
+			}
+			#cart-final-total td {
+				padding: 5px 10px 5px 10px;
+				font-size: var(--vend-font-size-18);
+				color: var(--vend-foreground-color);
+				padding: 10px;
+				font-weight: bold;
+			}
+			#checkout-controlbar-process {
+				background-color: var(--vend-foreground-color) !important;
+				color: var(--vend-background-color) !important;
+				opacity: 1;
+				cursor: pointer;
+			}
+			.no-touch #checkout-controlbar-process:hover {
+				opacity: .8;
+			}
+			.no-touch #checkout-controlbar-process.Disabled:hover ,
+			#checkout-controlbar-process.Disabled {
+				background-color: var(--vend-application-background-color);
+				border: 1px var(--vend-stroke-color) solid;
+				color: var(--vend-foreground-color);
+				opacity: .25;
+				cursor: default;
+			}
+	#clickwrap {
+		background: var(--vend-form-background-color);
+		padding: 5px 5px;
+		margin: 0 0 10px 0;
+	}
+		#clickwrap label {
+			color: var(--vend-foreground-color);
+			font-size: var(--vend-font-size-14);
+		}
+		#clickwrap a {
+			color: var(--vend-foreground-color);
+			font-size: var(--vend-font-size-14);
+			cursor: pointer;
+			font-weight: bold;
+			text-decoration: underline;
+		}
+		.no-touch #clickwrap a:hover {
+			color: var(--vend-highlight-color);
+		}
+@media screen and (max-width: 1000px){
+		#overlay-checkout .Column1 ,
+		#overlay-checkout .Column2 {
+			width: 50%;
+		}
+}
+@media screen and (max-width: 600px){
+		#checkout-blocks {
+			border-right: none;
+			padding-bottom: 0px;
+			background: var(--vend-application-background-color);
+		}
+		#checkout-summary .Inner {
+			padding: 20px;
+		}
+		#overlay-checkout .Column1 ,
+		#overlay-checkout .Column2 {
+			float: none;
+			width: 100%;
+		}
+}

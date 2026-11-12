@@ -165,6 +165,7 @@
 		}
 		
 		public function getImageData ($orderid) {
+			if (!Payments::canDownload($orderid) || ($_SESSION["authorized_order"] ?? "")!==$orderid) return array(false, "invalid_order", "");
 			// load session vars
 			$order_object = $_SESSION["order_object"];
 			$sessionobj = $_SESSION["session_object"];
@@ -257,6 +258,7 @@
 		}
 		
 		public function copyOrderChunk ($orderid) {
+			if (!Payments::canDownload($orderid) || ($_SESSION["authorized_order"] ?? "")!==$orderid) return array(false, "invalid_order", "");
 			$start = microtime(true);
 			// pull up the image table
 			$imagelist_path = SA_DIR_TEMP."/".md5("dropboxlist".$orderid).".txt";
@@ -309,6 +311,7 @@
 		}
 		
 		public function getShareLinks ($orderid) {
+			if (!Payments::canDownload($orderid) || ($_SESSION["authorized_order"] ?? "")!==$orderid) return array(false, "invalid_order", "");
 			$data = $this->getOrderFlags($orderid);
 				$data = explode("\n", $data);
 				$urls = array();

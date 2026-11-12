@@ -1,0 +1,142 @@
+/* ---- Form Dialog ---- */
+
+#form-dialog-container {
+	display: none;
+	position: fixed;
+	z-index: 3;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+	#form-dialog-screen {
+		position: absolute;
+		z-index: 2;
+		top: 0;
+		left: 0;
+		background-color: var(--vend-background-color);
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#form-dialog-background {
+		display: none;
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+		#form-dialog-background img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	#form-dialog {
+		color: var(--vend-foreground-color);
+		position: absolute;
+		z-index: 3;
+		max-width: 480px;
+		width: 100%;
+		border: 1px var(--vend-stroke-color) solid;
+		background-color: var(--vend-application-background-color);
+		box-sizing: border-box;
+	}
+		#form-dialog-inner {
+			margin: 20px;
+		}
+		#form-dialog-description {
+			font-size: var(--vend-font-size-14);
+			margin-bottom: 20px;
+			color: var(--vend-foreground-color);
+		}
+			#form-dialog-container h2 {
+				font-size: var(--vend-font-size-30);
+			}
+		#form-dialog-content {
+			position: relative;
+		}
+		#form-dialog-footer {
+			font-size: var(--vend-font-size-12);
+			margin-top: 20px;
+			color: var(--vend-foreground-color);
+		}
+			#form-dialog-footer a {
+				color: var(--vend-foreground-color);
+			}
+			#form-dialog-footer a:hover {
+				color: var(--vend-highlight-color);
+			}
+			#form-dialog-content form,
+			#form-dialog-response {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+			}
+				#form-dialog-error {
+					color: var(--vend-foreground-color);
+					font-size: var(--vend-font-size-18);
+					padding: 0 0 11px 0;
+				}
+			#form-dialog-screen2 {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+			
+#form-dialog-container.Inline {
+	margin: 30px auto;
+	position: relative;
+	width: auto;
+	height: auto;
+}
+	#form-dialog-container.Inline #form-dialog-screen {
+		display: none;
+	}
+	#form-dialog-container.Inline #form-dialog {
+		margin: 0 auto;
+		position: relative;
+	}
+	
+	#form-dialog-container.BgImage #form-dialog-screen {
+		background-color: #000;
+	}
+	#form-dialog-container.BgImage #form-dialog {
+		border: none;
+		background-color: transparent;
+		color: #fff;
+		text-align: center;
+	}
+			#form-dialog-container.BgImage #form-dialog-screen2 {
+				background-color: transparent;
+			}
+		#form-dialog-container.BgImage h2 {
+			color: #fff;
+		}
+		#form-dialog-container.BgImage #form-dialog-description ,
+		#form-dialog-container.BgImage #form-dialog-footer {
+			color: #fff;
+		}
+		#form-dialog-container.BgImage .uiField {
+			background: transparent;
+			color: #fff;
+		}
+		#form-dialog-container.BgImage .uiPushButton {
+			background: transparent;
+			color: #fff;
+		}
+	
+@media screen and (max-width: 500px){
+	#form-dialog {
+		width: 90%;
+	}
+		#form-dialog-container h2 {
+			font-size: var(--vend-font-size-22) !important;
+		}
+}

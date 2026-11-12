@@ -1,0 +1,177 @@
+/* --- Application Globals --*/
+
+	table td {
+		cursor: default;
+	}
+	table td a {
+		cursor: pointer;
+	}
+	
+	table.AssetTable td ,
+	table.AssetTableCurated td {
+		vertical-align: middle !important;
+	}
+	
+	/*table.AssetTableCurated td:nth-child(1) ,
+	table.AssetTableCurated td:nth-child(2) {
+		text-align : center;
+	}
+	
+	table.AssetTable td:nth-child(1)  {
+		text-align : center;
+	}*/
+	table.AssetTableCurated .FileObject ,
+	table.AssetTableCurated .ImageObject ,
+	table.AssetTable .FileObject ,
+	table.AssetTable .ImageObject {
+		position: relative;
+		background: #fff;
+		width: 102px;
+		height: 102px;
+		border: 1px #ccc solid !important;
+	}
+		table.AssetTableCurated .ImageObject button ,
+		table.AssetTable .ImageObject button {
+			position: absolute;
+			right: 5px;
+			bottom: 5px;
+		}
+		table.AssetTableCurated .ImageObject img ,
+		table.AssetTable .ImageObject img {
+			display: block;
+		}
+		table.AssetTableCurated .FileObject .file-icon ,
+		table.AssetTable .FileObject .file-icon {
+			position: relative;
+			top: 18px;
+		}
+	table.AssetTableCurated .AudioObject ,
+	table.AssetTable .AudioObject {
+		display: table;
+		width: 100%;
+		height: 102px;
+		border: 1px #ccc solid !important;
+	}
+		table.AssetTableCurated .AudioObject div ,
+		table.AssetTable .AudioObject div {
+			background: #fff;
+			text-align: center;
+			display: table-cell; 
+			vertical-align: middle;
+		}
+		.msedgeBrowser .AudioObject div ,
+		.msieBrowser .AudioObject div {
+			background: #000 !important;
+		}
+		.safariBrowser .AudioObject div {
+			background: #292929 !important;
+		}
+		.ipodPlatform .AudioObject div ,
+		.iphonePlatform .AudioObject div ,
+		.ipadPlatform .AudioObject div {
+			background: #d4d4d4 !important;
+		}
+		.mozillaBrowser .AudioObject div {
+			background: #232323 !important;
+		}
+		.operaBrowser .AudioObject div ,
+		.chromeBrowser .AudioObject div {
+			background: #fafafa !important;
+		}
+		
+	.AssetLabel {
+		display: block;
+		float: left;
+		font-size: 14px;
+		font-weight: bold;
+		color: #444;
+		height: 35px;
+		line-height: 35px;
+		box-sizing: border-box;
+		margin-bottom: 10px;
+	}
+		.AssetLabel:visited ,
+		.AssetLabel:hover {
+			color: #444;
+			text-decoration: none;
+		}
+	.AssetLabelDesc {
+		clear: both;
+		height: 55px;
+		overflow: hidden;
+		text-overflow: ellipsis; 
+	}
+
+	.CodeMirror,
+	.CodeMirror-scroll {
+		max-height: 100px !important;
+	}
+	.CodeMirror-fullscreen.CodeMirror {
+		max-height: none;
+	}
+	.CodeMirror-fullscreen .CodeMirror-scroll {
+		max-height: none;
+	}
+	
+	div.SystemInfo {
+		max-width: 600px !important;
+	}
+	.ReleaseNotes {
+		box-sizing: border-box;
+		max-width: 600px !important;
+		overflow: auto;
+		border: 1px #ccc solid;
+		color: #444;
+		font-size: 14px;
+		padding: 20px;
+	}
+	.ReleaseNotes .Changelog h2 ,
+	.ReleaseNotes .Changelog ul ,
+	.ReleaseNotes .Changelog p {
+		margin: 0 0 10px 0;
+	}
+	.ToolBoxGroup {
+		padding: 0;
+		margin: 0;
+		border-bottom: 1px #ccc solid;
+		padding-bottom: 10px;
+		margin-bottom: 20px;
+		max-width: 600px;
+		clear: both;
+	}
+	.ToolBoxGroup:last-child {
+		border-bottom: none;
+	}
+		.ToolBoxGroup h2 {
+			margin: 0;
+			padding: 0;
+			margin-bottom: 10px;
+			font-size: 18px;
+		}
+		.ToolBox .Button {
+			cursor: pointer;
+			float: left;
+			clear: left;
+			font-size: 14px;
+			font-weight: bold;
+			color: #333333;
+			border-radius: 4px 4px 4px 4px;
+			-moz-border-radius: 4px 4px 4px 4px;
+			-webkit-border-radius: 4px 4px 4px 4px;
+			background: #f8f8f8;
+			border: 2px #ccc solid;
+			padding: 10px 15px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+		}
+		.ToolBox .Button:hover {
+			color: #000;
+			background: #eee;
+		}
+		.ToolBox .Disabled {
+			cursor: default !important;
+			opacity: .5 !important;
+		}
+		.ToolBox .Disabled:hover {
+			color: #333333 !important;
+		}

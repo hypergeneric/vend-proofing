@@ -44,13 +44,12 @@
 	<!-- Mobile viewport optimized -->
 	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
 	<!-- CSS: implied media=all -->
-	<link rel="stylesheet" href="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/css/admin/<?php echo SA_PRODUCT_VERSION; ?>/">
-	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/admin/js/extend/jquery-ui/jquery-ui.min.css">
-	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/admin/js/extend/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/css/admin.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/admin.css"); ?>">
 </head>
 <body>
 	<div id="container"></div>
-	<script src="<?php echo Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH; ?>?/js/admin/<?php echo SA_PRODUCT_VERSION; ?>/"></script>
+	<?php include SA_DIR_COREPATH . "/tmpl/html/2.config-admin.tmpl"; ?>
+	<script src="<?php echo SA_DIR_COREPATH; ?>/js/admin.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/admin.js"); ?>"></script>
 	<script type="text/javascript">
 		classes.Admin.initialize();
 	</script>
@@ -126,7 +125,7 @@
 	<head>
 		<title><?php echo $page_title; ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/itdradmin.css?v=<?php echo SA_PRODUCT_VERSION; ?>" media="all" />
+		<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/admin-shell.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/admin-shell.css"); ?>" media="all" />
 	</head>
 	<body>
 		<div id="container">

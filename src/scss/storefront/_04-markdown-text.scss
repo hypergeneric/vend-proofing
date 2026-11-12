@@ -1,0 +1,51 @@
+/* ---- Markdown Text ---- */
+
+p {
+	margin-bottom: 15px;
+}
+.Description pre {
+	white-space: normal;
+	margin: 0 20px 15px 20px;
+}
+.Description pre code {
+	font-style: italic;
+}
+.Description ul {
+	list-style-type: disc;
+	margin-bottom: 15px;
+	padding-left: 20px;
+}
+.Description li {
+	margin-left: 0px;
+}
+.Title,
+h2{
+	font-size: var(--vend-font-size-18);
+	color: var(--vend-foreground-color);
+	margin-bottom: 15px;
+}
+h3 {
+	font-size: var(--vend-font-size-12);
+	color: var(--vend-foreground-color);
+}
+.Description {
+	font-size: var(--vend-font-size-12);
+	color: var(--vend-foreground-color);
+}
+.Description a {
+	font-size: var(--vend-font-size-12);
+	color: var(--vend-foreground-color);
+	text-decoration: underline;
+}
+.Description a:hover {
+	color: var(--vend-foreground-color);
+}
+.Description pre {
+}
+.Description h2 {
+	font-size: var(--vend-font-size-16);
+	color: var(--vend-foreground-color);
+}
+.Description strong {
+	font-weight: bold;
+}

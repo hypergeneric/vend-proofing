@@ -1,0 +1,157 @@
+/* ---- ContactPage Default Setup ---- */
+
+.Contact .Column1 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: right;
+	width: 60%;
+}
+	.Contact .Column1 .Inner {
+		padding: 20px;
+		width: 100%;
+		box-sizing: border-box;
+	}
+.Contact .Column2 {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	float: left;
+	width: 40%;
+}
+	.Contact .Column2 .Inner {
+		padding: 20px;
+		box-sizing: border-box;
+		background: var(--vend-application-background-alt);
+		border-right: 1px var(--vend-stroke-color) solid;
+	}
+
+.Contact .Context {
+	max-width: 800px;
+}
+	.Contact .Context h1 {
+		margin-top: 0;
+	}
+	.Contact .Context img {
+		display: block;
+		margin-bottom: 20px;
+		width: 100%;
+		max-width: auto;
+		height: inherit;
+	}
+.Contact #contact-form {
+	position: relative;
+	margin: 0;
+}
+.Contact .Hidden {
+	display: none;
+}
+.Contact label {
+	font-weight: bold;
+	margin: 0 0 0 3px;
+	font-size: var(--vend-font-size-14);
+	color: var(--vend-foreground-color);
+}
+.Contact label span {
+	color: var(--vend-highlight-color);
+}
+.Contact form div {
+	margin: 5px 0px 15px 0;
+}
+.Contact form .uiField {
+	font-size: var(--vend-font-size-14);
+}
+.Contact .Radio,
+.Contact .Checkbox,
+.Contact .Dropdown {
+	background: var(--vend-application-background-color);
+	border-top: 1px var(--vend-stroke-color) solid;
+	position: relative;
+	font-size: var(--vend-font-size-12);
+	margin: 5px 0px 15px 0;
+	padding: 5px;
+}
+.Contact .Dropdown {
+	border: none;
+	padding: 0;
+}
+.Contact .Dropdown select {
+	-moz-appearance: none;
+	-webkit-appearance:none;
+	border-radius: 0;
+	color: var(--vend-foreground-color);
+	border: 1px var(--vend-stroke-color) solid;
+	width: 100%;
+	background: transparent;
+	outline: none;
+	padding: 5px;
+	font-size: var(--vend-font-size-16);
+	margin: 0;
+	background-image: var(--vend-navigation-arrow);
+	background-repeat: no-repeat;
+	background-position: 98% center;
+}
+.Contact .Radio input,
+.Contact .Checkbox input {
+	color: var(--vend-foreground-color);
+	border: auto;
+	width: auto;
+	margin: 5px;
+	background: auto;
+}
+.Contact .Area textarea {
+	height: 80px;
+}
+.Contact .ButtonGroup input {
+	width: auto;
+	display: inline-block !important;
+	background-color: var(--vend-foreground-color) !important;
+	color: var(--vend-background-color) !important;
+	opacity: 1;
+	cursor: pointer;
+}
+.Contact .ButtonGroup input:hover {
+	opacity: .8;
+}
+.Contact .Focused {
+	border-color: var(--vend-stroke-color);
+}
+.Contact .Default {
+	border-color: var(--vend-stroke-color);
+}
+.Contact .Invalid {
+	border-color: var(--vend-highlight-color);
+}
+.Contact select:focus,
+.Contact input:focus {
+	outline: none !important;
+}
+.Contact .Area textarea:required ,
+.Contact .Input input:required {
+	color: var(--vend-foreground-color);
+	background: var(--vend-form-background-color);
+}
+.Contact .Area textarea:invalid,
+.Contact .Dropdown select:invalid,
+.Contact .Input input:invalid {
+	color: var(--vend-highlight-color);
+}
+
+
+@media screen and (max-width: 1000px){
+		.Contact.Column1 ,
+		.Contact.Column2 {
+			width: 50%;
+		}
+}
+@media screen and (max-width: 600px){
+		.Contact .Column2 .Inner  {
+			border-right: none;
+			background: var(--vend-application-background-color);
+		}
+		.Contact .Column1 ,
+		.Contact .Column2 {
+			float: none;
+			width: 100%;
+		}
+}

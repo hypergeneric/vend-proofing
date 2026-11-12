@@ -1,424 +1,212 @@
-<?php return array (
-  'root' => 
-  array (
-    'pretty_version' => 'dev-main',
-    'version' => 'dev-main',
-    'aliases' => 
-    array (
+<?php return array(
+    'root' => array(
+        'name' => '__root__',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'c62874bb6dfb05c509e7b2437e6c6c0c9b986cae',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
     ),
-    'reference' => 'e5e12a63afa31e05d85024b4a11f49b6452227f4',
-    'name' => '__root__',
-  ),
-  'versions' => 
-  array (
-    '__root__' => 
-    array (
-      'pretty_version' => 'dev-main',
-      'version' => 'dev-main',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'e5e12a63afa31e05d85024b4a11f49b6452227f4',
+    'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'c62874bb6dfb05c509e7b2437e6c6c0c9b986cae',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'drewm/mailchimp-api' => array(
+            'pretty_version' => 'v2.5.4',
+            'version' => '2.5.4.0',
+            'reference' => 'c6cdfab4ca6ddbc3b260913470bd0a4a5cb84c7a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../drewm/mailchimp-api',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'guzzlehttp/guzzle' => array(
+            'pretty_version' => '7.5.0',
+            'version' => '7.5.0.0',
+            'reference' => 'b50a2a1251152e43f6a37f0fa053e730a67d25ba',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../guzzlehttp/guzzle',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'guzzlehttp/promises' => array(
+            'pretty_version' => '1.5.2',
+            'version' => '1.5.2.0',
+            'reference' => 'b94b2807d85443f9719887892882d0329d1e2598',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../guzzlehttp/promises',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'guzzlehttp/psr7' => array(
+            'pretty_version' => '2.4.1',
+            'version' => '2.4.1.0',
+            'reference' => '69568e4293f4fa993f3b0e51c9723e1e17c41379',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../guzzlehttp/psr7',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'illuminate/collections' => array(
+            'pretty_version' => 'v8.83.25',
+            'version' => '8.83.25.0',
+            'reference' => '705a4e1ef93cd492c45b9b3e7911cccc990a07f4',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../illuminate/collections',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'illuminate/contracts' => array(
+            'pretty_version' => 'v8.83.25',
+            'version' => '8.83.25.0',
+            'reference' => '5e0fd287a1b22a6b346a9f7cd484d8cf0234585d',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../illuminate/contracts',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'illuminate/macroable' => array(
+            'pretty_version' => 'v8.83.25',
+            'version' => '8.83.25.0',
+            'reference' => 'aed81891a6e046fdee72edd497f822190f61c162',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../illuminate/macroable',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'kunalvarma05/dropbox-php-sdk' => array(
+            'pretty_version' => 'v0.4.1',
+            'version' => '0.4.1.0',
+            'reference' => '6d4c70fbdd222d6e815a647b8fd2ab9a2241d0f5',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../kunalvarma05/dropbox-php-sdk',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'michelf/php-markdown' => array(
+            'pretty_version' => '1.9.1',
+            'version' => '1.9.1.0',
+            'reference' => '5024d623c1a057dcd2d076d25b7d270a1d0d55f3',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../michelf/php-markdown',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'mobiledetect/mobiledetectlib' => array(
+            'pretty_version' => '2.8.39',
+            'version' => '2.8.39.0',
+            'reference' => '0fd6753003fc870f6e229bae869cc1337c99bc45',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../mobiledetect/mobiledetectlib',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v5.2.28',
+            'version' => '5.2.28.0',
+            'reference' => 'acba50393dd03da69a50226c139722af8b153b11',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'psr/container' => array(
+            'pretty_version' => '1.1.2',
+            'version' => '1.1.2.0',
+            'reference' => '513e0666f7216c7459170d56df27dfcefe1689ea',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/container',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'psr/http-client' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => '2dfb5f6c5eff0e91e20e913f8c5452ed95b86621',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/http-client',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'psr/http-client-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '1.0',
+            ),
+        ),
+        'psr/http-factory' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => '12ac7fcd07e5b077433f5f2bee95b3a771bf61be',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/http-factory',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'psr/http-factory-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '1.0',
+            ),
+        ),
+        'psr/http-message' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => 'f6561bf28d520154e4b0ec72be95418abe6d9363',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/http-message',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'psr/http-message-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '1.0',
+            ),
+        ),
+        'psr/simple-cache' => array(
+            'pretty_version' => '1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => '408d5eafb83c57f6365a3ca330ff23aa4a5fa39b',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/simple-cache',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'ralouphie/getallheaders' => array(
+            'pretty_version' => '3.0.3',
+            'version' => '3.0.3.0',
+            'reference' => '120b605dfeb996808c31b6477290a714d356e822',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ralouphie/getallheaders',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'stripe/stripe-php' => array(
+            'pretty_version' => 'v19.4.2',
+            'version' => '19.4.2.0',
+            'reference' => 'f6b0bc6d442d327212ac1d38458bf50fdc684f32',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../stripe/stripe-php',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'symfony/deprecation-contracts' => array(
+            'pretty_version' => 'v2.5.2',
+            'version' => '2.5.2.0',
+            'reference' => 'e8b495ea28c1d97b5e0c121748d6f9b53d075c66',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/deprecation-contracts',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
     ),
-    'drewm/mailchimp-api' => 
-    array (
-      'pretty_version' => 'v2.5.4',
-      'version' => '2.5.4.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'c6cdfab4ca6ddbc3b260913470bd0a4a5cb84c7a',
-    ),
-    'guzzle/batch' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/cache' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/common' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/guzzle' => 
-    array (
-      'pretty_version' => 'v3.9.3',
-      'version' => '3.9.3.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '0645b70d953bc1c067bbc8d5bc53194706b628d9',
-    ),
-    'guzzle/http' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/inflection' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/iterator' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/log' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/parser' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-async' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-backoff' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-cache' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-cookie' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-curlauth' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-error-response' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-history' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-log' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-md5' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-mock' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/plugin-oauth' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/service' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzle/stream' => 
-    array (
-      'replaced' => 
-      array (
-        0 => 'v3.9.3',
-      ),
-    ),
-    'guzzlehttp/guzzle' => 
-    array (
-      'pretty_version' => '7.5.0',
-      'version' => '7.5.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'b50a2a1251152e43f6a37f0fa053e730a67d25ba',
-    ),
-    'guzzlehttp/promises' => 
-    array (
-      'pretty_version' => '1.5.2',
-      'version' => '1.5.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'b94b2807d85443f9719887892882d0329d1e2598',
-    ),
-    'guzzlehttp/psr7' => 
-    array (
-      'pretty_version' => '2.4.1',
-      'version' => '2.4.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '69568e4293f4fa993f3b0e51c9723e1e17c41379',
-    ),
-    'illuminate/collections' => 
-    array (
-      'pretty_version' => 'v8.83.25',
-      'version' => '8.83.25.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '705a4e1ef93cd492c45b9b3e7911cccc990a07f4',
-    ),
-    'illuminate/contracts' => 
-    array (
-      'pretty_version' => 'v8.83.25',
-      'version' => '8.83.25.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '5e0fd287a1b22a6b346a9f7cd484d8cf0234585d',
-    ),
-    'illuminate/macroable' => 
-    array (
-      'pretty_version' => 'v8.83.25',
-      'version' => '8.83.25.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'aed81891a6e046fdee72edd497f822190f61c162',
-    ),
-    'kunalvarma05/dropbox-php-sdk' => 
-    array (
-      'pretty_version' => 'v0.4.1',
-      'version' => '0.4.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '6d4c70fbdd222d6e815a647b8fd2ab9a2241d0f5',
-    ),
-    'michelf/php-markdown' => 
-    array (
-      'pretty_version' => '1.9.1',
-      'version' => '1.9.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '5024d623c1a057dcd2d076d25b7d270a1d0d55f3',
-    ),
-    'mobiledetect/mobiledetectlib' => 
-    array (
-      'pretty_version' => '2.8.39',
-      'version' => '2.8.39.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '0fd6753003fc870f6e229bae869cc1337c99bc45',
-    ),
-    'omnipay/common' => 
-    array (
-      'pretty_version' => '2.5.2',
-      'version' => '2.5.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '54910f2ece6b1be64f5e53e2111dd1254d50ee49',
-    ),
-    'omnipay/stripe' => 
-    array (
-      'pretty_version' => 'V2.4.7',
-      'version' => '2.4.7.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '26a33414a75939af75064022112005d5e51fc9ea',
-    ),
-    'phpmailer/phpmailer' => 
-    array (
-      'pretty_version' => 'v5.2.28',
-      'version' => '5.2.28.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'acba50393dd03da69a50226c139722af8b153b11',
-    ),
-    'psr/container' => 
-    array (
-      'pretty_version' => '1.1.2',
-      'version' => '1.1.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '513e0666f7216c7459170d56df27dfcefe1689ea',
-    ),
-    'psr/http-client' => 
-    array (
-      'pretty_version' => '1.0.1',
-      'version' => '1.0.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '2dfb5f6c5eff0e91e20e913f8c5452ed95b86621',
-    ),
-    'psr/http-client-implementation' => 
-    array (
-      'provided' => 
-      array (
-        0 => '1.0',
-      ),
-    ),
-    'psr/http-factory' => 
-    array (
-      'pretty_version' => '1.0.1',
-      'version' => '1.0.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '12ac7fcd07e5b077433f5f2bee95b3a771bf61be',
-    ),
-    'psr/http-factory-implementation' => 
-    array (
-      'provided' => 
-      array (
-        0 => '1.0',
-      ),
-    ),
-    'psr/http-message' => 
-    array (
-      'pretty_version' => '1.0.1',
-      'version' => '1.0.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'f6561bf28d520154e4b0ec72be95418abe6d9363',
-    ),
-    'psr/http-message-implementation' => 
-    array (
-      'provided' => 
-      array (
-        0 => '1.0',
-      ),
-    ),
-    'psr/simple-cache' => 
-    array (
-      'pretty_version' => '1.0.1',
-      'version' => '1.0.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '408d5eafb83c57f6365a3ca330ff23aa4a5fa39b',
-    ),
-    'ralouphie/getallheaders' => 
-    array (
-      'pretty_version' => '3.0.3',
-      'version' => '3.0.3.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '120b605dfeb996808c31b6477290a714d356e822',
-    ),
-    'symfony/deprecation-contracts' => 
-    array (
-      'pretty_version' => 'v2.5.2',
-      'version' => '2.5.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'e8b495ea28c1d97b5e0c121748d6f9b53d075c66',
-    ),
-    'symfony/event-dispatcher' => 
-    array (
-      'pretty_version' => 'v2.8.52',
-      'version' => '2.8.52.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'a77e974a5fecb4398833b0709210e3d5e334ffb0',
-    ),
-    'symfony/http-foundation' => 
-    array (
-      'pretty_version' => 'v3.4.47',
-      'version' => '3.4.47.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'b9885fcce6fe494201da4f70a9309770e9d13dc8',
-    ),
-    'symfony/polyfill-mbstring' => 
-    array (
-      'pretty_version' => 'v1.26.0',
-      'version' => '1.26.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e',
-    ),
-    'symfony/polyfill-php70' => 
-    array (
-      'pretty_version' => 'v1.20.0',
-      'version' => '1.20.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '5f03a781d984aae42cebd18e7912fa80f02ee644',
-    ),
-  ),
 );

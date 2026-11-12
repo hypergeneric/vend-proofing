@@ -1,0 +1,425 @@
+/* ---- Browser ---- */					
+	
+#overlay-browser {
+	position: absolute;
+	z-index: 1;
+}
+	#overlay-browser .ControlBar {
+		position: absolute;
+		z-index: 2;
+		height: 44px;
+		width: 100%;
+		background: var(--vend-application-background-color);
+	}
+	#overlay-browser .Inner {
+	}
+		#browse-controlbar-done,
+		#browse-controlbar-options {
+			display: none;
+		}
+	#overlay-browser .Inner {
+		position: absolute;
+		z-index: 1;
+		width: 100%;
+	}
+	#overlay-browser .Display {
+		z-index: 1;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: var(--vend-application-background-color);
+	}
+		#overlay-browser .Display img {
+			position: absolute;
+			display: block;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+	#browser-paddles {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+	}
+	#browser-hitarea-prev,
+	#browser-hitarea-next {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 50%;
+		height: 100%;
+	}
+	#browser-hitarea-next {
+		left: 50%;
+	}
+	#browser-cropview {
+		position: absolute;
+		z-index: 3;
+		top: 0;
+		left: 0;
+	}
+		#browser-cropview-t,
+		#browser-cropview-l,
+		#browser-cropview-b,
+		#browser-cropview-r {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: var(--vend-application-background-color);
+			opacity: .8;
+		}
+		#browser-cropview-o {
+			position: absolute;
+			top: 0;
+			left: 0;
+			border: 1px var(--vend-stroke-color) solid;
+			cursor: move;
+		}
+	#browser-zoom {
+		background: var(--vend-application-background-color);
+		position: absolute;
+		z-index: 4;
+		top: 0;
+		left: 0;
+		display: none;
+		overflow: hidden;
+	}
+		#browser-zoom img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			cursor: move;
+		}
+@media screen and (max-width: 800px){
+	#overlay-browser .ControlBar {
+		bottom: 0;
+	}
+	#overlay-browser.Editor .ControlBar div {
+		display: none;
+	}
+	#overlay-browser.Editor #browse-controlbar-done {
+		display: inline-block;
+	}
+	#browse-controlbar-done {
+		line-height: 40px;
+		height: 38px;
+		background-color: var(--vend-application-background-color) !important;
+		border: 1px var(--vend-stroke-color) solid;
+	}
+	#browse-controlbar-options {
+		display: inline-block;
+		line-height: 40px;
+		height: 38px;
+		background-color: var(--vend-application-background-color) !important;
+		border: 1px var(--vend-stroke-color) solid;
+	}
+	#overlay-browser #browse-controlbar-title {
+		display: none;
+	}
+	#overlay-browser .ControlBar .IBLeft {
+		margin-left: 5px;
+		width: 38px;
+		height: 38px;
+		background-color: var(--vend-application-background-color) !important;
+		border: 1px var(--vend-stroke-color) solid;
+	}
+	#overlay-browser .ControlBar .IBRight {
+		margin-right: 5px;
+		width: 38px;
+		height: 38px;
+		background-color: var(--vend-application-background-color) !important;
+		border: 1px var(--vend-stroke-color) solid;
+	}
+	#browse-controlbar-close {
+		position: fixed;
+		top: 5px;
+		right: 0px;
+	}
+}
+@media screen and (max-width: 480px){
+	#overlay-browser #browse-controlbar-prev ,
+	#overlay-browser #browse-controlbar-next ,
+	#overlay-browser #browse-controlbar-title {
+		display: none;
+	}
+}
+
+
+
+/*  --- Sidebar --- */
+
+#overlay-sidebar {
+	position: absolute;
+	z-index: 2;
+	background-color: var(--vend-application-background-alt);
+}
+	#overlay-sidebar .Inner {
+		position: relative;
+		z-index: 1;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		border-right: 1px var(--vend-stroke-color) solid;
+		box-sizing: border-box;
+	}
+	#overlay-sidebar .ControlBar {
+		position: absolute;
+		z-index: 2;
+		height: 50px;
+		width: 100%;
+		background: var(--vend-application-background-color);
+		background-color: var(--vend-application-background-alt);
+		border-right: 1px var(--vend-stroke-color) solid;
+		box-sizing: border-box;
+	}
+		#overlay-sidebar .ControlBar div {
+			margin-top: 5px;
+			height: 38px;
+			line-height: 40px;
+			background-color: var(--vend-application-background-color);
+			border: 1px var(--vend-stroke-color) solid;
+		}
+		#browse-controlbar-return-icon {
+			margin-right: 5px;
+			width: 38px;
+		}
+		#browse-controlbar-add {
+			background-color: var(--vend-foreground-color) !important;
+			color: var(--vend-background-color) !important;
+			opacity: 1;
+		}
+		.no-touch #browse-controlbar-add:hover {
+			opacity: .8;
+		}
+		.no-touch #browse-controlbar-add.Disabled:hover ,
+		#browse-controlbar-add.Disabled {
+			background-color: var(--vend-application-background-color);
+			border: 1px var(--vend-stroke-color) solid;
+			color: var(--vend-foreground-color);
+			opacity: .25;
+		}
+		#browse-controlbar-return-icon ,
+		#browse-controlbar-return {
+			display: none;
+		}
+	#sidebar-screen {
+		position: absolute;
+		z-index: 20;
+		top: 0;
+		left: 0;
+		background-color: var(--vend-application-background-color);
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#sidebar-input {
+		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		height: 100%;
+		width: 100%;
+	}
+	#sidebar-input-screen {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: var(--vend-application-background-color);
+		opacity: .5;
+		width: 100%;
+		height: 100%;
+	}
+	#sidebar-input-content {
+		position: relative;
+		z-index: 2;
+	}
+		#sidebar-input .UIText {
+			position: absolute;
+			width: 100%;
+		}
+		#sidebar-input .UIText .Wrapper {
+			margin: 15px;
+			padding: 15px;
+			border: 1px solid var(--vend-stroke-color);
+			background: var(--vend-application-background-color);
+		}
+		#sidebar-input .UIText textarea {
+			box-sizing: border-box;
+			width: 100%;
+			resize: none;
+			font-size: var(--vend-font-size-14);
+			height: 80px;
+			margin-bottom: 10px;
+			border: 1px solid var(--vend-stroke-color);
+			background: var(--vend-application-background-color);
+			color: var(--vend-foreground-color);
+		}
+		#sidebar-input .UIText button {
+			font-size: var(--vend-font-size-14);
+			-moz-outline-style: none;
+			outline: none;
+			text-decoration: none;
+			-webkit-appearance:none;
+			color: var(--vend-foreground-color);
+			background: var(--vend-form-background-color);
+			border: 1px solid var(--vend-stroke-color);
+			padding: 5px;
+		}
+		#overlay-sidebar label.Disabled {
+			opacity: .5;
+		}
+		#overlay-sidebar .Inner div {
+			position: relative;
+			padding: 10px;
+			background: var(--vend-application-background-alt);
+		}
+		#overlay-sidebar .Inner div > div {
+			display: none;
+			padding: 0 0 0 0;
+			border: none;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+			opacity: .5;
+		}
+		#overlay-sidebar .Input {
+			position: relative;
+		}
+			#overlay-sidebar .Input h3 {
+				font-size: var(--vend-font-size-14);
+				margin: 0;
+				padding: 0;
+				margin-bottom: 5px;
+			}
+			#overlay-sidebar .Input span {
+				color: var(--vend-foreground-color);
+				display: block;
+				margin: 0 0 0 0;
+				padding: 5px;
+				color: var(--vend-foreground-color);
+				font-size: var(--vend-font-size-14);
+				margin-bottom: 10px;
+				border: 1px solid var(--vend-stroke-color);
+				background: var(--vend-application-background-color);
+			}
+			#overlay-sidebar .Selection span {
+				display: none !important;
+			}
+			#overlay-sidebar .Input select {
+				-webkit-appearance: none;
+				-webkit-box-shadow: none;
+				-webkit-border-radius: 0;
+				-moz-appearance: none;
+				background: var(--vend-application-background-color);
+				background-image: var(--vend-navigation-arrow);
+				background-repeat: no-repeat;
+				background-position: 98% center;
+				border: 1px solid var(--vend-stroke-color);
+				color: var(--vend-foreground-color);
+				font-size: var(--vend-font-size-14);
+				margin: 0 0 0 0;
+				padding: 5px;
+				outline: none;
+				width: 100%;
+				box-sizing: border-box;
+			}
+			#overlay-sidebar .Input form {
+				display: block;
+				padding: 10px;
+				background: var(--vend-application-background-color);
+				border-top: 1px solid var(--vend-stroke-color);
+				margin-bottom: 10px;
+			}
+			#sidebar-comments form {
+				padding: 0px !important;
+				background: transparent !important;
+				border: none !important;
+			}
+				#overlay-sidebar .Input label {
+					display: inline-block;
+					padding: 3px;
+					color: var(--vend-foreground-color);
+					font-size: var(--vend-font-size-14);
+				}
+				#overlay-sidebar .Text textarea {
+					box-sizing: border-box;
+					width: 100%;
+					color: var(--vend-foreground-color);
+					font-size: var(--vend-font-size-14);
+					padding: 3px;
+					border: 1px solid var(--vend-stroke-color);
+					background: var(--vend-application-background-color);
+					height: 80px;
+					resize: none;
+				}
+			#overlay-sidebar .Button button {
+				box-sizing: border-box;
+				width: 100%;
+				background-color: var(--vend-foreground-color) !important;
+				color: var(--vend-background-color) !important;
+				opacity: 1;
+			}
+			.no-touch #overlay-sidebar .Button button:hover {
+				opacity: .8;
+			}
+			#overlay-sidebar .Numeric span {
+				margin: 0 0 0 0;
+				padding: 5px;
+				color: var(--vend-foreground-color);
+				font-size: var(--vend-font-size-14);
+				margin-right: 75px;
+				margin-bottom: 10px;
+				border: 1px solid var(--vend-stroke-color);
+				background: var(--vend-application-background-color);
+			}
+			#overlay-sidebar .Numeric button {
+				float: right;
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				font-size: var(--vend-font-size-16);
+				-moz-outline-style: none;
+				outline: none;
+				text-decoration: none;
+				-webkit-appearance:none;
+				color: var(--vend-foreground-color);
+				background: var(--vend-application-background-color);
+				border: 1px solid var(--vend-stroke-color);
+				margin-left: 5px;
+				opacity: .75;
+			}
+@media screen and (max-width: 800px){
+	#browse-controlbar-return ,
+	#browse-controlbar-add {
+		display: inline-block;
+	}
+	#overlay-sidebar .Inner {
+		border-right: none;
+	}
+	#overlay-sidebar .ControlBar {
+		border-right: none;
+	}
+}
+@media screen and (max-width: 320px){
+	#browse-controlbar-return {
+		display: none;
+	}
+	#browse-controlbar-return-icon {
+		display: block;
+	}
+}
+
+#overlay-container.NoSidebar #browse-controlbar-options ,
+#overlay-container.NoSidebar #browse-controlbar-done ,
+#overlay-container.NoSidebar #overlay-sidebar .ControlBar {
+	display: none;
+}

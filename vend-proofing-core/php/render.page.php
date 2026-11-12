@@ -4,6 +4,12 @@
 		*/
 	if (count(get_included_files())==1) exit();
 
+	// Browser assets are static build artifacts; the former CSS/JS routes are retired.
+	if (preg_match('~^/(?:css|js)/~', rawurldecode($_SERVER['QUERY_STRING'] ?? ''))) {
+		http_response_code(404);
+		exit();
+	}
+
 	function cleanExtractedFilename ($p_event, &$p_header){
 		// cget pertinant info
 		$stored_filename = trim($p_header['stored_filename'], "/");
@@ -137,7 +143,7 @@
 		*/
 	$page = new LocalPage();
 	$page->cache(false);
-	$page->setTypes(array("js", "html", "xml", "css"));
+	$page->setTypes(array("html", "xml"));
 	$page->loadData(array("setup", "design", "ordering", "language"));
 	$page->render();
 

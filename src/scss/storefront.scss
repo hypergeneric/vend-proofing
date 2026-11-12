@@ -1,0 +1,20 @@
+// Component order preserves the existing cascade.
+@use "shared/reset";
+@use "storefront/01-global-stuff" as component1;
+@use "storefront/02-error" as component2;
+@use "storefront/03-container" as component3;
+@use "storefront/04-markdown-text" as component4;
+@use "storefront/05-ui-objects" as component5;
+@use "storefront/06-form-dialog" as component6;
+@use "storefront/07-dialog" as component7;
+@use "storefront/08-control-bar" as component8;
+@use "storefront/09-overlay" as component9;
+@use "storefront/10-control-buttons" as component10;
+@use "storefront/11-browser" as component11;
+@use "storefront/12-pages" as component12;
+@use "storefront/13-cart-overview" as component13;
+@use "storefront/14-checkout" as component14;
+@use "storefront/15-clickwrap" as component15;
+@use "storefront/16-packages" as component16;
+@use "storefront/17-splash-wall-view" as component17;
+@use "storefront/18-contactpage-default-setup" as component18;

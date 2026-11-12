@@ -1,0 +1,128 @@
+/* --- Navigation --- */
+
+#title {
+	position: relative;
+	z-index: 700;
+	padding: 25px;
+	padding-bottom: 0px;
+	margin-left: 250px;
+	font-size: 24px;
+	color: #666;
+}
+#title a {
+    color: #337ab7 !important;
+    text-decoration: none;
+}
+
+#application {
+	position: relative;
+	z-index: 700;
+	overflow: hidden;
+	margin-left: 250px;
+}
+
+#navigation {
+	position: fixed;
+	z-index: 500;
+	width: 250px;
+	background: #444;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#nav { 
+  display: block; 
+}
+
+#navigation select {
+	position: absolute;
+	top: 0;
+	left: 0;
+	cursor: pointer;
+	padding: 7px 10px;
+	line-height: 51px;
+	color: #666;
+	font-size: 14px;
+	border: 1px #ccc solid;
+	background: #fff;
+}
+#navigation #logo { 
+	position: relative;
+	float: left;
+}
+#navigation ul { 
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+	#nav li {
+		
+	}
+		#nav > li > a { 
+		  display: block; 
+		  padding: 10px 15px;
+		  font-size: 15px;
+		  font-weight: bold;
+		  color: #d4d4d4;
+		  text-decoration: none;
+		  border-bottom: 1px solid #212121;
+		  background-color: #343434;
+		  cursor: pointer;
+		}
+			#nav > li > a:hover,
+			#nav > li > a.open ,
+			#nav > li > a.Active { 
+			  color: #e9e9e9;
+			  border-bottom-color: #384f76;
+			  background-color: #6985b5;
+			}
+	#nav li ul { 
+		display: none; 
+		background: #4a5b78; 
+	}
+		#nav li ul li a { 
+		  display: block; 
+		  background: none;
+		  padding: 7px 12px;
+		  padding-left: 30px;
+		  font-size: 13px;
+		  text-decoration: none;
+		  font-weight: bold;
+		  color: #ccc;
+		  text-shadow: 1px 1px 0px #394963;
+		  border-bottom: 1px solid #394963;
+		  cursor: pointer;
+		}
+		#nav li ul li a:hover {
+		  background: #394963;
+		}
+		#nav li ul li a.Active {
+			color: #fff;
+		}
+#navigation #copyright {
+	display: block;
+	font-size: 10px;
+	padding: 10px;
+	color: #999;
+}
+#copyright a {
+    color: #337ab7 !important;
+    text-decoration: none;
+}
+
+@media screen and (max-width: 800px) {
+	#title {
+		margin-left: 0px;
+	}
+	#application {
+		margin-left: 0px;
+	}
+	#navigation {
+		position: relative;
+		width: 100%;
+		height: 50px;
+		overflow-y: hidden;
+		overflow-x: hidden;
+	}
+}

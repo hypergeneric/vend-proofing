@@ -11,6 +11,7 @@ cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,r
 mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/install.php" "$project_dir/scripts/admin-account.php" "$project_dir/scripts/dev-router.php" "$project_dir/scripts/dropbox-records-test.php" "$project_dir/scripts/message-records-test.php" "$project_dir/scripts/media-records-test.php" "$project_dir/scripts/pricing-records-test.php" "$project_dir/scripts/misc-records-test.php" "$project_dir/scripts/proofing-records-test.php" "$project_dir/scripts/order-records-test.php" "$fixture_dir/scripts/"
+cp "$project_dir/scripts/checkout-fixture.php" "$fixture_dir/scripts/"
 cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 
 docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
@@ -134,8 +135,9 @@ case "$admin_favorites" in *browser-f*) ;; *) echo "FAIL admin favorite export: 
 removed_session=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_delete" --data-urlencode "name=session" --data-urlencode "suid=$session_key" --data-urlencode "puid=$suid" --data-urlencode "token=$token" "$gateway")
 case "$removed_session" in s=true*) ;; *) echo "FAIL admin session delete: $removed_session"; exit 1 ;; esac
 echo "PASS public and admin proofing Gateway responses"
+php scripts/checkout-fixture.php "$suid"
 checkout_key=$(curl -fsS --data-urlencode "action=open_session" --data-urlencode "puid=$suid" --data-urlencode "email=checkout@example.invalid" "$gateway")
-checkout_item=$(printf "%s\t" "checkout-print" "$suid" "$filename" "Photo.jpg" "1" "color" "Eight by Ten" "0.8" "10" "0" "portrait" "0" "0" "Matte" "0" "0" "" "0" "0" "10.00" "0.00" "")
+checkout_item=$(printf "%s\t" "checkout-print" "$suid" "$filename" "Photo.jpg" "1" "color" "Eight by Ten" "0.8" "10" "0" "portrait" "0" "0" "" "0" "0" "" "0" "0" "10.00" "0.00" "")
 curl -fsS --data-urlencode "action=update_session_item" --data-urlencode "type=cart" --data-urlencode "puid=$suid" --data-urlencode "name=$checkout_key" --data-urlencode "data=$checkout_item" "$gateway" >/dev/null
 php -r '\''define("SA_DIR_AUTH", "vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::saveDiscount(Database::allocateSuid(), $argv[1], array($argv[1], "CHECKOUT10", "10", "percentage", "0", "1", "", "0", "0"));'\'' "$suid"
 verified=$(curl -fsS --data-urlencode "action=verify_discount_code" --data-urlencode "puid=$suid" --data-urlencode "code=CHECKOUT10" --data-urlencode "subtotal=10" "$gateway")
@@ -150,17 +152,31 @@ checkout_orderid=$(printf "%s" "$prequalified" | cut -f2)
 retried=$(curl -fsS --data-urlencode "action=prequalify_order" --data-urlencode "puid=$suid" --data-urlencode "name=$checkout_key" --data-urlencode "orderid=$checkout_orderid" --data-urlencode "code=CHECKOUT10" --data-urlencode "subtotal=10" "$gateway")
 test "$retried" = "$prequalified"
 exhausted=$(curl -fsS --data-urlencode "action=prequalify_order" --data-urlencode "puid=$suid" --data-urlencode "name=$checkout_key" --data-urlencode "code=CHECKOUT10" --data-urlencode "subtotal=10" "$gateway")
-case "$exhausted" in false?discount_maximum_uses_filled) ;; *) echo "FAIL discount limit language key: $exhausted"; exit 1 ;; esac
+test "$exhausted" = "$prequalified"
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); if($db->query("SELECT SUM(use_count) FROM discounts")->fetchColumn()!=1 || $db->query("SELECT COUNT(*) FROM discount_reservations")->fetchColumn()!=1) exit(1);'\''
-checkout_row=$(printf "%s\t" "$checkout_orderid" "$suid" "0" "offline" "" "standard" "CHECKOUT10" "Checkout Buyer" "checkout@example.invalid" "" "" "US" "" "" "9.00" "10.00" "1.00" "0.00" "0.00" "0.00" "0" "false" "false" "false" "")
+checkout_row=$(printf "%s\t" "$checkout_orderid" "$suid" "0" "stripe" "forged-reference" "standard" "CHECKOUT10" "Checkout Buyer" "checkout@example.invalid" "" "" "US" "" "CA" "9.00" "10.00" "1.00" "0.00" "0.00" "0.00" "0" "false" "false" "false")
 placed=$(curl -fsS --data-urlencode "action=finalize_order" --data-urlencode "puid=$suid" --data-urlencode "name=$checkout_key" --data-urlencode "data=$checkout_row" "$gateway")
 case "$placed" in true?*) ;; *) echo "FAIL offline checkout: $placed"; exit 1 ;; esac
+replayed=$(curl -fsS --data-urlencode "action=finalize_order" --data-urlencode "puid=$suid" --data-urlencode "name=$checkout_key" --data-urlencode "data=$checkout_row" "$gateway")
+case "$replayed" in true?*) ;; *) echo "FAIL offline checkout replay: $replayed"; exit 1 ;; esac
+php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $payment=$db->query("SELECT provider,status,provider_reference FROM payments")->fetch(PDO::FETCH_ASSOC); if($payment["provider"]!=="offline" || $payment["status"]!=="pending" || $payment["provider_reference"]!==null || $db->query("SELECT transaction_reference FROM orders")->fetchColumn()!=="") exit(1);'\''
+retired=$(curl -fsS --data-urlencode action=process_credit_card "$gateway")
+case "$retired" in *payment_unavailable*) ;; *) echo "FAIL retired raw-card action"; exit 1 ;; esac
+unsigned_code=$(curl -sS -o /tmp/unsigned-webhook.json -w "%{http_code}" -H "Content-Type: application/json" --data "{}" "$gateway?action=payment_webhook&provider=stripe&mode=test")
+test "$unsigned_code" = 400
+admin_payment_code=$(curl -sS -o /tmp/unauthorized-payment.json -w "%{http_code}" --data-urlencode action=payment_mark_paid --data-urlencode "order=$checkout_orderid" "$gateway")
+test "$admin_payment_code" = 403
+
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); if($db->query("SELECT COUNT(*) FROM orders")->fetchColumn()!=1 || $db->query("SELECT COUNT(*) FROM order_items")->fetchColumn()!=1 || $db->query("SELECT COUNT(*) FROM discount_redemptions")->fetchColumn()!=1 || $db->query("SELECT COUNT(*) FROM discount_reservations")->fetchColumn()!=0) exit(1);'\''
 invoice_html=$(curl -fsS "http://127.0.0.1:8080/?/order/$checkout_orderid/invoice/$(php -r '\''echo md5("checkout@example.invalid");'\'')/")
 case "$invoice_html" in *"Checkout Buyer"*"Photo"*"cart-final-total"*"</html>"*) ;; *) echo "FAIL invoice did not render its item and total"; exit 1 ;; esac
+php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $db->prepare("UPDATE payments SET provider = ?")->execute(array("stripe")); $db->prepare("UPDATE orders SET payment_type = ?")->execute(array("stripe"));'\''
+curl -fsS "http://127.0.0.1:8080/?/order/$checkout_orderid/invoice/$(php -r '\''echo md5("checkout@example.invalid");'\'')/" -o /tmp/online-invoice.html
+php -r '\''$html=file_get_contents("/tmp/online-invoice.html"); if(strpos($html,"vend-payment-retry")===false) exit(1); preg_match_all("~<script\b[^>]*>(.*?)</script>~si",$html,$matches); file_put_contents("/app/online-invoice-check.js",implode("\n",$matches[1])); $db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $db->prepare("UPDATE payments SET provider = ?")->execute(array("offline")); $db->prepare("UPDATE orders SET payment_type = ?")->execute(array("offline"));'\''
 curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=delete_order" --data-urlencode "orderid=$checkout_orderid" --data-urlencode "timestamp=0" --data-urlencode "token=$token" "$gateway" >/dev/null
 php -r '\''define("SA_DIR_AUTH","vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Proofing.php"; Proofing::deleteSession($argv[1],$argv[2]);'\'' "$suid" "$checkout_key"
 echo "PASS offline checkout and invoice through Gateway with relational order rows"
+php scripts/checkout-fixture.php "$suid" cleanup
 second_upload=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies -F action=image_upload -F "token=$token" -F name=page -F "suid=$suid" -F "Filedata=@/tmp/basic-set.jpg;filename=sorted-second.jpg;type=image/jpeg" "$gateway")
 case "$second_upload" in s=true*) ;; *) echo "FAIL second image upload: $second_upload"; exit 1 ;; esac
 second_key=$(php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $q=$db->prepare("SELECT public_key FROM media_assets WHERE original_name = ?"); $q->execute(array("sorted-second.jpg")); echo $q->fetchColumn();'\'')
@@ -297,3 +313,5 @@ php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); if($db->qu
 echo "PASS relational format, paper, and modifier rows and exact formula expressions"
 if grep -Eiq "Fatal error|Parse error|Uncaught|Warning:" /tmp/vend-basic-server.log /tmp/vend-basic-restart.log; then cat /tmp/vend-basic-server.log /tmp/vend-basic-restart.log; exit 1; fi
 '
+
+node --check "$fixture_dir/online-invoice-check.js"

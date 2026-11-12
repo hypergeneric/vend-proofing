@@ -1,0 +1,165 @@
+/* ---- Packages ---- */
+
+	#overlay-packages  .Column1 {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		float: right;
+		width: 40%;
+		display: none;
+	}
+		#overlay-packages  .Column1 .Inner {
+			padding: 20px;
+			box-sizing: border-box;
+			border-left: 1px var(--vend-stroke-color) solid;
+			background: var(--vend-application-background-alt);
+		}
+	#overlay-packages  .Column2 {
+		position: relative;
+		margin: 0;
+		padding: 0;
+		float: left;
+		width: 60%;
+	}
+		#overlay-packages  .Wide .Inner ,
+		#overlay-packages  .Column2 .Inner {
+			padding: 20px;
+			box-sizing: border-box;
+		}
+	
+	#overlay-packages .EmptyNotice {
+		font-size: var(--vend-font-size-18);
+		text-align: center;
+		color: var(--vend-highlight-color);
+		padding: 20px;
+		font-style: italic;
+	}
+	
+	#overlay-packages table {
+		width: 100%;
+		margin-bottom: 20px;
+		table-layout: fixed;
+	}
+	#overlay-packages .Wide {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+	#overlay-packages .Column1 {
+		max-width: none !important;
+	}
+		#overlay-packages table button {
+			display: inline-block;
+			width: 30px;
+			height: 30px;
+			border: none;
+			text-indent: -5000px;
+			overflow: hidden;
+			padding: 5px;
+			background: transparent var(--vend-icon-sprite) no-repeat -120px 50%;
+			background-size: 500px 40px;
+		}
+		#overlay-packages table .col2 {
+			width: 60px;
+			text-align: center;
+		}
+		#overlay-packages table .col3 {
+			width: 40%;
+			text-align: center;
+		}
+		#overlay-packages table .col4 {
+			text-align: center;
+			width: 40px !important;
+		}
+		#overlay-packages tr {
+			padding: 0 0 0 0;
+			margin: 0 0 0 0;
+			cursor: pointer;
+		}
+		.no-touch #overlay-packages .LineItem:hover {
+			color: var(--vend-highlight-color) !important;
+		}
+		#overlay-packages td {
+			height: 30px;
+			line-height: 30px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-size: var(--vend-font-size-12);
+		}
+		#overlay-packages .GroupHeading td {
+			font-size: var(--vend-font-size-16);
+			font-weight: bold;
+			border-bottom: 1px var(--vend-stroke-color) solid;
+			height: 40px;
+			line-height: 40px;
+			cursor: default;
+		}
+		#overlay-packages .LineItem.Active {
+			color: var(--vend-highlight-color) !important;
+		}
+		#overlay-package-controlbar {
+			text-align: right;
+			margin-bottom: 20px;
+		}
+		#overlay-package-cancel {
+			cursor: pointer;
+		}
+@media screen and (max-width: 1000px){
+	#overlay-packages .Column2 table .col2 {
+		display: none;
+	}
+}
+@media screen and (max-width: 600px){
+	#overlay-packages table .col3 {
+		width: auto;
+	}
+	#overlay-packages table .col2 {
+		display: none;
+	}
+}
+	
+
+	#overlay-package .Display {
+		height: 200px;
+		margin-bottom: 20px;
+	}
+	#overlay-package .Display img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+	}
+	#package-context h2 {
+		margin-top: 0;
+	}
+	#packages-controlbar-add {
+		background-color: var(--vend-foreground-color) !important;
+		color: var(--vend-background-color) !important;
+		opacity: 1;
+		cursor: pointer;
+	}
+	.no-touch #packages-controlbar-add:hover {
+		opacity: .8;
+	}
+	#packages-controlbar-back {
+		cursor: pointer;
+	}
+
+@media screen and (max-width: 600px){
+		#overlay-packages  .Column1 .Inner {
+			border-left: none;
+			background: var(--vend-application-background-color);
+			top: 0;
+			left: 0;
+			position: fixed;
+			z-index: 9999;
+			overflow-x: hidden;
+			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+			width: 100%;
+		}
+		#overlay-cartview .Column1 ,
+		#overlay-cartview .Column2 {
+			float: none;
+			width: 100%;
+		}
+}

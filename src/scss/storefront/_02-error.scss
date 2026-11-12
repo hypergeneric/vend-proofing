@@ -1,0 +1,39 @@
+/* ---- Error ---- */
+
+#body-error {
+	position: absolute;
+	background: #fff;
+	width: 100%;
+	height: 100%;
+}
+#body-error-inner {
+	padding: 25px;
+	position: relative;
+	background: #fff;
+}
+#body-fail-icon {
+	margin: 0 auto 0 auto;
+	width: 115px;
+	height: 115px;
+	background-repeat: no-repeat;
+	background-image: var(--vend-error-sprite);
+	background-position: 0 115px;
+}
+#body-fail-icon.browser {
+	background-position: -0px 0;
+}
+#body-fail-icon.orientation {
+	background-position: -115px 0;
+}
+#body-fail-title {
+	text-align: center;
+	max-width: 500px;
+	margin: 25px auto 25px auto;
+	color: #444;
+}
+#body-fail-description {
+	text-align: center;
+	max-width: 500px;
+	margin: 0 auto 0 auto;
+	color: #444;
+}
