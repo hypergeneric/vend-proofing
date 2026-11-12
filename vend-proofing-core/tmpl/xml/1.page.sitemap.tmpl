@@ -16,7 +16,7 @@
 	/* loop through and spit it all out
 		*/
 	foreach ($this->getData("page") as $page_id => $page_info) {
-		$page_data = Flatfile::getXmlArray(strtolower($page_info[2]), $page_id, true);
+		$page_data = Configuration::getDocument(strtolower($page_info[2]), $page_id);
 		$hasExpired = false;
 		$pwdRequired = false;
 		if ($page_data!=false) {

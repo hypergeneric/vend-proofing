@@ -109,8 +109,8 @@
 		public function __construct() {
 			/* set the local timezone
 				*/
-			$this->setup_data = 			Flatfile::getXmlArray("setup");
-			$this->ordering_data = 			Flatfile::getXmlArray("ordering");
+			$this->setup_data = 			Configuration::getDocument("setup");
+			$this->ordering_data = 			Configuration::getDocument("ordering");
 			$setup = 					$this->setup_data;
 			$local_timezone = 			$setup->getNodeVal("data.settings.local_timezone");
 			$local_timezone =				explode(",", $local_timezone);
@@ -190,7 +190,7 @@
 		protected function sendMails () {
 			// get data stuff
 			$ordering = $this->ordering_data;
-			$contact = Flatfile::getXmlArray("contact", null, true);
+			$contact = Configuration::getDocument("contact", null, true);
 			// post/pre
 			$post = array (
 				"ORDER_ID" => $this->prop("orderid"),

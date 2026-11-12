@@ -1,0 +1,12 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"cron_enabled_bool": {"_value": "false"},
+			"expiring_notify_bool": {"_value": "false"},
+			"expiring_days_before_num": {"_value": "7", "_attributes": {"min": "2", "max": "365"}},
+			"dropbox_purge_old_bool": {"_value": "false"},
+			"dropbox_days_after_num": {"_value": "2", "_attributes": {"min": "1", "max": "365"}}
+		}
+	}
+}

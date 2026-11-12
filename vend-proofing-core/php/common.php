@@ -29,10 +29,7 @@
 		include SA_DIR_COREPATH."/php/classes/simpleadmin/$class.php";
 	});
 
-	/* parse the config doc in case we need it for anything
-		*/
-	$CONFIG = new SimpleXML4();
-	$CONFIG->load(SA_BASEPATH.SA_NAMESPACE."-config.xml");
+	$CONFIG = new AppConfig();
 	$LANG = new Lang();
 	$LANG->language($CONFIG->getNodeVal("setup.language"));
 
@@ -43,6 +40,6 @@
 
 	/* start this baby up
 		*/
-	Func::init(false);
+	Func::normalizeServerVars();
 
 ?>

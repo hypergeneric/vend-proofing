@@ -2,8 +2,10 @@
 
 // Run only inside the disposable basic-set fixture.
 define("SA_DIR_AUTH", "vend-proofing-data/auth");
+define("SA_DIR_DEFAULTS", "vend-proofing-core/defaults");
 require "vend-proofing-core/php/classes/simpleadmin/Database.php";
 require "vend-proofing-core/php/classes/simpleadmin/Records.php";
+require "vend-proofing-core/php/classes/simpleadmin/Configuration.php";
 
 $db = Database::connection();
 $gallery = $db->query("SELECT suid FROM pages WHERE title = 'Basic Gallery'")->fetchColumn();
@@ -12,6 +14,7 @@ if (!$gallery) exit(1);
 $download = Database::allocateSuid();
 Records::saveSetRow("downloadset", $download, null, array("Web delivery"));
 if (Records::getSetTable("downloadset")[$download]!==array($download, "Web delivery")) exit(1);
+if (!Configuration::save("downloads", $download, file_get_contents(SA_DIR_DEFAULTS . "/downloads.json"))) exit(1);
 
 $global = Database::allocateSuid();
 $local = Database::allocateSuid();
@@ -41,6 +44,7 @@ if ($db->query("SELECT name FROM mailing_contacts")->fetchColumn()!=="Updated Na
 Records::deleteSetRow("discount", $local, $gallery);
 Records::deleteSetRow("discount", $global, null);
 Records::deleteSetRow("downloadset", $download, null);
+if (Configuration::getJson("downloads", $download, true)!=="") exit(1);
 Records::deleteSetRow("ustaxchart", "CA", null);
 Records::deleteSetRow("cataxchart", "ON", null);
 Records::deleteSetRow("vattaxchart", "GB", null);

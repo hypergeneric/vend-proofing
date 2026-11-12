@@ -11,9 +11,9 @@
 		return $decTime;
 	}
 
-	$contact = Flatfile::getXmlArray("contact", null, true);
-	$language = Flatfile::getXmlArray("language");
-	$cron = Flatfile::getXmlArray("cron");
+	$contact = Configuration::getDocument("contact", null, true);
+	$language = Configuration::getDocument("language");
+	$cron = Configuration::getDocument("cron");
 	
 	$cron_enabled_bool = $cron->getNodeVal("data.settings.cron_enabled_bool")=="true";
 	$expiring_notify_bool = $cron->getNodeVal("data.settings.expiring_notify_bool")=="true";
@@ -50,7 +50,7 @@
 				$mail_sent = false;
 				$recipients = "";
 				$expiry = "";
-				$page_data = Flatfile::getXmlArray(strtolower($page_info[2]), $page_id, true);
+				$page_data = Configuration::getDocument(strtolower($page_info[2]), $page_id);
 				if ($page_data!=false) {
 					$password = "";
 					$sessions = Records::getSetTable("session", $page_id);

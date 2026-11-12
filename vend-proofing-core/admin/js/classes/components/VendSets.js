@@ -48,13 +48,13 @@ classes.components.VendSets = function () {
 	}
 	function saveClick () {
 		_ingest.data._attributes["default"] = "false";
-		var xmlstr = Func.JsonToXML(_ingest);
+		var json = JSON.stringify(_ingest);
 		_panel.screen(true);
 		Auth.send(this, saveComplete, {
 			action: "setup_save",
 			suid: _suid,
 			type: _type,
-			data: '<?xml version="1.0"?>' + xmlstr
+			data: json
 		});
 	}
 	function saveComplete (success, data) {
@@ -116,8 +116,7 @@ classes.components.VendSets = function () {
 		/*
 			parse the incomming data
 			*/
-		var xmlobj = $.parseXML(response);
-		_ingest = Func.xmlToJson(xmlobj);
+		_ingest = JSON.parse(response);
 		_loaded = true;
 		/* see what the big man has to day
 			*/
@@ -253,8 +252,7 @@ classes.components.VendSets = function () {
 		_instance.dispatch("dataLoaded");
 	}
 	function referenceLoaded (success, response) {
-		var xmlobj = $.parseXML(response);
-		_reference = Func.xmlToJson(xmlobj);
+		_reference = JSON.parse(response);
 		_inited = true;
 		loadBaseFile();
 	}

@@ -212,16 +212,8 @@ classes.Admin = (function () {
 		function render () {
 			$('html,body,#container').css("height", "auto");
 			$('#container').css("background", "none");
-			// load up our base data
-			$.ajax( NAMESPACE + "-config.xml", {
-				cache: false,
-				dataType: "xml",
-				method: "get",
-				success: function (data, status, obj) {
-					_config = Func.xmlToJson(data);
-					start();
-				}
-			});
+			_config = VEND_ADMIN_CONFIG;
+			start();
 		}
 		
 		/* public methods

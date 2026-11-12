@@ -1,0 +1,34 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"show_in_navigation_bool": {"_value": "true"},
+			"title": {},
+			"image_asset": {"_attributes": {"width": "", "height": ""}},
+			"description": {"_attributes": {"markdown": "true", "toolbar": "true", "lines": "6"}},
+			"contact_form_recipients": {"_attributes": {"lines": "5"}},
+			"mailing_list": {"_value": "none", "_attributes": {"options": "mailinglists.provider"}},
+			"mailing_list_account_api_key": {},
+			"mailing_list_subscriber_list_key": {},
+			"use_autoresponder_bool": {"_value": "false"}
+		},
+		"details": {
+			"your_website_url": {"_attributes": {"href": ""}},
+			"your_phone_number": {},
+			"your_physical_address": {"_attributes": {"lines": "5"}},
+			"your_email": {"_attributes": {"href": ""}}
+		},
+		"mailer_settings": {
+			"mail_provider": {"_value": "mail", "_attributes": {"options": "mail_providers.provider"}},
+			"log_all_messages_bool": {"_value": "true"},
+			"sendgrid_api_key": {"_attributes": {"private": "true", "encoded": "true"}},
+			"server_origin_email": {"_attributes": {"href": ""}},
+			"smtp_hostname": {},
+			"smtp_port_num": {"_value": "25", "_attributes": {"min": "0", "max": "65536"}},
+			"smtp_connection_type": {"_value": "none", "_attributes": {"options": "smtp_connection_types.type"}},
+			"smtp_requires_auth_bool": {"_value": "false"},
+			"smtp_username": {"_attributes": {"private": "true"}},
+			"smtp_password": {"_attributes": {"private": "true", "encoded": "true"}}
+		}
+	}
+}

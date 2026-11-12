@@ -82,13 +82,13 @@
 	$expires_on_date = 						$expires_on_date["value"]>0 ? date($date_pattern["value"], $expires_on_date["value"]/1000) : "0";
 	$expires_on_date = 						htmlspecialchars($expires_on_date);
 	$lang_table = 							$LANG->getTableArray();
-	$country_iso_codes = 					$lang_table["data"]["_c"]["country_iso_codes"]["_c"]["code"];
-		array_shift($country_iso_codes);
-	$us_states = 							$lang_table["data"]["_c"]["us_states"]["_c"]["code"];
-		array_shift($us_states);
-	$ca_province = 							$lang_table["data"]["_c"]["ca_province"]["_c"]["code"];
-		array_shift($ca_province);
-	$taxchart = 							Records::getSetTable($default_country=="CA"||$default_country=="US" ? strtolower($default_country)."taxchart" : "vattaxchart");
+	$country_iso_codes = 					$lang_table["data"]["country_iso_codes"]["code"];
+	array_shift($country_iso_codes);
+		$us_states = 							$lang_table["data"]["us_states"]["code"];
+	array_shift($us_states);
+		$ca_province = 							$lang_table["data"]["ca_province"]["code"];
+	array_shift($ca_province);
+		$taxchart = 							Records::getSetTable($default_country=="CA"||$default_country=="US" ? strtolower($default_country)."taxchart" : "vattaxchart");
 
 	$icon_mail_asset_tag = 			"";
 	if ($show_in_navigation_bool==true) {
@@ -116,9 +116,9 @@
 	
 	// download options -- dropbox only
 	if ($this->info("class")=="DropboxSet") {
-		$this->data_lookup["downloads"] = 	Flatfile::getXmlArray("downloads", $page_data->getNodeVal("data.settings.download_set"));
+		$this->data_lookup["downloads"] = 	Configuration::getDocument("downloads", $page_data->getNodeVal("data.settings.download_set"));
 	} else {
-		$this->data_lookup["downloads"] = 	Flatfile::getXmlArray("downloads");
+		$this->data_lookup["downloads"] = 	Configuration::getDocument("downloads");
 	}
 	$allow_single_downloads_bool = 			$this->getTypedValue("downloads", "settings", "allow_single_downloads_bool");
 	$allow_web_version_bool = 				$this->getTypedValue("downloads", "settings", "allow_web_version_bool");
@@ -131,7 +131,7 @@
 	$downloads_available = 					$allow_single_downloads_bool || $allow_web_version_bool || $allow_download_all_bool;
 
 	//clickwrap
-	$this->data_lookup["policies"] = 		Flatfile::getXmlArray("policies", null, true);
+	$this->data_lookup["policies"] = 		Configuration::getDocument("policies", null, true);
 	$clickwrap_title = 						"";
 	$clickwrap_description = 				"";
 	if ($this->getData("policies")!=false) {
@@ -874,12 +874,12 @@
 <?php 	if ($default_country=="US") { ?>
 									<option value="">State</option>
 <?php 		foreach($us_states as $code) { ?>
-									<option<?php echo $code["_a"]["value"]==$default_us_state ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_a"]["value"]; ?>"><?php echo htmlspecialchars($code["_a"]["name"]); ?></option>
+									<option<?php echo $code["_attributes"]["value"]==$default_us_state ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_attributes"]["value"]; ?>"><?php echo htmlspecialchars($code["_attributes"]["name"]); ?></option>
 <?php 		}
 		} else if ($default_country=="CA") { ?>
 									<option value="">Province</option>
 <?php 		foreach($ca_province as $code) { ?>
-									<option<?php echo $code["_a"]["value"]==$default_ca_province ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_a"]["value"]; ?>"><?php echo htmlspecialchars($code["_a"]["name"]); ?></option>
+									<option<?php echo $code["_attributes"]["value"]==$default_ca_province ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_attributes"]["value"]; ?>"><?php echo htmlspecialchars($code["_attributes"]["name"]); ?></option>
 <?php 		}
 		} ?>
 								</select>
@@ -887,7 +887,7 @@
 								<select class="uiField" id="checkout-country" name="checkout-country">
 									<option value=""><?php echo $checkout_shipping_country["html"]; ?></option>
 <?php 	foreach($country_iso_codes as $code) { ?>
-									<option<?php echo $code["_a"]["value"]==$default_country ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_a"]["value"]; ?>"><?php echo htmlspecialchars($code["_a"]["name"]); ?></option>
+									<option<?php echo $code["_attributes"]["value"]==$default_country ? ' selected="selected" ' : " "; ?>value="<?php echo $code["_attributes"]["value"]; ?>"><?php echo htmlspecialchars($code["_attributes"]["name"]); ?></option>
 <?php 	} ?>
 								</select>
 <?php } ?>

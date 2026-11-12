@@ -1,0 +1,35 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"site_name": {},
+			"touch_screen_icon_asset": {"_attributes": {"width": "", "height": ""}},
+			"website_favicon_asset": {"_attributes": {"extensions": "ico,png", "width": "", "height": ""}},
+			"browser_title": {"_value": "{PAGE_NAME}", "_attributes": {"tags": "PAGE_NAME"}},
+			"meta_tag_description": {"_attributes": {"lines": "3"}},
+			"meta_tag_keywords": {"_attributes": {"lines": "3"}},
+			"page_head_tags": {"_attributes": {"lines": "6"}},
+			"invoice_footer": {"_attributes": {"markdown": "true", "toolbar": "true", "lines": "3"}},
+			"google_analytics_user_agent": {"_attributes": {"lines": "5"}},
+			"facebook_pixel_id": {},
+			"resampling_quality_num": {"_value": "90", "_attributes": {"min": "60", "max": "95"}},
+			"resample_use_imagick_bool": {"_value": "false"},
+			"resample_sharpen_bool": {"_value": "true"},
+			"show_image_wall_tooltips_bool": {"_value": "true"},
+			"toning_enable_bw_bool": {"_value": "true"},
+			"toning_enable_sepia_bool": {"_value": "true"},
+			"local_timezone": {"_value": "-05:00,America/New_York", "_attributes": {"options": "timezones.zone"}},
+			"orderview_print_images_bool": {"_value": "false"}
+		},
+		"watermarking": {
+			"watermark_bool": {"_value": "false"},
+			"watermark_asset": {"_attributes": {"width": "", "height": ""}},
+			"watermark_x_num": {"_value": "50"},
+			"watermark_y_num": {"_value": "50"},
+			"watermark_alpha_num": {"_value": "50"},
+			"crosshairs_bool": {"_value": "true"},
+			"crosshairs_color": {"_value": "0xFFFFFF"},
+			"crosshairs_alpha_num": {"_value": "100"}
+		}
+	}
+}

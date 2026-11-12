@@ -7,13 +7,13 @@ fixture_dir="$(mktemp -d /tmp/vend-php84-dev.XXXXXX)"
 trap 'rm -rf "$fixture_dir"' EXIT
 
 cp -a "$project_dir/vend-proofing-core" "$fixture_dir/"
-cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$project_dir/vend-proofing-config.xml" "$fixture_dir/"
+cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/"
 mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/admin-account.php" "$project_dir/scripts/install.php" "$project_dir/scripts/dev-router.php" "$fixture_dir/scripts/"
-cp "$project_dir/vend-proofing-core/defaults/contact.xml" "$fixture_dir/vend-proofing-data/storage/contact.xml"
-sed -i 's#<your_email href=""></your_email>#<your_email href="owner@example.invalid">Owner</your_email>#' "$fixture_dir/vend-proofing-data/storage/contact.xml"
+cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 php scripts/install.php
+docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 php scripts/configuration-test.php
 printf '%s\n' 'SyntheticAdminPassword123!' | docker run --rm --network none -i -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 php scripts/admin-account.php create testadmin owner@example.invalid
 
 echo "Disposable PHP 8.4 Vend: http://127.0.0.1:8048/"

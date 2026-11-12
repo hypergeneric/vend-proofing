@@ -1,0 +1,15 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"allow_single_downloads_bool": {"_value": "false"},
+			"allow_web_version_bool": {"_value": "false"},
+			"allow_download_all_bool": {"_value": "false"},
+			"download_all_flatfee_bool": {"_value": "false"},
+			"single_download_price": {"_value": "0", "_attributes": {"restrict": "0-9."}},
+			"web_version_download_price": {"_value": "0", "_attributes": {"restrict": "0-9."}},
+			"single_download_all_price": {"_value": "0", "_attributes": {"restrict": "0-9."}},
+			"web_version_download_all_price": {"_value": "0", "_attributes": {"restrict": "0-9."}}
+		}
+	}
+}

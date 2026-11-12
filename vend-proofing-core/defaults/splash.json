@@ -1,0 +1,13 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"title": {},
+			"description": {"_attributes": {"markdown": "true", "toolbar": "true", "lines": "6"}},
+			"splash_page_view": {"_value": "wall", "_attributes": {"options": "splash_page_views.view"}},
+			"sorting_mechanism": {"_value": "P,dc,a;S,dc,a;E,dc,a", "_attributes": {"options": "splash_wall_sort.type"}},
+			"hide_image_counts_bool": {"_value": "false"},
+			"auto_hide_expired_sets_bool": {"_value": "false"}
+		}
+	}
+}

@@ -82,14 +82,6 @@
 		protected $query_actual = "";
 		protected $markdown_lookup = false;
 
-		protected function getTypedChildObject ($obj) {
-			$xmlstr = "<data><settings>";
-			$xmlstr .= rawurldecode($obj[2]);
-			$xmlstr .= "</settings></data>";
-			$child = new SimpleXML4($xmlstr);
-			return $child;
-		}
-
 		protected function getTypedChildValue ($obj, $key, $arg1=100) {
 			return $this->getTypedValue($obj, "settings", $key, $arg1);
 		}
@@ -187,34 +179,6 @@
 			return $value;
 		}
 
-		protected function cleanXmlOutput (&$source) {
-			if (is_array($source)==false) return;
- 			foreach($source as $key => $obj) {
-				$key_fragments = explode("_", $key);
-				$key_type = array_pop($key_fragments);
-				if ($key_type=="linkage") {
-					$source[$key]["_v"] = $this->doFlashURIConvert($obj["_v"]);
-				}
-				if (isset($obj["_a"])) {
-					if (isset($obj["_a"]["markdown"])) {
-					if ($obj["_a"]["markdown"]=="true") {
-						$source[$key]["_v"] = $this->doFlashMarkdown($obj["_v"]);
-					}
-					}
-				}
-				if (isset($obj["_c"])) {
-					$child = &$source[$key]["_c"];
-					$this->cleanXmlOutput($child);
-				}
-				if (isset($obj[0])) {
-					for ($i=0; $i<count($obj); ++$i) {
-						$child = &$source[$key][$i]["_c"];
-						$this->cleanXmlOutput($child);
-					}
-				}
-			}
-		}
-
 		protected function doFlashMarkdown ($str) {
 			$str = $this->doMarkdown($str);
 			$str = $this->doFlashURIConvert($str);
@@ -310,12 +274,12 @@
 				*/
 			for ($i=0; $i<count($this->data_types); ++$i) {
 				$data_type = $this->data_types[$i];
-				$this->data_lookup[$data_type] = Flatfile::getXmlArray($data_type);
+				$this->data_lookup[$data_type] = Configuration::getDocument($data_type);
 			}
 			/* load up our special pages and pages, and assets
 				*/
-			$this->data_lookup["splash"] = Flatfile::getXmlArray("splash", null, true);
-			$this->data_lookup["contact"] = Flatfile::getXmlArray("contact", null, true);
+			$this->data_lookup["splash"] = Configuration::getDocument("splash", null, true);
+			$this->data_lookup["contact"] = Configuration::getDocument("contact", null, true);
 			$this->data_lookup["page"] = Records::getSetTable("page");
 			$this->data_lookup["asset"] = Records::getFileTable("asset");
 			/* find the site homepage
@@ -399,7 +363,7 @@
 				/* load up the page data
 					*/
 				$this->populatePage($page_obj);
-				$this->page_object["data"] = Flatfile::getXmlArray(strtolower($this->page_object["class"]), $this->page_object["id"]);
+				$this->page_object["data"] = Configuration::getDocument(strtolower($this->page_object["class"]), $this->page_object["id"]);
 				/* this is the full hash including the title
 					*/
 				$query_actual = $this->page_object["type"] . "/" . $this->page_object["id"] . "/" . $this->cleanTitleFragment($this->page_object["title"]);

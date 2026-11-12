@@ -1,0 +1,10 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"enabled_bool": {"_value": "true"},
+			"volume_num": {"_value": "50", "_attributes": {"max": "100"}},
+			"loop_bool": {"_value": "false"}
+		}
+	}
+}

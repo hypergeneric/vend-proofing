@@ -7,16 +7,16 @@ fixture_dir="$(mktemp -d /tmp/vend-basic-set.XXXXXX)"
 trap 'rm -rf "$fixture_dir"' EXIT
 
 cp -a "$project_dir/vend-proofing-core" "$fixture_dir/"
-cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$project_dir/vend-proofing-config.xml" "$fixture_dir/"
+cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/"
 mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/install.php" "$project_dir/scripts/admin-account.php" "$project_dir/scripts/dev-router.php" "$project_dir/scripts/dropbox-records-test.php" "$project_dir/scripts/message-records-test.php" "$project_dir/scripts/media-records-test.php" "$project_dir/scripts/pricing-records-test.php" "$project_dir/scripts/misc-records-test.php" "$project_dir/scripts/proofing-records-test.php" "$project_dir/scripts/order-records-test.php" "$fixture_dir/scripts/"
-cp "$project_dir/vend-proofing-core/defaults/contact.xml" "$fixture_dir/vend-proofing-data/storage/contact.xml"
-sed -i 's#<your_email href=""></your_email>#<your_email href="owner@example.invalid">Owner</your_email>#' "$fixture_dir/vend-proofing-data/storage/contact.xml"
+cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 
 docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
 set -eu
 php scripts/install.php
+php scripts/configuration-test.php
 printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
 php -r '\''$image=imagecreatetruecolor(640,480); imagefill($image,0,0,imagecolorallocate($image,32,96,160)); imagejpeg($image,"/tmp/basic-set.jpg",85);'\''
 php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-basic-server.log 2>&1 &
@@ -31,6 +31,7 @@ created=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode
 case "$created" in s=true*) ;; *) echo "FAIL create: $created"; exit 1 ;; esac
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $row=$db->query("SELECT suid, title FROM pages")->fetch(PDO::FETCH_ASSOC); if(!$row || $row["title"]!=="Basic Gallery") exit(1); file_put_contents("/tmp/basic-suid",$row["suid"]);'\''
 suid=$(cat /tmp/basic-suid)
+php -r '\''define("SA_DIR_AUTH", "vend-proofing-data/auth"); define("SA_DIR_DEFAULTS", "vend-proofing-core/defaults"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Configuration.php"; if (!Configuration::save("uploadset", $argv[1], file_get_contents(SA_DIR_DEFAULTS . "/uploadset.json"))) exit(1);'\'' "$suid"
 test ! -e vend-proofing-data/storage/set.page.table
 list=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_list" --data-urlencode "name=page" --data-urlencode "token=$token" "$gateway")
 case "$list" in *"Basic%20Gallery"*) ;; *) echo "FAIL page list: $list"; exit 1 ;; esac
@@ -204,6 +205,7 @@ php -r '\''define("SA_DIR_AUTH", "vend-proofing-data/auth"); require "vend-proof
 deleted=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_delete" --data-urlencode "name=page" --data-urlencode "suid=$suid" --data-urlencode "token=$token" "$gateway")
 case "$deleted" in s=true*) ;; *) echo "FAIL delete set: $deleted"; exit 1 ;; esac
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); if($db->query("SELECT COUNT(*) FROM pages")->fetchColumn()!=0 || $db->query("SELECT COUNT(*) FROM media_entries")->fetchColumn()!=0 || $db->query("SELECT COUNT(*) FROM media_assets")->fetchColumn()!=0) exit(1);'\''
+php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $query=$db->prepare("SELECT COUNT(*) FROM configuration_documents WHERE scope_id = ?"); $query->execute(array($argv[1])); if($query->fetchColumn()!=0) exit(1);'\'' "$suid"
 echo "PASS delete relational set"
 created=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_create" --data-urlencode "name=page" --data-urlencode "data=Remote Gallery	DropboxSet	0" --data-urlencode "token=$token" "$gateway")
 case "$created" in s=true*) ;; *) echo "FAIL create Dropbox set: $created"; exit 1 ;; esac
@@ -276,7 +278,8 @@ pricing_page=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urle
 case "$pricing_page" in s=true*) ;; *) echo "FAIL pricing page: $pricing_page"; exit 1 ;; esac
 pricing_page_suid=$(php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $query=$db->prepare("SELECT suid FROM pages WHERE title = ?"); $query->execute(array("Pricing Gallery")); echo $query->fetchColumn();'\'')
 mkdir -p "vend-proofing-data/storage/$pricing_page_suid"
-sed -e "s#</format_set>#$format_group</format_set>#" -e "s#</paper_set>#$paper_group</paper_set>#" -e "s#</modifier_set>#$modifier_group</modifier_set>#" -e "s#</package_set>#$package_group</package_set>#" -e "s#</product_set>#$product_group</product_set>#" vend-proofing-core/defaults/uploadset.xml > "vend-proofing-data/storage/$pricing_page_suid/uploadset.xml"
+php -r '\''$data=json_decode(file_get_contents("vend-proofing-core/defaults/uploadset.json"), true); foreach(array("format","paper","modifier","package","product") as $i=>$name) { $data["data"]["settings"]["{$name}_set"]["_value"]=$argv[$i+1]; } file_put_contents("/tmp/pricing-gallery.json", json_encode($data, JSON_UNESCAPED_SLASHES));'\'' "$format_group" "$paper_group" "$modifier_group" "$package_group" "$product_group"
+php -r '\''define("SA_DIR_AUTH", "vend-proofing-data/auth"); define("SA_DIR_DEFAULTS", "vend-proofing-core/defaults"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Configuration.php"; if (!Configuration::save("uploadset", $argv[1], file_get_contents($argv[2]))) exit(1);'\'' "$pricing_page_suid" /tmp/pricing-gallery.json
 uploaded=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies -F action=image_upload -F "token=$token" -F name=page -F "suid=$pricing_page_suid" -F "Filedata=@/tmp/basic-set.jpg;filename=pricing.jpg;type=image/jpeg" "$gateway")
 case "$uploaded" in s=true*) ;; *) echo "FAIL pricing image: $uploaded"; exit 1 ;; esac
 pricing_html=$(curl -fsS "http://127.0.0.1:8080/?/set/$pricing_page_suid/pricing-gallery/")

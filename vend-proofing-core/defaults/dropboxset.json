@@ -1,0 +1,26 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"password": {"_attributes": {"private": "true", "encoded": "true"}},
+			"expires_on_date": {"_attributes": {"timezone": "", "offset": ""}},
+			"format_set": {"_attributes": {"action": "set_list", "name": "formatset", "suid": ""}},
+			"paper_set": {"_attributes": {"action": "set_list", "name": "paperset", "suid": ""}},
+			"modifier_set": {"_attributes": {"action": "set_list", "name": "modifierset", "suid": ""}},
+			"package_set": {"_attributes": {"action": "set_list", "name": "packageset", "suid": ""}},
+			"product_set": {"_attributes": {"action": "set_list", "name": "productset", "suid": ""}},
+			"download_set": {"_attributes": {"action": "set_list", "name": "downloadset", "suid": ""}},
+			"enable_quantity_ui_bool": {"_value": "true"},
+			"enable_color_options_bool": {"_value": "true"},
+			"enable_cropping_tool_bool": {"_value": "true"},
+			"enable_comments_bool": {"_value": "true"},
+			"enable_watermarking_bool": {"_value": "true"},
+			"use_global_soundtrack_bool": {"_value": "false"},
+			"include_in_gallery_wall_bool": {"_value": "true"},
+			"pin_to_top_of_splash_bool": {"_value": "false"},
+			"set_cover_image_asset": {"_attributes": {"width": "", "height": ""}},
+			"set_contact_list": {"_attributes": {"private": "true", "lines": "5"}},
+			"set_welcome_message": {"_attributes": {"markdown": "true", "toolbar": "true", "lines": "4", "tags": "IMAGE_COUNT,EXPIRY"}}
+		}
+	}
+}

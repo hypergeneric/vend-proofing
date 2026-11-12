@@ -73,8 +73,8 @@
 
 		public function __construct() {
 			// setup the mailer
-			$this->contact = Flatfile::getXmlArray("contact", null, true);
-			$this->language = Flatfile::getXmlArray("language");
+			$this->contact = Configuration::getDocument("contact", null, true);
+			$this->language = Configuration::getDocument("language");
 			// create the arrays
 			$this->recipient_list = array();
 			$this->pre_tags = array();

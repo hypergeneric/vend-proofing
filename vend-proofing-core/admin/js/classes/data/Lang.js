@@ -19,12 +19,12 @@ classes.data.Lang = (function () {
 		/* private methods
 			*/
 		function load () {
-			$.ajax( Auth.basepath() + Auth.corepath() + "/lang/" + _code + ".xml", {
+			$.ajax( Auth.basepath() + Auth.corepath() + "/defaults/" + _code + ".json", {
 				cache: false,
-				dataType: "xml",
+				dataType: "json",
 				method: "get",
-				success: function (str, status, obj) {
-					data = Func.xmlToJson(str);
+				success: function (response, status, obj) {
+					data = response;
 					//console.log(data);
 					_instance.dispatch("onLoaded");
 				},

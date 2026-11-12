@@ -11,6 +11,7 @@ function check($condition, $message) {
     }
 }
 
-$gallery = Flatfile::getXmlArray('uploadset', '875c', true);
-check($gallery !== false, 'Gallery XML contract');
-echo "XML configuration smoke passed\n";
+$gallery = Configuration::getDocument('uploadset', '875c');
+check($gallery instanceof ConfigurationDocument, 'Source JSON default did not load');
+check(Configuration::getDocument('uploadset', '875c', true) === '', 'Required saved JSON did not report absence');
+echo "Source JSON defaults passed\n";

@@ -1,0 +1,9 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"settings": {
+			"title": {},
+			"description": {"_attributes": {"markdown": "true", "toolbar": "true", "lines": "12"}}
+		}
+	}
+}

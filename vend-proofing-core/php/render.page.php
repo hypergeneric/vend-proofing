@@ -89,7 +89,7 @@
 
 		protected function setHomePage () {
 			$this->home_uri = "/" . $this->flag_label_special . "/" . $this->flag_label_splash . "/";
-			$this->data_lookup["splash"] = Flatfile::getXmlArray("splash");
+			$this->data_lookup["splash"] = Configuration::getDocument("splash");
 		}
 
 		protected function populatePage ($page_obj) {
@@ -98,10 +98,10 @@
 		}
 
 		protected function isPageAuthenticated ($page_id, $page_data) {
-			global $CONFIG;
 			$password_required = $page_data->getNodeVal("data.settings.password")!="";
 			$set_authid = isset($_COOKIE[$page_id."_authid"]) ? $_COOKIE[$page_id."_authid"] : "";
-			$authenticated = $set_authid == md5( $page_id . $CONFIG->getNodeVal("setup.product_key"));
+			$expected = hash_hmac("sha256", $page_id, Database::installationSecret());
+			$authenticated = is_string($set_authid) && hash_equals($expected, $set_authid);
 			return $password_required==false || $authenticated;
 		}
 

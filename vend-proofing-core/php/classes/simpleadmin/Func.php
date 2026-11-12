@@ -2,7 +2,7 @@
 
 	class Func {
 
-		protected static function nomalizeServerVars() {
+		public static function normalizeServerVars() {
 			$default_server_values = array(
 				'SERVER_SOFTWARE' => '',
 				'REQUEST_URI' => ''
@@ -87,46 +87,6 @@
 				}
 			}
 			return $isValid;
-		}
-
-		public static function init ($bool) {
-			Func::nomalizeServerVars();
-			if ($bool==false) return;
-			global $CONFIG, $LANG;
-			$product_key = $CONFIG->getNodeVal("setup.product_key");
-			$product_key = strtolower($product_key);
-			$product_key = str_replace("-", "", $product_key);
-			// get the real install base
-			$server_port = isset($_SERVER["SERVER_PORT"]) ? $_SERVER["SERVER_PORT"] : "80";
-			$server_protocol = $server_port=="80" ? "http://" : "https://";
-			$server_name = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["HOST_NAME"];
-			if (substr($server_name, -4)==":443") $server_name = substr($server_name, 0, -4);
-			if (substr($server_name, -3)==":80") $server_name = substr($server_name, 0, -3);
-			$script_name = isset($_SERVER["SCRIPT_NAME"]) ? $_SERVER["SCRIPT_NAME"] : substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], ".php")+4);
-			if (strpos($script_name, 'cgi-bin')!==false) $script_name = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], ".php")+4);
-			if (strpos($script_name, 'system-cgi')!==false) $script_name = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], ".php")+4);
-			if (strpos($script_name, 'global-bin')!==false) $script_name = substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], ".php")+4);
-			$install_uri = $server_protocol . $server_name . $script_name;
-				$install_uri = explode("/", $install_uri);
-				array_pop($install_uri);
-				if ( SA_BASEPATH=="../../../" ) {
-					array_pop($install_uri);
-					array_pop($install_uri);
-					array_pop($install_uri);
-				}
-				$install_uri = implode("/", $install_uri);
-			if (substr($install_uri, 0, 7)=="http://") $install_uri = substr($install_uri, 7);
-			if (substr($install_uri, 0, 8)=="https://") $install_uri = substr($install_uri, 8);
-			if (substr($install_uri, 0, 4)=="www.") $install_uri = substr($install_uri, 4);
-			if (substr($install_uri, -8)=="wp-admin") $install_uri = substr($install_uri, 0, -9);
-			$install_key = md5($CONFIG->getNodeVal("setup.install_id"));
-			$install_key .= md5($CONFIG->getNodeVal("setup.product"));
-			$install_key .= md5($install_uri);
-			$install_key = sha1($install_key);
-			if ($install_key!==$product_key) {
-				print $LANG->lookup("Installation Invalid");
-				exit();
-			}
 		}
 
 		public static function homogenize($str) {

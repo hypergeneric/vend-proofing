@@ -1,6 +1,5 @@
 <?php
 
-	require_once("SimpleXML4.php");
 	require_once("Func.php");
 
 	class SideLoad {

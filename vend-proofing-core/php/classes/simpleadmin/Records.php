@@ -459,6 +459,8 @@
 
 		public static function deleteDownload (string $suid): void {
 			Database::transaction(function (PDO $db) use ($suid): void {
+				$db->prepare("DELETE FROM configuration_documents WHERE type = 'downloads' AND scope_id = ?")
+					->execute(array($suid));
 				$delete = $db->prepare("DELETE FROM download_profiles WHERE suid = ?");
 				$delete->execute(array($suid));
 			});
@@ -1145,6 +1147,7 @@
 
 				$delete = $db->prepare("DELETE FROM gallery_images WHERE gallery_id = ?");
 				$delete->execute(array($pageId));
+				$db->prepare("DELETE FROM configuration_documents WHERE scope_id = ?")->execute(array($suid));
 				$delete = $db->prepare("DELETE FROM pages WHERE id = ?");
 				$delete->execute(array($pageId));
 

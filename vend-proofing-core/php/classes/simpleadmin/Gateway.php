@@ -345,22 +345,22 @@
 				 case "save" :
 					$data = $this->getRequestVariable("data");
 					$this->respond(array(
-						"success" => Flatfile::createXmlString($type, $suid, $data),
+						"success" => Configuration::save($type, $suid, $data),
 						"invalidate" => true
 					));
 				 case "revert" :
 					$this->respond(array(
-						"success" => Flatfile::revertXmlString($type, $suid),
+						"success" => Configuration::revert($type, $suid),
 						"invalidate" => true
 					));
 				 case "defaults" :
-					$response = Flatfile::getXmlDefaults($type);
+					$response = Configuration::getDefaults($type);
 					$this->respond(array(
 						"success" => $response!==false,
 						"data" => $response
 					));
 				 case "load" :
-					$response = Flatfile::getXmlString($type, $suid);
+					$response = Configuration::getJson($type, $suid);
 					$this->respond(array(
 						"success" => $response!==false,
 						"data" => $response

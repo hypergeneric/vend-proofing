@@ -310,7 +310,7 @@
 
 		private static function discountExpired (?int $expiresAt): bool {
 			if ($expiresAt===null || $expiresAt<=0) return false;
-			$setup = Flatfile::getXmlArray("setup");
+			$setup = Configuration::getDocument("setup");
 			$setting = (string) $setup->getNodeVal("data.settings.local_timezone");
 			$timezoneName = explode(",", $setting, 2)[1] ?? "UTC";
 			$timezone = new DateTimeZone($timezoneName);

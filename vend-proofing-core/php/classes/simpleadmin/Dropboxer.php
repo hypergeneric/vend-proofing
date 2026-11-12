@@ -33,7 +33,7 @@
 						// we only want to do this once per change, so set the token to a hidden field in the xml and use the has to track it
 						$this->dropbox_token = $accessToken->getToken();
 						$this->setup->editNode("data.payment_gateway.dropbox_token", $this->dropbox_token, "hash=".md5($this->dropbox_authorization_code));
-						$this->setup->save();
+						Configuration::save("ordering", null, $this->setup->toString());
 					}
 					$app = new DropboxApp($this->dropbox_api_key, $this->dropbox_api_secret, $this->dropbox_token);	
 					$dropbox = new Dropbox($app);
@@ -384,7 +384,7 @@
 			$max_time = $max_time/2;
 			if ($max_time>15) $max_time = 15;
 			$this->max_time = $max_time;
-			$this->setup = Flatfile::getXmlArray("ordering");
+			$this->setup = Configuration::getDocument("ordering");
 			$this->dropbox_api_key = base64_decode($this->setup->getNodeVal("data.payment_gateway.dropbox_api_key"));
 			$this->dropbox_api_secret = base64_decode($this->setup->getNodeVal("data.payment_gateway.dropbox_api_secret"));
 			$this->dropbox_authorization_code = base64_decode($this->setup->getNodeVal("data.payment_gateway.dropbox_authorization_code"));

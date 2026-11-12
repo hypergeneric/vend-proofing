@@ -7,20 +7,19 @@ fixture_dir="$(mktemp -d /tmp/vend-upload84.XXXXXX)"
 trap 'rm -rf "$fixture_dir"' EXIT
 
 cp -a "$project_dir/vend-proofing-core" "$fixture_dir/"
-cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$project_dir/vend-proofing-config.xml" "$fixture_dir/"
+cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/"
 mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
 mkdir -p "$fixture_dir/vend-proofing-data/storage/875c"
-cp "$project_dir/vend-proofing-core/defaults/categoryset.xml" "$fixture_dir/vend-proofing-data/storage/875c/categoryset.xml"
-cp "$project_dir/vend-proofing-core/defaults/contact.xml" "$fixture_dir/vend-proofing-data/storage/contact.xml"
-sed -i 's#<your_email href=""></your_email>#<your_email href="owner@example.invalid">Owner</your_email>#' "$fixture_dir/vend-proofing-data/storage/contact.xml"
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/install.php" "$fixture_dir/scripts/install.php"
 cp "$project_dir/scripts/admin-account.php" "$fixture_dir/scripts/admin-account.php"
 cp "$project_dir/scripts/dev-router.php" "$fixture_dir/scripts/dev-router.php"
+cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 
 docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
 set -eu
 php scripts/install.php
+php scripts/configuration-test.php
 php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Upload Test", "CategorySet", 0]);'\''
 printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
 php -r '\''$image=imagecreatetruecolor(1200,800); imagefill($image,0,0,imagecolorallocate($image,32,96,160)); imagejpeg($image,"/tmp/upload-test.jpg",85);'\''

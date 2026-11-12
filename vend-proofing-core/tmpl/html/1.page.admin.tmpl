@@ -12,7 +12,7 @@
 
 		$auth = new Auth();
 		
-		$data_contact = 				Flatfile::getXmlArray("contact", null, true);
+		$data_contact = 				Configuration::getDocument("contact", null, true);
 		$show_setup = 					false;
 		if ($auth->sessionAuthenticated() && $data_contact) {
 			$your_email = 				$data_contact->getAttrVal("data.details.your_email.href");
@@ -101,13 +101,13 @@
 				if (count($form_errors)==0) {
 					/* save to contact xml
 						*/
-					$data_contact = Flatfile::getXmlArray("contact");
+					$data_contact = Configuration::getDocument("contact");
 					$data_contact->editNode("data", null, "default=false");
 					$data_contact->editNode("data.details.your_website_url", $your_website_name, "href=$your_website_url");
 					$data_contact->editNode("data.details.your_phone_number", $your_phone_number);
 					$data_contact->editNode("data.details.your_physical_address", $your_physical_address);
 					$data_contact->editNode("data.details.your_email", $your_name, "href=$your_email");
-					$data_contact->save( SA_DIR_STORAGE . "/contact.xml" );
+					Configuration::save("contact", null, $data_contact->toString());
 					/* redirect to the new admin
 						*/
 					$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/admin/";

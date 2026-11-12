@@ -17,7 +17,7 @@ classes.data.Auth = (function () {
 		var _provideruri = 			"intothedarkroom.com";
 		var id = 					"";
 		var lookup = 				{};
-		var xmlcache = 				{};
+		var configcache = 				{};
 		var status = 				"init";
 		var _uploader = 			null;
 		var _uploader_curent = 		{};
@@ -83,8 +83,8 @@ classes.data.Auth = (function () {
 				*/
 			if (props.action) {
 				if (props.action=="setup_defaults") {
-					if (xmlcache[props.type]!=undefined) {
-						method(true, xmlcache[props.type]);
+					if (configcache[props.type]!=undefined) {
+						method(true, configcache[props.type]);
 						return;
 					}
 				}
@@ -107,7 +107,7 @@ classes.data.Auth = (function () {
 					// console.log( [ "AUTH [" + this.id + "] IN", this.props, decodeURIComponent(data), params ]);
 					if (this.props.action) {
 						if (this.props.action=="setup_defaults") {
-							xmlcache[this.props.type] = params.r;
+							configcache[this.props.type] = params.r;
 						}
 					}
 					this.method(params.s=="true", params.r);

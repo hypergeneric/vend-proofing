@@ -141,7 +141,7 @@
 			$checkhash = array_shift($fragments);
 			$order = new Order();
 			$orderobj = $order->getOrderById($orderid);
-			$contact = Flatfile::getXmlArray("contact", null, true);
+			$contact = Configuration::getDocument("contact", null, true);
 			$ordering = $this->getData("ordering");
 			$post = array (
 				"ORDER_ID" => $orderid,

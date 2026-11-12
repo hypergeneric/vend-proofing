@@ -166,9 +166,9 @@
 					exit();
 				}
 			 case "test_mail_setup" :
-				$ordering = Flatfile::getXmlArray("ordering");
-				$contact = Flatfile::getXmlArray("contact");
-				$language = Flatfile::getXmlArray("language");
+				$ordering = Configuration::getDocument("ordering");
+				$contact = Configuration::getDocument("contact");
+				$language = Configuration::getDocument("language");
 				// pre
 				$pre = array();
 				$pre["SET_URL"] = "";
@@ -220,8 +220,8 @@
 				include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
 				exit();
 			 case "output_bulkmail" :
-				$contact = Flatfile::getXmlArray("contact");
-				$language = Flatfile::getXmlArray("language");
+				$contact = Configuration::getDocument("contact");
+				$language = Configuration::getDocument("language");
 				// incoming
 				$suid = $this->getRequestVariable("suid");
 				$template = $this->getRequestVariable("template");
@@ -238,13 +238,8 @@
 						$recipients .= "," . $obj[1];
 					}
 				}
-				$page_data = Flatfile::getXmlArray("uploadset", $suid, true);
-				if ($page_data==false) {
-					$page_data = Flatfile::getXmlArray("categoryset", $suid, true);
-				}
-				if ($page_data==false) {
-					$page_data = Flatfile::getXmlArray("dropboxset", $suid, true);
-				}
+				$pageType = Records::pageType($suid);
+				$page_data = $pageType===null ? false : Configuration::getDocument(strtolower($pageType), $suid);
 				if ($page_data) {
 					$password = $page_data->getNodeVal("data.settings.password");
 					if ($password!=null) {
@@ -501,19 +496,16 @@
 						"type" => "raw"
 					));
 				}
-				if (!is_string($suid) || !isset(Records::getSetTable("page")[$suid])) {
+				$pageType = is_string($suid) ? Records::pageType($suid) : null;
+				if ($pageType===null) {
 					http_response_code(400);
 					$this->respond(array("type" => "xml", "errors" => array("Invalid gallery identifier")));
 				}
-				$page_data = Flatfile::getXmlArray("uploadset", $suid, true);
-				if ($page_data==false) {
-					$page_data = Flatfile::getXmlArray("categoryset", $suid, true);
-				}
-				if ($page_data==false) {
-					$page_data = Flatfile::getXmlArray("dropboxset", $suid, true);
-				}
+				$page_data = Configuration::getDocument(strtolower($pageType), $suid);
 				$set_password = $page_data->getNodeVal("data.settings.password");
-				$auth_key = base64_encode($password)!==$set_password ? md5("") : md5( $suid . $CONFIG->getNodeVal("setup.product_key"));
+				$auth_key = base64_encode($password)!==$set_password
+					? md5("")
+					: hash_hmac("sha256", $suid, Database::installationSecret());
 				setcookie($suid."_authid", $auth_key);
 				$this->respond(array(
 					"type" => "raw",
@@ -543,8 +535,8 @@
 				}
 			 case "send_email" :
 				// make sure the contact page is setup
-				$contact = Flatfile::getXmlArray("contact");
-				$language = Flatfile::getXmlArray("language");
+				$contact = Configuration::getDocument("contact");
+				$language = Configuration::getDocument("language");
 				// get our form reciepients
 				$recipients = $contact->getNodeVal("data.settings.contact_form_recipients");
 				$use_autoresponder = $contact->getNodeVal("data.settings.use_autoresponder_bool")=="true";
@@ -649,7 +641,7 @@
 		}
 		
 		protected function addToMailingList ($email, $fullname) {
-			$contact = Flatfile::getXmlArray("contact", null, true);
+			$contact = Configuration::getDocument("contact", null, true);
 			if ($contact==false) {
 				return false;
 			}

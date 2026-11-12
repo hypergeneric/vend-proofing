@@ -39,6 +39,7 @@
 ?>
 	
 	var NAMESPACE = "<?php echo SA_NAMESPACE; ?>";
+	var VEND_ADMIN_CONFIG = <?php echo json_encode(AppConfig::adminConfig(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 	
 	var md = new MobileDetect(window.navigator.userAgent);
 	var IS_MOBILE = md.phone()!=null;

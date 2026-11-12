@@ -58,6 +58,26 @@ class Database {
 				$db->prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)')->execute([$version, time()]);
 			});
 		}
+		self::installationSecret();
+	}
+
+	public static function installationSecret (): string {
+		$query = self::connection()->prepare('SELECT secret FROM installation_secrets WHERE name = ?');
+		$query->execute(['gallery_access']);
+		$secret = $query->fetchColumn();
+		if ($secret !== false) return $secret;
+
+		return self::transaction(function (PDO $db): string {
+			$query = $db->prepare('SELECT secret FROM installation_secrets WHERE name = ?');
+			$query->execute(['gallery_access']);
+			$secret = $query->fetchColumn();
+			if ($secret !== false) return $secret;
+
+			$secret = bin2hex(random_bytes(32));
+			$db->prepare('INSERT INTO installation_secrets (name, secret) VALUES (?, ?)')
+				->execute(['gallery_access', $secret]);
+			return $secret;
+		});
 	}
 
 	public static function transaction (callable $work): mixed {

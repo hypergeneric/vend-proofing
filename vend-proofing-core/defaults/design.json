@@ -1,0 +1,17 @@
+{
+	"data": {
+		"_attributes": {"default": "true"},
+		"design": {
+			"color_theme": {"_value": "light", "_attributes": {"options": "color_themes.theme"}},
+			"splash_logo_asset": {"_attributes": {"width": "", "height": ""}},
+			"splash_logo_margin_num": {"_value": "0", "_attributes": {"max": "20"}},
+			"splash_logo_retina_bool": {"_value": "false"},
+			"invoice_logo_asset": {"_attributes": {"width": "", "height": ""}},
+			"font_asset": {"_attributes": {"width": "", "height": "", "extensions": "zip"}},
+			"font_style": {"_value": "sans", "_attributes": {"options": "font_face.face"}},
+			"font_size_scale_num": {"_value": "0", "_attributes": {"min": "-100", "max": "100"}},
+			"tile_gutter_width_num": {"_value": "5", "_attributes": {"max": "10"}},
+			"highlight_color": {"_value": "0x993300"}
+		}
+	}
+}
