@@ -19,8 +19,8 @@ Thumbs.db
 *.log
 
 # ignore specific themes
-vend-proofing-data/*
-!vend-proofing-data/.htaccess
+dist/vend-proofing-data/*
+!dist/vend-proofing-data/.htaccess
 
 # ignore node/grunt dependency directories
 node_modules/

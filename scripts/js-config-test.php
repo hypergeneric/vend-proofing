@@ -44,7 +44,7 @@ class JsConfigFixture {
 	public function render($type) {
 		global $LANG;
 		ob_start();
-		include __DIR__ . '/../vend-proofing-core/tmpl/html/2.config-' . $type . '.tmpl';
+		include __DIR__ . '/../dist/vend-proofing-core/tmpl/html/2.config-' . $type . '.tmpl';
 		$html = ob_get_clean();
 		if (substr_count($html, '</script>') !== 1) throw new RuntimeException('Unsafe script closing tag');
 		if (str_contains($html, 'must-never-appear')) throw new RuntimeException('Private configuration leaked');

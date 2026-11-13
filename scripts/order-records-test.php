@@ -4,6 +4,7 @@
 define('SA_DIR_AUTH', 'vend-proofing-data/auth');
 define('SA_DIR_STORAGE', 'vend-proofing-data/storage');
 define('SA_DIR_DEFAULTS', 'vend-proofing-core/defaults');
+define('SA_DIR_LANG', 'vend-proofing-core/lang');
 spl_autoload_register(function ($name) { require 'vend-proofing-core/php/classes/simpleadmin/' . $name . '.php'; });
 function checkOrder ($condition, $message) { if (!$condition) throw new RuntimeException($message); }
 $gallery = $argv[1]; $image = $argv[2];

@@ -2,9 +2,9 @@
 
 // Disposable fixture only. Run after scripts/install.php in the PHP 8.4 smoke copy.
 if (PHP_SAPI !== 'cli') exit(2);
-define('SA_DIR_AUTH', dirname(__DIR__) . '/vend-proofing-data/auth');
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/Database.php';
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/PhpSessionStore.php';
+define('SA_DIR_AUTH', dirname(__DIR__) . '/dist/vend-proofing-data/auth');
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/Database.php';
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/PhpSessionStore.php';
 
 function check (bool $condition, string $message): void {
 	if (!$condition) throw new RuntimeException($message);
@@ -67,7 +67,7 @@ try {
 
 $processes = [];
 $worker = __DIR__ . '/foundation-worker.php';
-$dataDir = dirname(__DIR__) . '/vend-proofing-data';
+$dataDir = dirname(__DIR__) . '/dist/vend-proofing-data';
 for ($i = 0; $i < 24; ++$i) {
 	$process = proc_open([PHP_BINARY, $worker, $dataDir], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
 	check(is_resource($process), 'Could not start identifier worker');

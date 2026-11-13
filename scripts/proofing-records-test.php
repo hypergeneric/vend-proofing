@@ -1,9 +1,9 @@
 <?php
 
 define("SA_DIR_AUTH", "vend-proofing-data/auth");
-require __DIR__ . "/../vend-proofing-core/php/classes/simpleadmin/Database.php";
-require __DIR__ . "/../vend-proofing-core/php/classes/simpleadmin/Records.php";
-require __DIR__ . "/../vend-proofing-core/php/classes/simpleadmin/Proofing.php";
+require __DIR__ . "/../dist/vend-proofing-core/php/classes/simpleadmin/Database.php";
+require __DIR__ . "/../dist/vend-proofing-core/php/classes/simpleadmin/Records.php";
+require __DIR__ . "/../dist/vend-proofing-core/php/classes/simpleadmin/Proofing.php";
 
 function checkProofing ($condition, $message) {
 	if (!$condition) throw new RuntimeException($message);

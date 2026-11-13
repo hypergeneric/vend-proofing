@@ -4,7 +4,7 @@ const vm = require('node:vm');
 const { default: MagicString, Bundle } = require('magic-string');
 
 const root = path.resolve(__dirname, '..');
-const output = path.join(root, 'vend-proofing-core/js');
+const output = path.join(root, 'dist/vend-proofing-core/js');
 
 function buildJs({ check = false } = {}) {
 	const configPath = path.join(root, 'assets.config.js');

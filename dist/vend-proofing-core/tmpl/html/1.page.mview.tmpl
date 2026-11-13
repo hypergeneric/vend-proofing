@@ -1,0 +1,17 @@
+<?php
+
+	$fragments = explode("/", trim($this->query_original, "/"));
+	
+?>
+<!DOCTYPE html>
+<meta name="viewport" content="user-scalable=0"/>
+<html>
+<head>
+    <script src="http://viewer.marmoset.co/main/marmoset.js"></script>
+</head>
+<body>
+    <script>
+        marmoset.embed( '<?php echo SA_DIR_STORAGE . "/" . $fragments[1] . "/" . $fragments[2] ; ?>', { width: 1200, height: 720, autoStart: true, fullFrame: true, pagePreset: false } );
+    </script>
+</body>
+</html>

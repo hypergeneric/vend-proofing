@@ -7,7 +7,7 @@ $root = dirname(__DIR__);
 $args = $argv;
 array_shift($args);
 if (count($args) === 0) {
-	$dataDir = $root . '/vend-proofing-data';
+	$dataDir = $root . '/dist/vend-proofing-data';
 } elseif (count($args) === 2 && $args[0] === '--data-dir') {
 	$dataDir = $args[1];
 } else {
@@ -16,7 +16,7 @@ if (count($args) === 0) {
 }
 
 define('SA_DIR_AUTH', rtrim($dataDir, '/') . '/auth');
-require $root . '/vend-proofing-core/php/classes/simpleadmin/Database.php';
+require $root . '/dist/vend-proofing-core/php/classes/simpleadmin/Database.php';
 
 try {
 	Database::migrate();

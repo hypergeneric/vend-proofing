@@ -5,7 +5,7 @@ const postcss = require('postcss');
 const postcssUrl = require('postcss-url');
 
 const root = path.resolve(__dirname, '..');
-const output = path.join(root, 'vend-proofing-core/css');
+const output = path.join(root, 'dist/vend-proofing-core/css');
 
 async function testAssets() {
 	const expected = ['admin.css', 'admin-shell.css', 'invoice.css', 'invoice-print.css', 'storefront.css'].sort();
@@ -19,15 +19,15 @@ async function testAssets() {
 		await postcss([postcssUrl({
 			url: (asset) => {
 				assert.ok(fs.existsSync(asset.absolutePath), `${name}: missing ${asset.url}`);
-				assert.ok(asset.absolutePath.startsWith(path.join(root, 'vend-proofing-core') + path.sep), `${name}: asset outside core`);
-				assert.ok(!asset.absolutePath.startsWith(path.join(root, 'vend-proofing-core/admin') + path.sep), `${name}: asset still in legacy admin directory`);
+				assert.ok(asset.absolutePath.startsWith(path.join(root, 'dist/vend-proofing-core') + path.sep), `${name}: asset outside core`);
+				assert.ok(!asset.absolutePath.startsWith(path.join(root, 'dist/vend-proofing-core/admin') + path.sep), `${name}: asset still in legacy admin directory`);
 				assetCount++;
 				return asset.url;
 			},
 		})]).process(tree, { from: filename, map: false });
 	}
 	for (const name of ['admin', 'content', 'credits', 'eula', 'init', 'order']) {
-		const html = fs.readFileSync(path.join(root, 'vend-proofing-core/tmpl/html', `1.page.${name}.tmpl`), 'utf8');
+		const html = fs.readFileSync(path.join(root, 'dist/vend-proofing-core/tmpl/html', `1.page.${name}.tmpl`), 'utf8');
 		const markup = html.replace(/<\?php[\s\S]*?\?>/g, 'PHP');
 		const links = markup.match(/<link\b[^>]*>/g) || [];
 		for (const link of links.filter((link) => /rel="stylesheet"/.test(link))) {

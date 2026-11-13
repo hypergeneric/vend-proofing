@@ -8,6 +8,8 @@ Vend has three documentation audiences:
 | Developers | [Development guide](DEVELOPMENT.md) | Run, test, and change Vend |
 | Coding agents | [AGENTS.md](../AGENTS.md) | Repository instructions and documentation alignment |
 
+For source layout, build/watch commands, PHP runtime configuration, and stale-watcher troubleshooting, use [Front-end asset build](DEVELOPMENT.md#front-end-asset-build). The [paused vendor cleanup](DEVELOPMENT.md#paused-vendor-cleanup) section records the agreed next-step boundary.
+
 Project records:
 
 - [Product discovery and technical audit](VEND-PRODUCT-DISCOVERY-AND-TECHNICAL-AUDIT.md)

@@ -56,7 +56,7 @@ function serve(done) {
 }
 
 function watchTemplates() {
-	return gulp.watch(['vend-proofing-core/tmpl/html/**/*.tmpl'], reload);
+	return gulp.watch(['dist/vend-proofing-core/tmpl/html/**/*.tmpl'], reload);
 }
 
 exports.css = css;

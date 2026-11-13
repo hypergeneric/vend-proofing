@@ -3,6 +3,7 @@
 // Helpers for the network-disabled basic-set fixture; never load real installation data.
 define('SA_DIR_AUTH', 'vend-proofing-data/auth');
 define('SA_DIR_DEFAULTS', 'vend-proofing-core/defaults');
+define('SA_DIR_LANG', 'vend-proofing-core/lang');
 spl_autoload_register(function ($name) { require 'vend-proofing-core/php/classes/simpleadmin/' . $name . '.php'; });
 $gallery = $argv[1];
 if (($argv[2] ?? '')==='cleanup') {

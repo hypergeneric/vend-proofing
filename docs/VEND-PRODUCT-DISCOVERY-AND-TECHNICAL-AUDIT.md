@@ -6,6 +6,8 @@ Scope: read-only product archaeology and preliminary technical/security assessme
 
 This report preserves the findings of the initial audit and incorporates the original developer's subsequent clarifications. Where those clarifications change a recommendation, the revised interpretation is stated explicitly. It is an assessment and proposed roadmap, not authorization to implement changes.
 
+> Asset source paths and PHP assembly routes below describe the original audit snapshot. For current source locations, static builds, and runtime configuration, use [Front-end asset build](DEVELOPMENT.md#front-end-asset-build).
+
 ## Evidence and scope
 
 - **Source verified:** established by inspecting code, configuration, or record structure.
@@ -103,7 +105,7 @@ Status terminology:
 | Maintenance | Cache clearing, system/PHP information, backup archive, template refresh, update UI, scheduled reminders/purge | **Implemented, mixed readiness.** Backup is incomplete for recovery; some tools expose unsafe surfaces or historical services. |
 | Historical integrations | Membership hub, WordPress authentication hooks, YouTube/Vimeo/Sketchfab helpers, Flash media | **Uncertain or legacy.** Remove unnecessary integration paths from the supported product. |
 
-Key evidence: [content configuration](../vend-proofing-config.xml), [gallery settings](../vend-proofing-core/defaults/uploadset.xml), [ordering settings](../vend-proofing-core/defaults/ordering.xml), [download settings](../vend-proofing-core/defaults/downloads.xml).
+Key evidence: [content configuration](../dist/vend-proofing-config.xml), [gallery settings](../dist/vend-proofing-core/defaults/uploadset.xml), [ordering settings](../dist/vend-proofing-core/defaults/ordering.xml), [download settings](../dist/vend-proofing-core/defaults/downloads.xml).
 
 Less-visible capabilities include folder-derived categories, formula pricing, session inspection, production output, download resets, expiration mail, custom contact forms, and order statistics.
 
@@ -125,9 +127,9 @@ Products use the package concept without format allocations. These screenshots a
 
 The public wrappers are `index.php` → `vend-proofing-index.php`, `vend-proofing-gateway.php`, and `vend-proofing-resample.php`.
 
-[common.php](../vend-proofing-core/php/common.php) defines paths/permissions, includes getID3/PclZip/Composer dependencies, registers the framework autoloader, loads configuration XML, and initializes language/server handling.
+[common.php](../dist/vend-proofing-core/php/common.php) defines paths/permissions, includes getID3/PclZip/Composer dependencies, registers the framework autoloader, loads configuration XML, and initializes language/server handling.
 
-`Page` parses query-path routes such as `?/order/...`, chooses HTML/JS/CSS/XML output, loads configuration/tables, and includes templates. `LocalPage` supplies Vend-specific gallery identification, password, expiration, and homepage behavior. Evidence: [Page.php:292](../vend-proofing-core/php/classes/simpleadmin/Page.php#L292), [render.page.php:90](../vend-proofing-core/php/render.page.php#L90).
+`Page` parses query-path routes such as `?/order/...`, chooses HTML/JS/CSS/XML output, loads configuration/tables, and includes templates. `LocalPage` supplies Vend-specific gallery identification, password, expiration, and homepage behavior. Evidence: [Page.php:292](../dist/vend-proofing-core/php/classes/simpleadmin/Page.php#L292), [render.page.php:90](../dist/vend-proofing-core/php/render.page.php#L90).
 
 ### Generic Gateway versus LocalGateway
 
@@ -141,7 +143,7 @@ Execution:
 4. Dispatch public actions.
 5. Return XML, tabular text, raw text, or file content.
 
-Subclass handlers fall back to the parent. Responses generally terminate execution, explaining switch cases that deliberately omit `break`. Private/public classification is a useful seam, but public business actions still need narrowly defined permissions. See [Gateway.php:11](../vend-proofing-core/php/classes/simpleadmin/Gateway.php#L11) and [gateway.php:496](../vend-proofing-core/php/gateway.php#L496).
+Subclass handlers fall back to the parent. Responses generally terminate execution, explaining switch cases that deliberately omit `break`. Private/public classification is a useful seam, but public business actions still need narrowly defined permissions. See [Gateway.php:11](../dist/vend-proofing-core/php/classes/simpleadmin/Gateway.php#L11) and [gateway.php:496](../dist/vend-proofing-core/php/gateway.php#L496).
 
 ### Flat-file storage and formats
 
@@ -162,13 +164,13 @@ Subclass handlers fall back to the parent. Responses generally terminate executi
 
 Tables are newline-separated rows and tab-separated fields, keyed by the first column. Indexes are application-maintained tables and a sequential hexadecimal ID allocator rather than database indexes. XML falls back to default files when local configuration does not exist.
 
-[Flatfile.php:426](../vend-proofing-core/php/classes/simpleadmin/Flatfile.php#L426) is a plausible preservation boundary. It reads and rewrites entire tables. `Filesystem::makeFile()` locks after opening the target in truncating mode; the earlier read and later write are not one transaction. Lost updates and interrupted writes remain risks despite the existing `flock`. See [Filesystem.php:56](../vend-proofing-core/php/classes/simpleadmin/Filesystem.php#L56).
+[Flatfile.php:426](../dist/vend-proofing-core/php/classes/simpleadmin/Flatfile.php#L426) is a plausible preservation boundary. It reads and rewrites entire tables. `Filesystem::makeFile()` locks after opening the target in truncating mode; the earlier read and later write are not one transaction. Lost updates and interrupted writes remain risks despite the existing `flock`. See [Filesystem.php:56](../dist/vend-proofing-core/php/classes/simpleadmin/Filesystem.php#L56).
 
 ### PHP/JavaScript communication
 
 This is not a JSON REST application. Templates emit HTML, JavaScript configuration, localized strings, and pricing. JavaScript posts named Gateway actions. Responses include XML envelopes and compact tabular strings. Positional commerce records are shared by JavaScript, PHP, invoice output, and delivery code.
 
-That record contract is tightly coupled and should be documented before changing it. [Session.js:34](../vend-proofing-core/js/vend/Session.js#L34) explicitly lists cart/download/favorite/package fields.
+That record contract is tightly coupled and should be documented before changing it. [Session.js:34](../dist/vend-proofing-core/js/vend/Session.js#L34) explicitly lists cart/download/favorite/package fields.
 
 ### Customer application
 
@@ -184,7 +186,7 @@ Session responses are parsed into lookup arrays and hashes, then notify componen
 
 ### Administration lifecycle
 
-Administration is a separate SPA with applications, panels, dialogs, XML-driven controls, and hash navigation. `Admin` destroys the previous application and initializes the next. Components register/unregister DOM and custom event handlers. See [Admin.js:296](../vend-proofing-core/admin/js/classes/Admin.js#L296) and [History.js](../vend-proofing-core/admin/js/classes/helpers/History.js).
+Administration is a separate SPA with applications, panels, dialogs, XML-driven controls, and hash navigation. `Admin` destroys the previous application and initializes the next. Components register/unregister DOM and custom event handlers. See [Admin.js:296](../dist/vend-proofing-core/admin/js/classes/Admin.js#L296) and [History.js](../dist/vend-proofing-core/admin/js/classes/helpers/History.js).
 
 This is comprehensible architecture. It has no inherent need for replacement with a current frontend framework.
 
@@ -196,7 +198,7 @@ This is comprehensible architecture. It has no inherent need for replacement wit
 - XML attributes describe control types, options, encoding, privacy, and editor behavior.
 - Admin language lookup is separate from editable storefront language XML and template-generated JavaScript localization.
 
-Evidence: [storefront assembly](../vend-proofing-core/tmpl/js/1.page.vend.tmpl), [admin assembly](../vend-proofing-core/tmpl/js/1.page.admin.tmpl), [Lang.php](../vend-proofing-core/php/classes/simpleadmin/Lang.php), [language defaults](../vend-proofing-core/defaults/language.xml).
+Evidence: [storefront assembly](../dist/vend-proofing-core/tmpl/js/1.page.vend.tmpl), [admin assembly](../dist/vend-proofing-core/tmpl/js/1.page.admin.tmpl), [Lang.php](../dist/vend-proofing-core/php/classes/simpleadmin/Lang.php), [language defaults](../dist/vend-proofing-core/defaults/language.xml).
 
 Build-time asset generation would permit immutable application containers without changing the interface.
 
@@ -226,11 +228,11 @@ The `simpleadmin` directory is not exclusively reusable framework code: `Order` 
 8. `image.table`, `set.category.table`, and the global page image count are updated.
 9. Subsequent viewing generates derivatives on demand.
 
-Evidence: [Upload.js:70](../vend-proofing-core/admin/js/classes/dialogs/Upload.js#L70), [Upload.js:343](../vend-proofing-core/admin/js/classes/dialogs/Upload.js#L343), [Flatfile.php:233](../vend-proofing-core/php/classes/simpleadmin/Flatfile.php#L233), [gateway.php:1203](../vend-proofing-core/php/gateway.php#L1203).
+Evidence: [Upload.js:70](../dist/vend-proofing-core/admin/js/classes/dialogs/Upload.js#L70), [Upload.js:343](../dist/vend-proofing-core/admin/js/classes/dialogs/Upload.js#L343), [Flatfile.php:233](../dist/vend-proofing-core/php/classes/simpleadmin/Flatfile.php#L233), [gateway.php:1203](../dist/vend-proofing-core/php/gateway.php#L1203).
 
 Arbitrary depth is traversed but flattened into categories; repeated leaf names can collide. The upload path retains originals. A resumable byte-chunk upload protocol was not found.
 
-ZIP sets have a separate pipeline: `verify_zip_file` inspects `uploads/<suid>.zip`, writes category/archive-entry indexes, and later extracts individual entries for previews. Removing archive paths is a real mitigation against ordinary ZIP traversal. Expansion/file-count/pixel limits still need attention. Root-level files and archives with unusual directory entries require fixtures. See [gateway.php:142](../vend-proofing-core/php/gateway.php#L142).
+ZIP sets have a separate pipeline: `verify_zip_file` inspects `uploads/<suid>.zip`, writes category/archive-entry indexes, and later extracts individual entries for previews. Removing archive paths is a real mitigation against ordinary ZIP traversal. Expansion/file-count/pixel limits still need attention. Root-level files and archives with unusual directory entries require fixtures. See [gateway.php:142](../dist/vend-proofing-core/php/gateway.php#L142).
 
 The 20–50 MB original size supplied by the developer makes memory and upload behavior a release concern. Compressed file size is not a reliable bound on decoded image memory. Test dimensions, processing peak memory, timeout behavior, derivative count, and inode growth—not just total disk capacity.
 
@@ -245,7 +247,7 @@ The 20–50 MB original size supplied by the developer makes memory and upload b
 7. The same email resumes the same session.
 8. `list_session_table` restores favorites/cart data.
 
-Evidence: [Display.js:447](../vend-proofing-core/js/vend/content/Display.js#L447), [gateway.php:941](../vend-proofing-core/php/gateway.php#L941), [Session.js:253](../vend-proofing-core/js/vend/Session.js#L253).
+Evidence: [Display.js:447](../dist/vend-proofing-core/js/vend/content/Display.js#L447), [gateway.php:941](../dist/vend-proofing-core/php/gateway.php#L941), [Session.js:253](../dist/vend-proofing-core/js/vend/Session.js#L253).
 
 **Preserve email-only entry unless the developer chooses otherwise.** It is intentionally a convenient proofing identity, not a verified customer account. Restrict requests to permitted session operations and gallery context; do not allow arbitrary table names/paths. Ordering and download authorization need their own stronger boundaries.
 
@@ -258,7 +260,7 @@ Evidence: [Display.js:447](../vend-proofing-core/js/vend/content/Display.js#L447
 5. Canvas applies mono/sepia preview matrices.
 6. Cart rows retain format/aspect, orientation, offsets, toning, paper, modifiers, comments, quantity, and monetary values.
 
-Evidence: [Sidebar.js:104](../vend-proofing-core/js/vend/overlay/Sidebar.js#L104), [Browser.js:77](../vend-proofing-core/js/vend/overlay/Browser.js#L77), [Func.js:20](../vend-proofing-core/js/vend/helpers/Func.js#L20).
+Evidence: [Sidebar.js:104](../dist/vend-proofing-core/js/vend/overlay/Sidebar.js#L104), [Browser.js:77](../dist/vend-proofing-core/js/vend/overlay/Browser.js#L77), [Func.js:20](../dist/vend-proofing-core/js/vend/helpers/Func.js#L20).
 
 **The selection records production instructions.** PHP generates resized/cropped preview derivatives and order output presents the selections. No complete export pipeline producing final print-resolution cropped/toned files was found. The developer confirms that manual fulfillment was intended; automatic export is optional future work.
 
@@ -273,7 +275,7 @@ Evidence: [Sidebar.js:104](../vend-proofing-core/js/vend/overlay/Sidebar.js#L104
 7. Email, invoice, and production output use those saved records.
 8. The photographer fulfills prints manually.
 
-Evidence: [gateway.php:523](../vend-proofing-core/php/gateway.php#L523), [Order.php:301](../vend-proofing-core/php/classes/simpleadmin/Order.php#L301), [Order.php:518](../vend-proofing-core/php/classes/simpleadmin/Order.php#L518).
+Evidence: [gateway.php:523](../dist/vend-proofing-core/php/gateway.php#L523), [Order.php:301](../dist/vend-proofing-core/php/classes/simpleadmin/Order.php#L301), [Order.php:518](../dist/vend-proofing-core/php/classes/simpleadmin/Order.php#L518).
 
 The critical gap is authoritative pricing/payment state, not the absence of a print lab. Server-created, durable quotes can preserve the intended frozen-price behavior. Offline order acceptance must remain distinguishable from payment confirmation.
 
@@ -291,19 +293,19 @@ The critical gap is authoritative pricing/payment state, not the absence of a pr
 10. Shared links are returned; flags retain progress and link issuance count.
 11. Reset/notification and purge paths manage later delivery.
 
-Evidence: [Dropboxer.php:145](../vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L145), [Dropboxer.php:191](../vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L191), [Dropboxer.php:283](../vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L283), [order processing:106](../vend-proofing-core/tmpl/html/1.page.order.tmpl#L106).
+Evidence: [Dropboxer.php:145](../dist/vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L145), [Dropboxer.php:191](../dist/vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L191), [Dropboxer.php:283](../dist/vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L283), [order processing:106](../dist/vend-proofing-core/tmpl/html/1.page.order.tmpl#L106).
 
 **Actual files are delivered here:** originals are copied, and local previews provide lower-resolution delivery. Physical-print crop/toning selections are not applied by this path. The developer confirms historical success; present API operation remains untested.
 
-Synchronization also recreates image records and deletes existing session records. That destructive refresh behavior needs explicit tests and a decision about preserving in-progress customer selections. See [Dropboxer.php:51](../vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L51).
+Synchronization also recreates image records and deletes existing session records. That destructive refresh behavior needs explicit tests and a decision about preserving in-progress customer selections. See [Dropboxer.php:51](../dist/vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L51).
 
 #### What download limits were found?
 
 This is a specific implementation detail, not a proposed requirement:
 
-- [2.order.invoice.tmpl:341](../vend-proofing-core/tmpl/html/2.order.invoice.tmpl#L341) checks whether the first order flag is less than **3**.
+- [2.order.invoice.tmpl:341](../dist/vend-proofing-core/tmpl/html/2.order.invoice.tmpl#L341) checks whether the first order flag is less than **3**.
 - After that threshold, the UI offers a reset path instead of the ordinary download-link action.
-- [Dropboxer::getShareLinks():335](../vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L335) increments that flag when it returns shared links.
+- [Dropboxer::getShareLinks():335](../dist/vend-proofing-core/php/classes/simpleadmin/Dropboxer.php#L335) increments that flag when it returns shared links.
 - `resetDownloadCount()` sets the flag back to zero.
 - Flags are stored in the Dropbox order folder's `info.txt`.
 
@@ -320,7 +322,7 @@ The initial audit treated weak download enforcement as a security issue in broad
 5. Storefront rendering reads those groups and emits browser configuration.
 6. Discount validation reads current local/global discount tables.
 
-Evidence: [Gateway.php:886](../vend-proofing-core/php/classes/simpleadmin/Gateway.php#L886), [2.content.display.tmpl:114](../vend-proofing-core/tmpl/html/2.content.display.tmpl#L114), [Order.php:203](../vend-proofing-core/php/classes/simpleadmin/Order.php#L203).
+Evidence: [Gateway.php:886](../dist/vend-proofing-core/php/classes/simpleadmin/Gateway.php#L886), [2.content.display.tmpl:114](../dist/vend-proofing-core/tmpl/html/2.content.display.tmpl#L114), [Order.php:203](../dist/vend-proofing-core/php/classes/simpleadmin/Order.php#L203).
 
 Newly rendered pages receive current definitions. Open browsers and saved cart rows can retain earlier values. The developer intended durable prices/options, probably frozen in time. **Do not automatically replace that behavior with checkout repricing.** Instead, test the historical behavior and select a server-authorized quote/version policy that preserves the chosen durability guarantee. Arbitrary client-supplied price snapshots remain unsafe regardless of the policy.
 
@@ -357,7 +359,7 @@ References: [PHP 8 migration](https://www.php.net/manual/en/migration80.incompat
 | Markdown/Mobile Detect | 1.9.1 / 2.8.39 | Update as needed with rendering/device regression tests. |
 | getID3/PclZip | Bundled source | Review parser limits and active paths; exclude demos/helper executables from runtime distribution. |
 
-Evidence: [composer.json](../vend-proofing-core/php/composer.json), [composer.lock](../vend-proofing-core/php/composer.lock). External references: [PHPMailer support policy](https://github.com/PHPMailer/PHPMailer), [Stripe integration guidance](https://support.stripe.com/questions/check-your-integration-for-strong-customer-authentication-%28sca%29-compliance?locale=en-GB).
+Evidence: [composer.json](../dist/vend-proofing-core/php/composer.json), [composer.lock](../dist/vend-proofing-core/php/composer.lock). External references: [PHPMailer support policy](https://github.com/PHPMailer/PHPMailer), [Stripe integration guidance](https://support.stripe.com/questions/check-your-integration-for-strong-customer-authentication-%28sca%29-compliance?locale=en-GB).
 
 **Dropbox:** the application exchanges a code once and reuses its stored access token indefinitely. No refresh lifecycle exists. New installations need current short-lived access tokens and offline refresh handling. This is not an API-v1-only implementation: several calls already use API-v2-style endpoints. See [Dropbox authorization](https://docs.dropboxapi.com/dropbox-api/docs/get-started/authorization).
 
@@ -386,19 +388,19 @@ Prototype functions, closures, canvas, and hash navigation remain viable primiti
 
 | Severity | Finding and source evidence | Confidence/qualification |
 |---|---|---|
-| **Critical** | Standalone admin token validation compares a client cookie to `md5(product_key)` and `sha1(client-supplied token)` without a server-side authenticated session. Supplied config has an empty key. [Auth.php:114](../vend-proofing-core/php/classes/simpleadmin/Auth.php#L114) | **Confirmed design flaw.** An unknown deployment key changes prerequisites, not the underlying design. |
-| **Critical** | Public `get_public_asset` applies `basename()` to filename but interpolates unchecked `folder`, then streams any existing file. [gateway.php:500](../vend-proofing-core/php/gateway.php#L500) | **Confirmed traversal/file read.** Filesystem permissions bound exposure; web directory rules do not constrain PHP reads. |
-| **Critical** | Public session actions interpolate gallery/table identifiers without ownership or session-table restrictions. [gateway.php:598](../vend-proofing-core/php/gateway.php#L598), [792](../vend-proofing-core/php/gateway.php#L792) | **Confirmed disclosure/tampering/path exposure.** Distinct from intentional email-only proofing. |
-| **Critical** | Browser supplies monetary session/order fields; Stripe charges submitted `gross`. [Order.php:294](../vend-proofing-core/php/classes/simpleadmin/Order.php#L294), [584](../vend-proofing-core/php/classes/simpleadmin/Order.php#L584) | **Confirmed.** Server-created durable quotes can preserve frozen pricing safely. |
-| **High** | Image requests control dimensions/watermark/cache; hex `hash` is not a signature; original output is possible. [Graphic.php:70](../vend-proofing-core/php/classes/simpleadmin/Graphic.php#L70), [540](../vend-proofing-core/php/classes/simpleadmin/Graphic.php#L540) | **Confirmed.** Endpoint does not enforce gallery access. |
-| **High** | Dropbox processing executes before invoice access checks; `next`/`download` use URL order IDs; reset uses `md5(orderid)`. [1.page.order.tmpl:106](../vend-proofing-core/tmpl/html/1.page.order.tmpl#L106) | **Confirmed missing checks.** Impact depends on configuration/existing order folders. |
-| **High** | PayPal success defaults true; an established socket with neither recognized reply can leave it true. No authoritative recipient/amount/currency reconciliation or transaction deduplication is evident. [Order.php:653](../vend-proofing-core/php/classes/simpleadmin/Order.php#L653) | **Confirmed logic defects.** Specific network/provider exploitation conditions untested. |
-| **High** | Admin passwords use fast unsalted hash composition; gallery passwords are base64; invoice access uses email MD5. [Gateway.php:82](../vend-proofing-core/php/classes/simpleadmin/Gateway.php#L82), [invoice check:248](../vend-proofing-core/tmpl/html/1.page.order.tmpl#L248) | **Confirmed.** Separate administrator/order security from intentionally convenient proofing identity. |
-| **High** | Persisted comment is inserted unescaped into constructed `<textarea>` HTML. [Sidebar.js:227](../vend-proofing-core/js/vend/overlay/Sidebar.js#L227) | **Confirmed unsafe sink.** Browser exploit not executed; some invoice fields are correctly escaped. |
-| **High operational risk** | Table/ID read–modify–write lacks transaction-wide locking; files truncate before locking. [Flatfile.php:7](../vend-proofing-core/php/classes/simpleadmin/Flatfile.php#L7), [Filesystem.php:56](../vend-proofing-core/php/classes/simpleadmin/Filesystem.php#L56) | **Confirmed correctness defect.** Can affect orders, sessions, identifiers, discount usage. |
+| **Critical** | Standalone admin token validation compares a client cookie to `md5(product_key)` and `sha1(client-supplied token)` without a server-side authenticated session. Supplied config has an empty key. [Auth.php:114](../dist/vend-proofing-core/php/classes/simpleadmin/Auth.php#L114) | **Confirmed design flaw.** An unknown deployment key changes prerequisites, not the underlying design. |
+| **Critical** | Public `get_public_asset` applies `basename()` to filename but interpolates unchecked `folder`, then streams any existing file. [gateway.php:500](../dist/vend-proofing-core/php/gateway.php#L500) | **Confirmed traversal/file read.** Filesystem permissions bound exposure; web directory rules do not constrain PHP reads. |
+| **Critical** | Public session actions interpolate gallery/table identifiers without ownership or session-table restrictions. [gateway.php:598](../dist/vend-proofing-core/php/gateway.php#L598), [792](../dist/vend-proofing-core/php/gateway.php#L792) | **Confirmed disclosure/tampering/path exposure.** Distinct from intentional email-only proofing. |
+| **Critical** | Browser supplies monetary session/order fields; Stripe charges submitted `gross`. [Order.php:294](../dist/vend-proofing-core/php/classes/simpleadmin/Order.php#L294), [584](../dist/vend-proofing-core/php/classes/simpleadmin/Order.php#L584) | **Confirmed.** Server-created durable quotes can preserve frozen pricing safely. |
+| **High** | Image requests control dimensions/watermark/cache; hex `hash` is not a signature; original output is possible. [Graphic.php:70](../dist/vend-proofing-core/php/classes/simpleadmin/Graphic.php#L70), [540](../dist/vend-proofing-core/php/classes/simpleadmin/Graphic.php#L540) | **Confirmed.** Endpoint does not enforce gallery access. |
+| **High** | Dropbox processing executes before invoice access checks; `next`/`download` use URL order IDs; reset uses `md5(orderid)`. [1.page.order.tmpl:106](../dist/vend-proofing-core/tmpl/html/1.page.order.tmpl#L106) | **Confirmed missing checks.** Impact depends on configuration/existing order folders. |
+| **High** | PayPal success defaults true; an established socket with neither recognized reply can leave it true. No authoritative recipient/amount/currency reconciliation or transaction deduplication is evident. [Order.php:653](../dist/vend-proofing-core/php/classes/simpleadmin/Order.php#L653) | **Confirmed logic defects.** Specific network/provider exploitation conditions untested. |
+| **High** | Admin passwords use fast unsalted hash composition; gallery passwords are base64; invoice access uses email MD5. [Gateway.php:82](../dist/vend-proofing-core/php/classes/simpleadmin/Gateway.php#L82), [invoice check:248](../dist/vend-proofing-core/tmpl/html/1.page.order.tmpl#L248) | **Confirmed.** Separate administrator/order security from intentionally convenient proofing identity. |
+| **High** | Persisted comment is inserted unescaped into constructed `<textarea>` HTML. [Sidebar.js:227](../dist/vend-proofing-core/js/vend/overlay/Sidebar.js#L227) | **Confirmed unsafe sink.** Browser exploit not executed; some invoice fields are correctly escaped. |
+| **High operational risk** | Table/ID read–modify–write lacks transaction-wide locking; files truncate before locking. [Flatfile.php:7](../dist/vend-proofing-core/php/classes/simpleadmin/Flatfile.php#L7), [Filesystem.php:56](../dist/vend-proofing-core/php/classes/simpleadmin/Filesystem.php#L56) | **Confirmed correctness defect.** Can affect orders, sessions, identifiers, discount usage. |
 | **Medium–High** | Public image work, contact mail, sessions, and enabled cron lack evident rate/work limits. | **Confirmed missing safeguards; capacity impact unmeasured.** Cron sends reminders and purges Dropbox order folders. |
-| **Medium** | Public `system_phpinfo` exposes `phpinfo()` in non-hub installations. [Gateway.php:193](../vend-proofing-core/php/classes/simpleadmin/Gateway.php#L193) | **Confirmed information disclosure.** |
-| **Medium–High, conditional** | Sideload fetches follow redirects without destination restrictions/finite connect timeout; custom JSON conversion uses `eval`. [SideLoad.php:122](../vend-proofing-core/php/classes/simpleadmin/SideLoad.php#L122) | Unsafe primitives verified. SSRF/code-execution exploitability depends on reachable branches and attacker influence; not proven. |
+| **Medium** | Public `system_phpinfo` exposes `phpinfo()` in non-hub installations. [Gateway.php:193](../dist/vend-proofing-core/php/classes/simpleadmin/Gateway.php#L193) | **Confirmed information disclosure.** |
+| **Medium–High, conditional** | Sideload fetches follow redirects without destination restrictions/finite connect timeout; custom JSON conversion uses `eval`. [SideLoad.php:122](../dist/vend-proofing-core/php/classes/simpleadmin/SideLoad.php#L122) | Unsafe primitives verified. SSRF/code-execution exploitability depends on reachable branches and attacker influence; not proven. |
 
 ### Additional boundaries
 
@@ -451,7 +453,7 @@ AI-assisted installation can validate DNS, permissions, volumes, SMTP, and backu
 
 ### Backup and recovery
 
-The existing backup action is **not a complete disaster-recovery backup**. It largely includes XML/tables/indexes/logs and selected asset/audio files, excluding gallery photographs. It archives storage rather than all deployment state. Evidence: [gateway.php:1157](../vend-proofing-core/php/gateway.php#L1157).
+The existing backup action is **not a complete disaster-recovery backup**. It largely includes XML/tables/indexes/logs and selected asset/audio files, excluding gallery photographs. It archives storage rather than all deployment state. Evidence: [gateway.php:1157](../dist/vend-proofing-core/php/gateway.php#L1157).
 
 A complete recovery set includes:
 

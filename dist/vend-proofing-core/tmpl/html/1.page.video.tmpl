@@ -1,0 +1,52 @@
+<?php
+
+	$fragments = explode("/", trim($this->query_original, "/"));
+	$parent = "";
+	$child = "";
+	$autoplay = "autoplay";
+	if (isset($fragments[1])) {
+		$parent = $fragments[1];
+	}
+	if (isset($fragments[2])) {
+		$child = $fragments[2];
+	}
+	if (isset($fragments[3])) {
+		if ($fragments[3]=="false") {
+			$autoplay = "";
+		}
+	}
+	
+?>
+<!DOCTYPE html>
+<meta name="viewport" content="user-scalable=0"/>
+<html>
+<head>
+    <link href="http://vjs.zencdn.net/4.11/video-js.css" rel="stylesheet">
+	<script src="http://vjs.zencdn.net/4.11/video.js"></script>
+	<style>
+		html, body {
+			width: 100% !important;
+			height: 100% !important;
+			padding: 0;
+			margin:0;
+			overflow: hidden;
+		}
+		.video-js {
+			overflow: hidden;
+			width: 100% !important;
+			height: 100% !important;
+		}
+	</style>
+</head>
+<body>
+	<video id="really-cool-video" class="video-js vjs-default-skin" controls <?php echo $autoplay; ?>
+		preload="auto" width="640" height="264" poster="<?php echo SA_DIR_STORAGE . "/" . $fragments[1] . "/" . $fragments[2] ; ?>.snapshot.jpg"
+		data-setup='{}'>
+		<source src="<?php echo SA_DIR_STORAGE . "/" . $parent . "/" . $child ; ?>" type='video/mp4'>
+		<p class="vjs-no-js">
+			To view this video please enable JavaScript, and consider upgrading to a web browser
+			that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+		</p>
+	</video>
+</body>
+</html>

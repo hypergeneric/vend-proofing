@@ -1,15 +1,17 @@
 <?php
 
 // Run only in the disposable, network-disabled payment-smoke.sh fixture.
-if (PHP_SAPI!=='cli' || getcwd()!=='/app' || !is_dir('/app/vend-proofing-data/auth')) exit(2);
-define('SA_DIR_AUTH', '/app/vend-proofing-data/auth');
-define('SA_DIR_STORAGE', '/app/vend-proofing-data/storage');
-define('SA_DIR_DEFAULTS', '/app/vend-proofing-core/defaults');
-define('SA_DIR_CACHE', '/app/vend-proofing-data/cache');
+if (PHP_SAPI!=='cli' || getcwd()!=='/app/dist' || !is_dir('/app/dist/vend-proofing-data/auth')) exit(2);
+define('SA_DIR_AUTH', '/app/dist/vend-proofing-data/auth');
+define('SA_DIR_STORAGE', '/app/dist/vend-proofing-data/storage');
+define('SA_DIR_DEFAULTS', '/app/dist/vend-proofing-core/defaults');
+define('SA_DIR_LANG', '/app/dist/vend-proofing-core/lang');
+define('SA_DIR_CACHE', '/app/dist/vend-proofing-data/cache');
 define('SA_DIR_INDEXPATH', '');
 define('SA_NAMESPACE', 'vend-proofing');
-require '/app/vend-proofing-core/php/vendor/autoload.php';
-spl_autoload_register(function ($name) { require '/app/vend-proofing-core/php/classes/simpleadmin/' . $name . '.php'; });
+define('SA_BASE_URL', 'https://vend.example.invalid');
+require '/app/dist/vend-proofing-core/php/vendor/autoload.php';
+spl_autoload_register(function ($name) { require '/app/dist/vend-proofing-core/php/classes/simpleadmin/' . $name . '.php'; });
 
 function checkPayment (bool $condition, string $message): void {
 	if (!$condition) throw new RuntimeException($message);
@@ -119,7 +121,7 @@ Proofing::clear($gallery, $session, 'cart');
 echo "PASS package allocations, surcharges and rejection of invented products\n";
 
 // Provider test configuration is synthetic and never used on a network.
-foreach (array('payment_site_url' => 'https://vend.example.invalid', 'stripe_enabled_bool' => 'true', 'stripe_mode' => 'test',
+foreach (array('stripe_enabled_bool' => 'true', 'stripe_mode' => 'test',
 	'stripe_test_secret' => 'sk_test_synthetic', 'stripe_test_webhook' => 'whsec_synthetic', 'paypal_enabled_bool' => 'true', 'paypal_mode' => 'test',
 	'paypal_test_client_id' => 'synthetic-client', 'paypal_test_secret' => 'synthetic-secret', 'paypal_test_webhook_id' => 'synthetic-hook') as $key => $value) setting($key, $value, 'payment_gateway');
 $admin = PaymentSettings::forAdmin(Configuration::getJson('ordering'));
@@ -342,7 +344,7 @@ checkPayment($retry['id']!==$trial['id'] && $retry['provider_reference']!==$tria
 function paymentWorkers (string $mode): void {
 	$workers = array();
 	for ($i=0; $i<8; $i++) {
-		$process = proc_open(array(PHP_BINARY, 'scripts/payment-worker.php', $mode), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
+		$process = proc_open(array(PHP_BINARY, '../scripts/payment-worker.php', $mode), array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
 		$workers[] = array($process, $pipes);
 	}
 	foreach ($workers as [$process, $pipes]) {

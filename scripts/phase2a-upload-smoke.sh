@@ -6,24 +6,25 @@ project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fixture_dir="$(mktemp -d /tmp/vend-upload84.XXXXXX)"
 trap 'rm -rf "$fixture_dir"' EXIT
 
-cp -a "$project_dir/vend-proofing-core" "$fixture_dir/"
-cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/"
-mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
-mkdir -p "$fixture_dir/vend-proofing-data/storage/875c"
+mkdir -p "$fixture_dir/dist"
+cp -a "$project_dir/dist/vend-proofing-core" "$fixture_dir/dist/"
+cp "$project_dir"/dist/index.php "$project_dir"/dist/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/dist/"
+mkdir -p "$fixture_dir/dist/vend-proofing-data"/{storage,auth,temp,cache,uploads}
+mkdir -p "$fixture_dir/dist/vend-proofing-data/storage/875c"
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/install.php" "$fixture_dir/scripts/install.php"
 cp "$project_dir/scripts/admin-account.php" "$fixture_dir/scripts/admin-account.php"
 cp "$project_dir/scripts/dev-router.php" "$fixture_dir/scripts/dev-router.php"
 cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 
-docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
+docker run --rm --network none -v "$fixture_dir":/app -w /app/dist devwithlando/php:8.4-apache-7 sh -lc '
 set -eu
-php scripts/install.php
-php scripts/configuration-test.php
-php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Upload Test", "CategorySet", 0]);'\''
-printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
+php ../scripts/install.php
+php ../scripts/configuration-test.php
+php -r '\''define("SA_DIR_AUTH", "/app/dist/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Upload Test", "CategorySet", 0]);'\''
+printf "%s\n" "SyntheticAdminPassword123!" | php ../scripts/admin-account.php create testadmin owner@example.invalid
 php -r '\''$image=imagecreatetruecolor(1200,800); imagefill($image,0,0,imagecolorallocate($image,32,96,160)); imagejpeg($image,"/tmp/upload-test.jpg",85);'\''
-php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-upload-server.log 2>&1 &
+php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-upload-server.log 2>&1 &
 server_pid=$!
 trap "kill $server_pid" EXIT
 sleep 1
@@ -56,7 +57,7 @@ case "$images$categories" in *decoy*|*deadbeef*) echo "FAIL old category records
 rm -f vend-proofing-data/storage/875c/image.table vend-proofing-data/storage/875c/set.category.table
 kill "$server_pid"
 wait "$server_pid" 2>/dev/null || true
-php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-upload-restart.log 2>&1 &
+php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-upload-restart.log 2>&1 &
 server_pid=$!
 trap "kill $server_pid" EXIT
 sleep 1

@@ -2,11 +2,11 @@
 
 // Run only inside a disposable installation.
 if (PHP_SAPI !== 'cli') exit(2);
-define('SA_DIR_AUTH', dirname(__DIR__) . '/vend-proofing-data/auth');
-define('SA_DIR_DEFAULTS', dirname(__DIR__) . '/vend-proofing-core/defaults');
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/Database.php';
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/ConfigurationDocument.php';
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/Configuration.php';
+define('SA_DIR_AUTH', dirname(__DIR__) . '/dist/vend-proofing-data/auth');
+define('SA_DIR_DEFAULTS', dirname(__DIR__) . '/dist/vend-proofing-core/defaults');
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/Database.php';
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/ConfigurationDocument.php';
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/Configuration.php';
 
 function check (bool $condition, string $message): void {
 	if (!$condition) throw new RuntimeException($message);
@@ -28,7 +28,7 @@ $storedContact = $database->query("SELECT json_text FROM configuration_documents
 check($storedContact===$contactJson, 'Saved settings retained empty runtime fields');
 check(Configuration::getJson('contact', null, true)===$contact->toRuntimeString(),
 	'Contact setting did not round trip');
-$oldPath = dirname(__DIR__) . '/vend-proofing-data/storage/contact.xml';
+$oldPath = dirname(__DIR__) . '/dist/vend-proofing-data/storage/contact.xml';
 file_put_contents($oldPath, '<data><details><your_email href="decoy@example.invalid"></your_email></details></data>');
 check(Configuration::getJson('contact', null, true)===$contact->toRuntimeString(),
 	'Old XML file overrode SQLite');

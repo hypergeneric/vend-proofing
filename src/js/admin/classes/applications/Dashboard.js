@@ -38,9 +38,9 @@ classes.applications.Dashboard = function () {
 			]
 		});
 		_panel.appendApplication({
-			classid: classes.panels.ToolBox,
-			label: Lang.lookup("Toolbox"),
-			key: "toolbox",
+			classid: classes.panels.Users,
+			label: Lang.lookup("Users"),
+			key: "users",
 			options: []
 		});
 		_panel.appendApplication({

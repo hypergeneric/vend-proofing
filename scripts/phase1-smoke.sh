@@ -6,17 +6,19 @@ project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fixture_dir="$(mktemp -d /tmp/vend-php84.XXXXXX)"
 trap 'rm -rf "$fixture_dir"' EXIT
 
-cp -a "$project_dir/vend-proofing-core" "$fixture_dir/"
-cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/"
-mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
-cat > "$fixture_dir/vend-proofing-data/storage/set.page.table" <<'DATA'
+mkdir -p "$fixture_dir/dist"
+cp -a "$project_dir/dist/vend-proofing-core" "$fixture_dir/dist/"
+cp "$project_dir"/dist/index.php "$project_dir"/dist/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/dist/"
+mkdir -p "$fixture_dir/dist/vend-proofing-data"/{storage,auth,temp,cache,uploads}
+cat > "$fixture_dir/dist/vend-proofing-data/storage/set.page.table" <<'DATA'
 875c	Test Gallery	UploadSet	0
 DATA
-mkdir -p "$fixture_dir/vend-proofing-data/storage/875c"
-mkdir -p "$fixture_dir/vend-proofing-data/storage/asset"
-printf 'public asset' > "$fixture_dir/vend-proofing-data/storage/asset/test.png"
-printf 'not listed' > "$fixture_dir/vend-proofing-data/storage/asset/unlisted.png"
-cp "$project_dir/scripts/phase1-storage.php" "$fixture_dir/phase1-storage.php"
+mkdir -p "$fixture_dir/dist/vend-proofing-data/storage/875c"
+mkdir -p "$fixture_dir/dist/vend-proofing-data/storage/asset"
+printf 'public asset' > "$fixture_dir/dist/vend-proofing-data/storage/asset/test.png"
+printf 'not listed' > "$fixture_dir/dist/vend-proofing-data/storage/asset/unlisted.png"
+mkdir -p "$fixture_dir/scripts"
+cp "$project_dir/scripts/phase1-storage.php" "$fixture_dir/scripts/phase1-storage.php"
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/admin-account.php" "$fixture_dir/scripts/admin-account.php"
 cp "$project_dir/scripts/install.php" "$fixture_dir/scripts/install.php"
@@ -24,29 +26,35 @@ cp "$project_dir/scripts/migrate.php" "$fixture_dir/scripts/migrate.php"
 cp "$project_dir/scripts/foundation-test.php" "$fixture_dir/scripts/foundation-test.php"
 cp "$project_dir/scripts/foundation-worker.php" "$fixture_dir/scripts/foundation-worker.php"
 cp "$project_dir/scripts/foundation-auth-test.php" "$fixture_dir/scripts/foundation-auth-test.php"
+cp "$project_dir/scripts/users-test.php" "$fixture_dir/scripts/users-test.php"
+cp "$project_dir/scripts/public-base-url-test.php" "$fixture_dir/scripts/public-base-url-test.php"
+cp "$project_dir/scripts/password-recovery-test.php" "$fixture_dir/scripts/password-recovery-test.php"
+cp "$project_dir/scripts/password-recovery-http-test.php" "$fixture_dir/scripts/password-recovery-http-test.php"
 cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 cp "$project_dir/scripts/dev-router.php" "$fixture_dir/scripts/dev-router.php"
 
-docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
+docker run --rm --network none -v "$fixture_dir":/app -w /app/dist devwithlando/php:8.4-apache-7 sh -lc '
 set -eu
 php -v | head -1
 find vend-proofing-core/php/classes/simpleadmin vend-proofing-core/php -maxdepth 1 -name "*.php" -print0 | xargs -0 -n1 php -l > /tmp/vend-lint.txt
 # Existing Guzzle Promise 1.5.2 emits PHP 8.4 deprecations during autoload.
 # Keep warnings/errors visible; dependency upgrade is tracked in the phase log.
-php -d display_errors=1 -d error_reporting=24575 phase1-storage.php
-php scripts/install.php
-php scripts/migrate.php
-php scripts/foundation-test.php
-php scripts/configuration-test.php
-php -r '\''define("SA_DIR_AUTH", "/app/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Test Gallery", "UploadSet", 0]); Records::addMedia("asset", "asset", ["test.png", "test.png", "1x1"]); unlink("vend-proofing-data/storage/set.page.table");'\''
-php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-server.log 2>&1 &
+php -d display_errors=1 -d error_reporting=24575 ../scripts/phase1-storage.php
+php ../scripts/install.php
+php ../scripts/migrate.php
+php ../scripts/foundation-test.php
+php ../scripts/public-base-url-test.php
+php -d error_reporting=24575 -d disable_functions=checkdnsrr ../scripts/password-recovery-test.php
+php ../scripts/configuration-test.php
+php -r '\''define("SA_DIR_AUTH", "/app/dist/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Test Gallery", "UploadSet", 0]); Records::addMedia("asset", "asset", ["test.png", "test.png", "1x1"]); unlink("vend-proofing-data/storage/set.page.table");'\''
+php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-server.log 2>&1 &
 server_pid=$!
 trap "kill $server_pid" EXIT
 sleep 1
 curl -fsS "http://127.0.0.1:8080/?/admin/" | grep -q "scripts/admin-account.php create USERNAME EMAIL"
 echo "PASS existing init template before administrator creation"
-printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
-php scripts/foundation-auth-test.php
+printf "%s\n" "SyntheticAdminPassword123!" | php ../scripts/admin-account.php create testadmin owner@example.invalid
+php ../scripts/foundation-auth-test.php
 for route in / /?/admin/ /?/set/875c/test-gallery/ /?/order/ /vend-proofing-core/js/admin.js /?/xml/cronjob/ /?/xml/sitemap/; do
   curl -fsS -o /tmp/vend-response.html -w "%{http_code} %{size_download} bytes $route\n" "http://127.0.0.1:8080$route"
   if grep -Eiq "(<b>(Fatal error|Parse error|Uncaught|Deprecated|Warning)</b>|^(Fatal error|Parse error|Deprecated:|Warning:))" /tmp/vend-response.html; then
@@ -70,7 +78,7 @@ curl -fsS "http://127.0.0.1:8080/" -o /app/storefront-check.html
 curl -fsS "http://127.0.0.1:8080/?/admin/" -o /app/admin-check.html
 private_status="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8080/vend-proofing-data/auth/vend.sqlite")"
 [ "$private_status" = 403 ]
-curl -fsS "http://127.0.0.1:8080/vend-proofing-core/defaults/en.json" -o /tmp/vend-admin-lang.json
+curl -fsS "http://127.0.0.1:8080/vend-proofing-core/lang/en.json" -o /tmp/vend-admin-lang.json
 grep -q '"country_iso_codes"' /tmp/vend-admin-lang.json
 gateway="http://127.0.0.1:8080/vend-proofing-gateway.php"
 for retired_action in get_xml get_files get_set; do
@@ -135,27 +143,10 @@ for retired_action in get_xml get_files get_set; do
 done
 system_info=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=system_getinfo" --data-urlencode "token=$csrf" "$gateway")
 case "$system_info" in *reseller_id*) echo "FAIL retired reseller property remained"; exit 1 ;; esac
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changepassword" --data-urlencode "username=testadmin" --data-urlencode "o_password=wrong" --data-urlencode "n_password=ReplacementPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=false"
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changeusername" --data-urlencode "o_username=testadmin" --data-urlencode "n_username=otheradmin" --data-urlencode "password=wrong" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=false"
 echo "PASS authorized Gateway"
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changeusername" --data-urlencode "o_username=testadmin" --data-urlencode "n_username=otheradmin" --data-urlencode "password=SyntheticAdminPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
-login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=otheradmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
-case "$login_result" in *"s=true"*) ;; *) echo "FAIL changed username login"; exit 1 ;; esac
-csrf="${login_result#*r=}"
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changeusername" --data-urlencode "o_username=otheradmin" --data-urlencode "n_username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
-login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
-case "$login_result" in *"s=true"*) ;; *) echo "FAIL restored username login"; exit 1 ;; esac
-csrf="${login_result#*r=}"
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changepassword" --data-urlencode "username=testadmin" --data-urlencode "o_password=SyntheticAdminPassword123!" --data-urlencode "n_password=TemporaryPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
-login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=TemporaryPassword123!" "$gateway")
-case "$login_result" in *"s=true"*) ;; *) echo "FAIL changed password login"; exit 1 ;; esac
-csrf="${login_result#*r=}"
-curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=account_changepassword" --data-urlencode "username=testadmin" --data-urlencode "o_password=TemporaryPassword123!" --data-urlencode "n_password=SyntheticAdminPassword123!" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"
-login_result=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
-case "$login_result" in *"s=true"*) ;; *) echo "FAIL restored password login"; exit 1 ;; esac
-csrf="${login_result#*r=}"
-echo "PASS administrator username and password changes"
-printf "%s\n" "ReplacementPassword123!" | php scripts/admin-account.php reset testadmin
+php ../scripts/users-test.php
+php ../scripts/password-recovery-http-test.php
+printf "%s\n" "ReplacementPassword123!" | php ../scripts/admin-account.php reset testadmin
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies -d "action=auth_status" "$gateway" | grep -q "s=false"
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies -d "action=login&username=testadmin&password=SyntheticAdminPassword123!" "$gateway" | grep -q "s=false"
 login_result="$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=ReplacementPassword123!" "$gateway")"

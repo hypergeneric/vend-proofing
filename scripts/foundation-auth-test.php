@@ -2,10 +2,10 @@
 
 // Disposable fixture only. Run after creating the synthetic administrator.
 if (PHP_SAPI !== 'cli') exit(2);
-define('SA_DIR_AUTH', dirname(__DIR__) . '/vend-proofing-data/auth');
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/Database.php';
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/AdminAccount.php';
-require dirname(__DIR__) . '/vend-proofing-core/php/classes/simpleadmin/Auth.php';
+define('SA_DIR_AUTH', dirname(__DIR__) . '/dist/vend-proofing-data/auth');
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/Database.php';
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/AdminAccount.php';
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/Auth.php';
 
 function check_auth (bool $condition, string $message): void {
 	if (!$condition) throw new RuntimeException($message);

@@ -19,7 +19,7 @@ classes.data.Lang = (function () {
 		/* private methods
 			*/
 		function load () {
-			$.ajax( Auth.basepath() + Auth.corepath() + "/defaults/" + _code + ".json", {
+			$.ajax( Auth.basepath() + Auth.corepath() + "/lang/" + _code + ".json", {
 				cache: false,
 				dataType: "json",
 				method: "get",
@@ -103,7 +103,7 @@ classes.data.Lang = (function () {
 		};
 		this.code = function(str) {
 			if (str) {
-				_code = str;
+				_code = /^[a-z]{2}$/.test(str) ? str : "en";
 				load();
 			}
 			return _code;

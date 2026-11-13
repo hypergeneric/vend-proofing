@@ -6,7 +6,7 @@ const postcssUrl = require('postcss-url');
 const { fileURLToPath } = require('node:url');
 
 const root = path.resolve(__dirname, '..');
-const output = path.join(root, 'vend-proofing-core/css');
+const output = path.join(root, 'dist/vend-proofing-core/css');
 
 function readCss(source) {
 	// Supplied maps can refer to upstream source files absent from the package.

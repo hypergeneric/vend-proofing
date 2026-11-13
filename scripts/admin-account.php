@@ -6,7 +6,7 @@ if (PHP_SAPI !== 'cli') exit(1);
 $root = dirname(__DIR__);
 $args = $argv;
 array_shift($args);
-$dataDir = $root . '/vend-proofing-data';
+$dataDir = $root . '/dist/vend-proofing-data';
 if (count($args) >= 2 && $args[count($args) - 2] === '--data-dir') {
 	$dataDir = $args[count($args) - 1];
 	array_splice($args, -2);
@@ -21,8 +21,15 @@ if (($args[0] ?? '') === 'create' && count($args) === 3) {
 }
 
 define('SA_DIR_AUTH', rtrim($dataDir, '/') . '/auth');
-require $root . '/vend-proofing-core/php/classes/simpleadmin/Database.php';
-require $root . '/vend-proofing-core/php/classes/simpleadmin/AdminAccount.php';
+require $root . '/dist/vend-proofing-core/php/classes/simpleadmin/Database.php';
+require $root . '/dist/vend-proofing-core/php/classes/simpleadmin/AdminAccount.php';
+define('SA_DIR_LANG', dirname(__DIR__) . '/dist/vend-proofing-core/lang');
+define('SA_DIR_DEFAULTS', $root . '/dist/vend-proofing-core/defaults');
+require $root . '/dist/vend-proofing-core/php/classes/simpleadmin/ConfigurationDocument.php';
+require $root . '/dist/vend-proofing-core/php/classes/simpleadmin/Filesystem.php';
+require $root . '/dist/vend-proofing-core/php/classes/simpleadmin/Lang.php';
+$language = new Lang();
+$language->language('en');
 
 try {
 	fwrite(STDERR, "Password (at least 12 characters): ");
@@ -43,6 +50,6 @@ try {
 	}
 	fwrite(STDOUT, $operation === 'create' ? "Administrator account created.\n" : "Administrator password reset.\n");
 } catch (Throwable $error) {
-	fwrite(STDERR, $error->getMessage() . "\n");
+	fwrite(STDERR, $language->lookup($error->getMessage()) . "\n");
 	exit(1);
 }

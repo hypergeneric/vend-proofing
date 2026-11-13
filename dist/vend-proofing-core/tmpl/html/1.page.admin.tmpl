@@ -1,0 +1,174 @@
+<?php
+
+	use Michelf\Markdown;
+
+	$inited = AdminAccount::exists();
+	if (!$inited) {
+		include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+		return;
+	}
+
+	if (isset($_GET['recover'])) {
+		include SA_DIR_COREPATH . '/tmpl/html/1.page.recovery.tmpl';
+		return;
+	}
+
+	if ( $inited ) {
+
+		$auth = new Auth();
+		
+		$data_contact = 				Configuration::getDocument("contact", null, true);
+		$show_setup = 					false;
+		if ($auth->sessionAuthenticated() && $data_contact) {
+			$your_email = 				$data_contact->getAttrVal("data.details.your_email.href");
+			if (Func::validEmail(trim($your_email))==false) {
+				$error = 				"Contact Email Not Configured Or Invalid";
+				$show_setup = 			true;
+			}
+		} else if ($auth->sessionAuthenticated()) {
+			$error = 					"Contact Tab Not Configured";
+			$show_setup = 				true;
+		}
+		
+		if ( !$show_setup ) {
+
+			$page_title = 				$CONFIG->getNodeVal("setup.product_title");
+			$need_flash_title = 		$LANG->lookup("Flash and Javascript Required");
+			$need_flash_description = 	$LANG->lookup("Flash and Javascript Required Description");
+			$need_flash_download = 		$LANG->lookup("Download Flash");
+			$help_title = 				$LANG->lookup("Help Documentation");
+			$help_description = 		Markdown::defaultTransform(@file_get_contents(SA_DIR_COREPATH."/lang/".$CONFIG->getNodeVal("setup.language").".wiki.txt"));
+			$help_link = 				$LANG->lookup("Visit Support Site");
+
+?>
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<title><?php echo $page_title; ?></title>
+	<meta charset="utf-8">
+	<!-- Mobile viewport optimized -->
+	<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1.0">
+	<!-- CSS: implied media=all -->
+	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/css/admin.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/admin.css"); ?>">
+</head>
+<body>
+	<div id="container"></div>
+	<?php include SA_DIR_COREPATH . "/tmpl/html/2.config-admin.tmpl"; ?>
+	<script src="<?php echo SA_DIR_COREPATH; ?>/js/admin.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/admin.js"); ?>"></script>
+	<script type="text/javascript">
+		classes.Admin.initialize();
+	</script>
+</body>
+</html>
+<?php
+
+		} else {
+			
+			$page_title = 					"Your Account Details";
+			$page_description = 			"For Vend to function correctly, we need a valid email address so that Vend can communicate with you and your users.  This will information will be publically visible on invoices and outgoing emails.";
+			$your_website_name_label = 		"Your Website Name";
+			$your_website_url_label = 		"Your Website URL (should start with http:// or https://)";
+			$your_phone_number_label = 		"Your Phone Number";
+			$your_physical_address_label = 	"Your Physical Address";
+			$your_name_label = 				"Your Name Address (required)";
+			$your_email_label = 			"Your Email Address (required)";
+			$submit_title = 				$LANG->lookup("Save");
+			
+			/* this might be a submit call, lets pull any post vars in
+			*/
+			$form_error = 					"";
+			$form_errors = 					array();
+			$your_website_name = 			isset($_POST["your_website_name"]) ? $_POST["your_website_name"] : "";
+			$your_website_url = 			isset($_POST["your_website_url"]) ? strtolower($_POST["your_website_url"]) : "";
+			$your_phone_number = 			isset($_POST["your_phone_number"]) ? $_POST["your_phone_number"] : "";
+			$your_physical_address = 		isset($_POST["your_physical_address"]) ? $_POST["your_physical_address"] : "";
+			$your_name = 					isset($_POST["your_name"]) ? $_POST["your_name"] : "";
+			$your_email = 					isset($_POST["your_email"]) ? strtolower($_POST["your_email"]) : "";
+			$submit = 						isset($_POST["submit"]) ? $_POST["submit"] : "";
+			
+			/* if it's a submit, search for errors
+				*/
+			if (strlen($submit)) {
+				if (!isset($_POST["admin_csrf"]) || !is_string($_POST["admin_csrf"]) || !hash_equals($auth->token(), $_POST["admin_csrf"])) {
+					$form_errors[] = "Your admin session expired. Reload this page and try again.";
+				}
+				if (strlen($your_name)==0) {
+					$form_errors[] = 		$LANG->lookup("You must supply an Email Name");
+				}
+				if (strlen($your_email)==0) {
+					$form_errors[] = 		$LANG->lookup("You must supply a valid Email Address");
+				} else {
+					if (Func::validEmail(trim($your_email))==false) {
+						$form_errors[] =	$LANG->lookup("You must supply a valid Email Address");
+					}
+				}
+				if (count($form_errors)==0) {
+					/* save to contact xml
+						*/
+					$data_contact = Configuration::getDocument("contact");
+					$data_contact->editNode("data", null, "default=false");
+					$data_contact->editNode("data.details.your_website_url", $your_website_name, "href=$your_website_url");
+					$data_contact->editNode("data.details.your_phone_number", $your_phone_number);
+					$data_contact->editNode("data.details.your_physical_address", $your_physical_address);
+					$data_contact->editNode("data.details.your_email", $your_name, "href=$your_email");
+					Configuration::save("contact", null, $data_contact->toString());
+					/* redirect to the new admin
+						*/
+					$path = Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/admin/";
+					header("Location: $path");
+					exit;
+				}
+			}
+			/* consolidate any errors
+				*/
+			foreach ($form_errors as $str) $form_error .= "<p>$str</p>";
+			
+			
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title><?php echo $page_title; ?></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/admin-shell.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/admin-shell.css"); ?>" media="all" />
+	</head>
+	<body>
+		<div id="container">
+			<div id="content">
+				<div class="PanelBox">
+					<div class="Top">
+						<h2 title="<?php echo $page_title; ?>"><?php echo $page_title; ?></h2>
+					</div>
+					<div class="Body">
+						<div class="Description"><?php echo $page_description; ?></div>
+							<form action="?/admin/" method="post">
+							<input type="hidden" name="admin_csrf" value="<?php echo htmlspecialchars($auth->token(), ENT_QUOTES, 'UTF-8'); ?>" />
+							<div class="formtitle"><?php echo $your_website_name_label; ?></div>
+							<input type="text" name="your_website_name" value="<?php echo htmlspecialchars($your_website_name, ENT_QUOTES, 'UTF-8'); ?>" />
+							<div class="formtitle"><?php echo $your_website_url_label; ?></div>
+							<input type="text" name="your_website_url" value="<?php echo htmlspecialchars($your_website_url, ENT_QUOTES, 'UTF-8'); ?>" />
+							<div class="formtitle"><?php echo $your_phone_number_label; ?></div>
+							<input type="text" name="your_phone_number" value="<?php echo htmlspecialchars($your_phone_number, ENT_QUOTES, 'UTF-8'); ?>" />
+							<div class="formtitle"><?php echo $your_physical_address_label; ?></div>
+							<textarea name="your_physical_address"><?php echo htmlspecialchars($your_physical_address, ENT_QUOTES, 'UTF-8'); ?></textarea>
+							<div class="formtitle"><?php echo $your_name_label; ?></div>
+							<input type="text" name="your_name" value="<?php echo htmlspecialchars($your_name, ENT_QUOTES, 'UTF-8'); ?>" />
+							<div class="formtitle"><?php echo $your_email_label; ?></div>
+							<input type="text" name="your_email" value="<?php echo htmlspecialchars($your_email, ENT_QUOTES, 'UTF-8'); ?>" />
+							<input class="InputButton" type="submit" name="submit" value="<?php echo $submit_title; ?>" />
+							<?php if ($form_error!="") { ?><div class="formerror"><?php echo $form_error; ?></div><?php } ?>
+						</form>
+					</div>
+					<div class="Foot">
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<?php
+		}
+
+	}
+
+?>

@@ -6,23 +6,24 @@ project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 fixture_dir="$(mktemp -d /tmp/vend-basic-set.XXXXXX)"
 trap 'rm -rf "$fixture_dir"' EXIT
 
-cp -a "$project_dir/vend-proofing-core" "$fixture_dir/"
-cp "$project_dir"/index.php "$project_dir"/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/"
-mkdir -p "$fixture_dir/vend-proofing-data"/{storage,auth,temp,cache,uploads}
+mkdir -p "$fixture_dir/dist"
+cp -a "$project_dir/dist/vend-proofing-core" "$fixture_dir/dist/"
+cp "$project_dir"/dist/index.php "$project_dir"/dist/vend-proofing-{config,gateway,index,resample}.php "$fixture_dir/dist/"
+mkdir -p "$fixture_dir/dist/vend-proofing-data"/{storage,auth,temp,cache,uploads}
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/install.php" "$project_dir/scripts/admin-account.php" "$project_dir/scripts/dev-router.php" "$project_dir/scripts/dropbox-records-test.php" "$project_dir/scripts/message-records-test.php" "$project_dir/scripts/media-records-test.php" "$project_dir/scripts/pricing-records-test.php" "$project_dir/scripts/misc-records-test.php" "$project_dir/scripts/proofing-records-test.php" "$project_dir/scripts/order-records-test.php" "$fixture_dir/scripts/"
 cp "$project_dir/scripts/checkout-fixture.php" "$fixture_dir/scripts/"
 cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
 
-docker run --rm --network none -v "$fixture_dir":/app -w /app devwithlando/php:8.4-apache-7 sh -lc '
+docker run --rm --network none -v "$fixture_dir":/app -w /app/dist devwithlando/php:8.4-apache-7 sh -lc '
 set -eu
-php scripts/install.php
-php scripts/configuration-test.php
-printf "%s\n" "SyntheticAdminPassword123!" | php scripts/admin-account.php create testadmin owner@example.invalid
+php ../scripts/install.php
+php ../scripts/configuration-test.php
+printf "%s\n" "SyntheticAdminPassword123!" | php ../scripts/admin-account.php create testadmin owner@example.invalid
 php -r '\''$image=imagecreatetruecolor(640,480); imagefill($image,0,0,imagecolorallocate($image,32,96,160)); imagejpeg($image,"/tmp/basic-set.jpg",85);'\''
-php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-basic-server.log 2>&1 &
+php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-basic-server.log 2>&1 &
 server_pid=$!
-trap "kill \$server_pid 2>/dev/null || true; chmod -R a+rwX /app/vend-proofing-data" EXIT
+trap "kill \$server_pid 2>/dev/null || true; chmod -R a+rwX /app/dist/vend-proofing-data" EXIT
 sleep 1
 gateway=http://127.0.0.1:8080/vend-proofing-gateway.php
 login=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" "$gateway")
@@ -37,14 +38,14 @@ test ! -e vend-proofing-data/storage/set.page.table
 list=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_list" --data-urlencode "name=page" --data-urlencode "token=$token" "$gateway")
 case "$list" in *"Basic%20Gallery"*) ;; *) echo "FAIL page list: $list"; exit 1 ;; esac
 echo "PASS create and list a relational upload set"
-php scripts/misc-records-test.php
+php ../scripts/misc-records-test.php
 tax_data=$(printf "California\t\t7.25")
 tax_created=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_create" --data-urlencode "name=ustaxchart" --data-urlencode "suid=CA" --data-urlencode "data=$tax_data" --data-urlencode "token=$token" "$gateway")
 case "$tax_created" in *California*) ;; *) echo "FAIL tax Gateway create: $tax_created"; exit 1 ;; esac
 tax_deleted=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_delete" --data-urlencode "name=ustaxchart" --data-urlencode "suid=CA" --data-urlencode "token=$token" "$gateway")
 case "$tax_deleted" in s=true*) ;; *) echo "FAIL tax Gateway delete: $tax_deleted"; exit 1 ;; esac
 echo "PASS download, discount, tax, and form table types in SQLite"
-php -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen scripts/message-records-test.php
+php -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen ../scripts/message-records-test.php
 message_suid=$(cat /tmp/message-suid)
 test ! -e vend-proofing-data/storage/set.messages.table
 messages=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_list" --data-urlencode "name=messages" --data-urlencode "token=$token" "$gateway")
@@ -97,7 +98,7 @@ for kind in asset audio track package product; do
 done
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); if($db->query("SELECT COUNT(*) FROM media_entries")->fetchColumn()!=0) exit(1);'\''
 echo "PASS five relational media table types through upload, list, edit, public read, and delete"
-php scripts/media-records-test.php
+php ../scripts/media-records-test.php
 reordered=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=asset_reindex" --data-urlencode "indices=0,1;1,0" --data-urlencode "token=$token" "$gateway")
 case "$reordered" in s=true*) ;; *) echo "FAIL asset reorder: $reordered"; exit 1 ;; esac
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $keys=$db->query("SELECT assets.public_key FROM media_entries AS entries JOIN media_assets AS assets ON assets.id = entries.asset_id WHERE entries.kind = \"asset\" ORDER BY entries.position")->fetchAll(PDO::FETCH_COLUMN); if($keys!==array("synthetic-b.jpg", "synthetic-a.jpg")) exit(1);'\''
@@ -118,8 +119,8 @@ snapshot_uploaded=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies -F act
 case "$snapshot_uploaded" in s=true*) ;; *) echo "FAIL multipart snapshot: $snapshot_uploaded"; exit 1 ;; esac
 cmp -s /tmp/basic-set.jpg "vend-proofing-data/storage/$suid/$filename.snapshot.jpg"
 echo "PASS image snapshot data and multipart upload"
-php scripts/proofing-records-test.php "$suid" "$filename"
-php scripts/order-records-test.php "$suid" "$filename"
+php ../scripts/proofing-records-test.php "$suid" "$filename"
+php ../scripts/order-records-test.php "$suid" "$filename"
 session_key=$(curl -fsS --data-urlencode "action=open_session" --data-urlencode "puid=$suid" --data-urlencode "email=browser@example.invalid" "$gateway")
 expected_key=$(php -r '\''echo md5("browser@example.invalid");'\'')
 test "$session_key" = "$expected_key"
@@ -135,7 +136,7 @@ case "$admin_favorites" in *browser-f*) ;; *) echo "FAIL admin favorite export: 
 removed_session=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_delete" --data-urlencode "name=session" --data-urlencode "suid=$session_key" --data-urlencode "puid=$suid" --data-urlencode "token=$token" "$gateway")
 case "$removed_session" in s=true*) ;; *) echo "FAIL admin session delete: $removed_session"; exit 1 ;; esac
 echo "PASS public and admin proofing Gateway responses"
-php scripts/checkout-fixture.php "$suid"
+php ../scripts/checkout-fixture.php "$suid"
 checkout_key=$(curl -fsS --data-urlencode "action=open_session" --data-urlencode "puid=$suid" --data-urlencode "email=checkout@example.invalid" "$gateway")
 checkout_item=$(printf "%s\t" "checkout-print" "$suid" "$filename" "Photo.jpg" "1" "color" "Eight by Ten" "0.8" "10" "0" "portrait" "0" "0" "" "0" "0" "" "0" "0" "10.00" "0.00" "")
 curl -fsS --data-urlencode "action=update_session_item" --data-urlencode "type=cart" --data-urlencode "puid=$suid" --data-urlencode "name=$checkout_key" --data-urlencode "data=$checkout_item" "$gateway" >/dev/null
@@ -176,7 +177,7 @@ php -r '\''$html=file_get_contents("/tmp/online-invoice.html"); if(strpos($html,
 curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=delete_order" --data-urlencode "orderid=$checkout_orderid" --data-urlencode "timestamp=0" --data-urlencode "token=$token" "$gateway" >/dev/null
 php -r '\''define("SA_DIR_AUTH","vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Proofing.php"; Proofing::deleteSession($argv[1],$argv[2]);'\'' "$suid" "$checkout_key"
 echo "PASS offline checkout and invoice through Gateway with relational order rows"
-php scripts/checkout-fixture.php "$suid" cleanup
+php ../scripts/checkout-fixture.php "$suid" cleanup
 second_upload=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies -F action=image_upload -F "token=$token" -F name=page -F "suid=$suid" -F "Filedata=@/tmp/basic-set.jpg;filename=sorted-second.jpg;type=image/jpeg" "$gateway")
 case "$second_upload" in s=true*) ;; *) echo "FAIL second image upload: $second_upload"; exit 1 ;; esac
 second_key=$(php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $q=$db->prepare("SELECT public_key FROM media_assets WHERE original_name = ?"); $q->execute(array("sorted-second.jpg")); echo $q->fetchColumn();'\'')
@@ -201,7 +202,7 @@ rm -f vend-proofing-data/storage/set.page.table "vend-proofing-data/storage/$sui
 echo "PASS flat-file gallery records are ignored"
 kill "$server_pid"
 wait "$server_pid" 2>/dev/null || true
-php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app /app/scripts/dev-router.php >/tmp/vend-basic-restart.log 2>&1 &
+php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-basic-restart.log 2>&1 &
 server_pid=$!
 sleep 1
 curl -fsS "http://127.0.0.1:8080/?/set/$suid/basic-gallery/" | grep -q "data-suid=\"$suid\""
@@ -229,7 +230,7 @@ dropbox_suid=$(php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlit
 test -n "$dropbox_suid"
 test ! -e "vend-proofing-data/storage/$dropbox_suid/image.table"
 test ! -e "vend-proofing-data/storage/$dropbox_suid/set.category.table"
-php scripts/dropbox-records-test.php "$dropbox_suid"
+php ../scripts/dropbox-records-test.php "$dropbox_suid"
 dropbox_images=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=image_list" --data-urlencode "name=page" --data-urlencode "suid=$dropbox_suid" --data-urlencode "token=$token" "$gateway")
 case "$dropbox_images" in *ceremony-a.jpg*) ;; *) echo "FAIL Dropbox relational image list: $dropbox_images"; exit 1 ;; esac
 dropbox_meta=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=dropboxset_meta" --data-urlencode "suid=$dropbox_suid" --data-urlencode "token=$token" "$gateway")
@@ -253,7 +254,7 @@ php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); if($db->qu
 groups=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_list" --data-urlencode "name=formatset" --data-urlencode "token=$token" "$gateway")
 case "$groups" in *"Test%20formatset"*) ;; *) echo "FAIL relational pricing group list: $groups"; exit 1 ;; esac
 echo "PASS create and list five relational pricing group types without index files"
-php scripts/pricing-records-test.php
+php ../scripts/pricing-records-test.php
 package_group=$(php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); echo $db->query("SELECT suid FROM pricing_groups WHERE kind = \"package\"")->fetchColumn();'\'')
 product_group=$(php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); echo $db->query("SELECT suid FROM pricing_groups WHERE kind = \"product\"")->fetchColumn();'\'')
 packages=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=set_list" --data-urlencode "name=package" --data-urlencode "puid=$package_group" --data-urlencode "token=$token" "$gateway")

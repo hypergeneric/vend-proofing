@@ -159,3 +159,23 @@
 	font-size: 14px;
 	color: #333;
 }
+
+/* Password recovery reuses the shell, including on narrow email-link viewports. */
+.Recovery #content {
+	width: 550px;
+	max-width: 100%;
+}
+
+.Recovery .PanelBox input:not([type="hidden"]) {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.Recovery .PanelBox p {
+	line-height: 1.5;
+	margin-bottom: 12px;
+}
+
+.Recovery .PanelBox form {
+	margin-bottom: 16px;
+}

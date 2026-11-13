@@ -16,7 +16,7 @@ class CssThemeFixture {
 
 	public function render() {
 		ob_start();
-		include __DIR__ . '/../vend-proofing-core/tmpl/html/2.theme.tmpl';
+		include __DIR__ . '/../dist/vend-proofing-core/tmpl/html/2.theme.tmpl';
 		return ob_get_clean();
 	}
 }
@@ -26,7 +26,7 @@ function checkCss($condition, $message) {
 }
 
 define('SA_NAMESPACE', 'vend-proofing');
-$build = __DIR__ . '/../vend-proofing-core/css/';
+$build = __DIR__ . '/../dist/vend-proofing-core/css/';
 $required = [];
 foreach (glob($build . '*.css') as $file) {
 	$css = file_get_contents($file);

@@ -83,6 +83,7 @@ classes.dialogs.Login = function () {
 			xhtml += 		'<div class="Response">&nbsp;</div>';
 			xhtml += 		'<div class="Clear"></div>';
 			xhtml += 	'</form>';
+			xhtml += '<p><a href="?/admin/&amp;recover=1">' + Lang.lookup('Forgot Password') + '</a></p>';
 			xhtml += '</div>';
 			
 		_parent.html(xhtml);
