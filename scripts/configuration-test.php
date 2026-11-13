@@ -12,7 +12,23 @@ function check (bool $condition, string $message): void {
 	if (!$condition) throw new RuntimeException($message);
 }
 
+require dirname(__DIR__) . '/dist/vend-proofing-core/php/classes/simpleadmin/AppConfig.php';
 $database = Database::connection();
+$installation = Configuration::getDocument('installation', null, true);
+check($installation instanceof ConfigurationDocument, 'Installer did not seed installation settings');
+$originalInstallation = $installation->toString();
+try {
+	$installation->editNode('data.setup.language', 'es');
+	$installation->editNode('data.setup.baseurl', 'https://fixture.invalid/proofs');
+	check(Configuration::save('installation', null, $installation->toString()), 'Installation save failed');
+	$config = new AppConfig();
+	check($config->getNodeVal('setup.language')==='es', 'AppConfig ignored saved language');
+	check($config->getNodeVal('setup.baseurl')==='https://fixture.invalid/proofs', 'AppConfig ignored saved URL');
+	Database::migrate();
+	check((new AppConfig())->getNodeVal('setup.language')==='es', 'Schema replay overwrote installation settings');
+} finally {
+	Configuration::save('installation', null, $originalInstallation);
+}
 $secret = Database::installationSecret();
 check(strlen($secret)===64 && ctype_xdigit($secret), 'Installation secret missing');
 check(Database::installationSecret()===$secret, 'Installation secret changed');
@@ -61,6 +77,6 @@ check(Configuration::getJson('uploadset', '875c')===$galleryObject->toRuntimeStr
 	'Gallery revert lost source default');
 check(!str_contains($contactJson, '"_value":""') && !str_contains($contactJson, '"_attributes":{}'),
 	'Saved JSON retained empty XML conversion fields');
-check((int) $database->query('SELECT COUNT(*) FROM configuration_documents')->fetchColumn()===2,
+check((int) $database->query('SELECT COUNT(*) FROM configuration_documents')->fetchColumn()===3,
 	'Unexpected configuration rows');
 echo "PASS saved JSON in SQLite, defaults, scope, validation, revert, and installation secret\n";

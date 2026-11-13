@@ -73,11 +73,11 @@ classes.dialogs.SetEditor = function () {
 				label: Lang.lookup("Please Choose"),
 				data: ""
 			});
-			for (var i=0; i<Admin.config().setup.content.type.length; ++i) {
-				var type = Admin.config().setup.content.type[i];
+			for (var i=0; i<Admin.config().contentTypes.length; ++i) {
+				var type = Admin.config().contentTypes[i];
 				provider.push({
-					data: type._attributes.key,
-					label: Lang.lookup(type._attributes.key) + " - " + Lang.lookup(type._attributes.key + " Description")
+					data: type.key,
+					label: Lang.lookup(type.key) + " - " + Lang.lookup(type.key + " Description")
 				});
 			}
 			for (var i=0; i<provider.length; ++i) {

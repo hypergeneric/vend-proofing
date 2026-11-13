@@ -17,6 +17,22 @@ class AdminAccount {
 		});
 	}
 
+	public static function prepareFirst (string $username, string $email, string $password): array {
+		self::validate($username, $email, $password);
+		return ['username' => $username, 'email' => strtolower($email), 'hash' => password_hash($password, PASSWORD_DEFAULT)];
+	}
+
+	public static function createFirstFromHash (string $username, string $email, string $hash): void {
+		self::validate($username, $email, str_repeat('x', 12));
+		if (password_get_info($hash)['algoName'] === 'unknown') throw new InvalidArgumentException('Account Invalid Fields');
+		Database::transaction(function (PDO $db) use ($username, $email, $hash): void {
+			if (self::exists()) throw new InvalidArgumentException('Setup Already Complete');
+			$now = time();
+			$db->prepare('INSERT INTO administrators (username, email, password_hash, created_at, updated_at, user_type) VALUES (?, ?, ?, ?, ?, ?)')
+				->execute([$username, $email, $hash, $now, $now, 'admin']);
+		});
+	}
+
 	private static function validate (string $username, string $email, string $password): void {
 		if (!preg_match('/^[A-Za-z0-9._-]{3,80}$/', $username) || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 12 || strlen($password) > 4096 || str_contains($password, "\0")) {
 			throw new InvalidArgumentException('Account Invalid Fields');

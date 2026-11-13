@@ -4,7 +4,6 @@
 classes.dialogs.LinkChooser = function () {
 	/* "imported" classes
 		*/
-	var Admin;
 	var Auth;
 	var Dialog;
 	var Lang;
@@ -340,13 +339,8 @@ classes.dialogs.LinkChooser = function () {
 		Auth = classes.data.Auth;
 		Lang = classes.data.Lang;
 		Func = classes.helpers.Func;
-		Admin = classes.Admin;
 		for (var prop in obj) {
 			this[prop](obj[prop]);
-		}
-		if (Admin.config().setup.standalone._value=="false") {
-			_showpages = false;
-			_ismarkdown = false;
 		}
 		render();
 	};

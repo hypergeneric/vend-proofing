@@ -1,6 +1,4 @@
-var NAMESPACE = VEND_CONFIG.namespace;
-var VEND_ADMIN_CONFIG = VEND_CONFIG.adminConfig;
-
+var NAMESPACE = "vend-proofing";
 var md = new MobileDetect(window.navigator.userAgent);
 var IS_MOBILE = md.phone()!=null;
 var IS_TABLET = md.tablet()!=null;

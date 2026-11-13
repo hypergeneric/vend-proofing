@@ -1730,6 +1730,63 @@ table.AssetTable .AudioObject div {
   color: #000;
   padding: 7px 15px;
   margin-bottom: 15px;
+}body.AdminPage {
+  height: auto;
+  padding: 28px 16px;
+  background: #f4f4f4;
+}body.AdminPage .Dialog {
+  position: relative;
+  width: 550px;
+  max-width: 100%;
+  margin: 0 auto;
+}body.AdminPage .Header {
+  margin: 0;
+}body.AdminPage .Content {
+  padding: 24px;
+}body.AdminPage h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}body.AdminPage .Header h2 {
+  font-size: 14px;
+  margin: 0;
+  line-height: inherit;
+}body.AdminPage p {
+  line-height: 1.5;
+  margin-bottom: 16px;
+}body.AdminPage .Progress {
+  color: #666;
+}body.AdminPage label {
+  display: block;
+  font-weight: bold;
+  margin: 12px 0 6px;
+}body.AdminPage input:not([type=hidden]), body.AdminPage select, body.AdminPage textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #bbb;
+  padding: 9px;
+  font-size: 14px;
+  background: white;
+}body.AdminPage input:focus, body.AdminPage select:focus, body.AdminPage textarea:focus, body.AdminPage button:focus {
+  outline: 2px solid #555 !important;
+  outline-offset: 2px;
+}body.AdminPage button {
+  cursor: pointer;
+  padding: 9px 16px;
+  border: 1px solid #bbb;
+  background: #f4f4f4;
+  font-weight: bold;
+}body.AdminPage .Actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}body.AdminPage .Error {
+  margin: 0 0 16px;
+}body.AdminPage form {
+  margin-bottom: 16px;
+}body.AdminPage form > button {
+  margin-top: 16px;
 }#container {
   background: url("../graphics/admin/ajax-loader.gif") no-repeat center center;
   height: 100%;

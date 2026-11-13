@@ -6,7 +6,6 @@ classes.panels.SystemInfo = function () {
 		*/
 	var Auth;
 	var Lang;
-	var Admin;
 	/* private properites
 		*/
 	var _instance = 			this;
@@ -19,7 +18,7 @@ classes.panels.SystemInfo = function () {
 	function doOption (key) {
 		switch (key) {
 			case "launch" :
-				var url = Admin.config().setup.standalone._value=="true" ? Auth.basepath() + Auth.indexpath() : Auth.basepath();
+				var url = Auth.basepath() + Auth.indexpath();
 				var popup = window.open(url);
 				break;
 			case "clear_cache" :
@@ -101,7 +100,6 @@ classes.panels.SystemInfo = function () {
 	this.destroy = function () {
 	};
 	this.initialize = function () {
-		Admin = classes.Admin;
 		Auth = classes.data.Auth;
 		Lang = classes.data.Lang;
 		render();

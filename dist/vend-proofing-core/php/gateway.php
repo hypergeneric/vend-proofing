@@ -18,7 +18,7 @@
 		}
 
 		protected function runPrivate () {
-			global $CONFIG;
+
 			global $LANG;
 			switch ($this->action) {
 			 case "delete_dropbox_set" :
@@ -162,7 +162,7 @@
 				} else {
 					$error = $LANG->lookup($data) . " - " . $error;
 					$help_link_uri = "https://intothedarkroom.zendesk.com/hc/en-us/articles/209636333";
-					include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+					include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 					exit();
 				}
 			 case "test_mail_setup" :
@@ -206,18 +206,18 @@
 				$email->addPostTags($post);
 				$email->send();
 				if ($email->success()) {
-					$init_title = $LANG->lookup("mail sent successfully");
-					$init_description = $LANG->lookup("mail sent successfully description");
+					$message_title = $LANG->lookup("mail sent successfully");
+					$message_description = $LANG->lookup("mail sent successfully description");
 					$help_link_uri = "";
 					unset($error);
 				} else {
-					$init_title = $LANG->lookup("mail failed to send");
-					$init_description = $LANG->lookup("mail failed to send description");
+					$message_title = $LANG->lookup("mail failed to send");
+					$message_description = $LANG->lookup("mail failed to send description");
 					$help_link_uri = "";
 					$error = $email->getErrorLog();
 					$error = implode("<br />\n", $error);
 				}
-				include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+				include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 				exit();
 			 case "output_bulkmail" :
 				$contact = Configuration::getDocument("contact");
@@ -320,9 +320,7 @@
 			parent::runPrivate();
 		}
 
-
 		protected function runPublic () {
-			global $CONFIG;
 			global $LANG;
 			$gallery_actions = array("list_session_table", "delete_session_type", "delete_session_item", "update_session_item", "add_all_of_type", "open_session", "prequalify_order", "verify_discount_code", "process_credit_card", "finalize_order");
 			$session_actions = array("list_session_table", "delete_session_type", "delete_session_item", "update_session_item", "add_all_of_type", "prequalify_order", "process_credit_card", "finalize_order");

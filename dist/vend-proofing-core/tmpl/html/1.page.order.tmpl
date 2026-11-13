@@ -198,16 +198,16 @@
 						$email->addPostTags($post);
 						$email->send();
 						unset($error);
-						$init_title = $LANG->lookup("download_reset_success");
-						$init_description = str_replace("{OID}", $orderid, $LANG->lookup("download_reset_success_description"));
+						$message_title = $LANG->lookup("download_reset_success");
+						$message_description = str_replace("{OID}", $orderid, $LANG->lookup("download_reset_success_description"));
 						$help_link_uri = "";
-						include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+						include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 						exit;
 					}
 				} else {
 					$error = $LANG->lookup($data) . " - " . $error;
 					$help_link_uri = "https://intothedarkroom.zendesk.com/hc/en-us/articles/209636333";
-					include SA_DIR_COREPATH . "/tmpl/html/1.page.init.tmpl";
+					include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 				}
 			} else {
 				$email = new Email();

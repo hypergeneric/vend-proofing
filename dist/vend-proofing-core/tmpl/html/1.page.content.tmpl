@@ -8,17 +8,17 @@
 	$page_data = 				$this->info("data");
 	$data_contact = 			$this->getData("contact");
 	
-	/* ---- no email, show the init --- */
+	/* ---- no email, show a contact configuration notice --- */
 	if ($data_contact) {
 		$your_email = $data_contact->getAttrVal("data.details.your_email.href");
 		if (Func::validEmail(trim($your_email))==false) {
-			$error = "Account Email Not Configured Or Invalid";
-			include "1.page.init.tmpl";
+			$error = $LANG->lookup("Account Email Not Configured Or Invalid");
+			include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 			exit();
 		}
 	} else {
-		$error = "Account Tab Not Configured";
-		include "1.page.init.tmpl";
+		$error = $LANG->lookup("Account Tab Not Configured");
+		include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 		exit();
 	}
 

@@ -1,6 +1,6 @@
 <?php
 
-/** Vend's single durable application database. No web request creates a database. */
+/** Vend's single durable application database. Created by the installer or CLI. */
 class Database {
 	private static ?PDO $connection = null;
 	private static int $savepoint = 0;
@@ -41,6 +41,9 @@ class Database {
 		if (!chmod($path, 0660)) throw new RuntimeException('Cannot restrict database permissions.');
 		self::$connection = $db;
 		self::migrate();
+		$defaults = file_get_contents(dirname(__DIR__, 3) . '/defaults/installation.json');
+		$db->prepare('INSERT INTO configuration_documents (type, scope_id, json_text, updated_at) VALUES (?, ?, ?, ?)')
+			->execute(['installation', '', $defaults, time()]);
 	}
 
 	public static function migrate (): void {

@@ -4,6 +4,20 @@
 		*/
 	if (count(get_included_files())==1) exit();
 
+	$route = trim(rawurldecode(explode('&', $_SERVER['QUERY_STRING'] ?? '')[0]), '/');
+	if ($route === 'setup') {
+		include SA_DIR_COREPATH . '/tmpl/html/1.page.setup.tmpl';
+		return;
+	}
+	if (!SetupWizard::ready()) {
+		header('Location: ?/setup/');
+		exit;
+	}
+	if ($route === 'admin') {
+		include SA_DIR_COREPATH . '/tmpl/html/1.page.admin.tmpl';
+		return;
+	}
+
 	// Browser assets are static build artifacts; the former CSS/JS routes are retired.
 	if (preg_match('~^/(?:css|js)/~', rawurldecode($_SERVER['QUERY_STRING'] ?? ''))) {
 		http_response_code(404);

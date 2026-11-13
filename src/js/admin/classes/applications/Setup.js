@@ -5,7 +5,6 @@ classes.components.Setup = function () {
 	/* "imported" classes
 		*/
 	var XMLTabs;
-	var Func;
 	var Admin;
 	var Lang;
 	var SiteBar;
@@ -24,15 +23,9 @@ classes.components.Setup = function () {
 			Admin.state(null, _panel.tabdata()[0].key);
 		}
 	}
-	function onDataChanged () {
-		if ( Admin.config().setup.standalone._value=="false" ) {
-			Func.refresh();
-		}
-	}
 	function render () {
 		_panel = new XMLTabs();
 		_panel.addEventListener("onTabData", onTabData);
-		_panel.addEventListener("onDataChanged", onDataChanged);
 		_panel.revert_is_delete(_revert_is_delete);
 		_panel.type(_type);
 		_panel.parent($('#application'));
@@ -71,13 +64,11 @@ classes.components.Setup = function () {
 	};
 	this.destroy = function () {
 		_panel.removeEventListener("onTabData", onTabData);
-		_panel.removeEventListener("onDataChanged", onDataChanged);
 		_panel.destroy();
 	};
 	this.initialize = function () {
 		Admin = classes.Admin;
 		Lang = classes.data.Lang;
-		Func = classes.helpers.Func;
 		XMLTabs = classes.components.XMLTabs;
 		SiteBar = classes.components.SiteBar;
 		render();

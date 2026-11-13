@@ -1,0 +1,33 @@
+// Setup and recovery use the admin's dialog styling without a modal overlay.
+body.AdminPage {
+	height: auto;
+	padding: 28px 16px;
+	background: #f4f4f4;
+	.Dialog {
+		position: relative;
+		width: 550px;
+		max-width: 100%;
+		margin: 0 auto;
+	}
+	.Header { margin: 0; }
+	.Content { padding: 24px; }
+	h2 { font-size: 18px; font-weight: bold; margin-bottom: 16px; }
+	.Header h2 { font-size: 14px; margin: 0; line-height: inherit; }
+	p { line-height: 1.5; margin-bottom: 16px; }
+	.Progress { color: #666; }
+	label { display: block; font-weight: bold; margin: 12px 0 6px; }
+	input:not([type="hidden"]), select, textarea {
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px solid #bbb;
+		padding: 9px;
+		font-size: 14px;
+		background: white;
+	}
+	input:focus, select:focus, textarea:focus, button:focus { outline: 2px solid #555 !important; outline-offset: 2px; }
+	button { cursor: pointer; padding: 9px 16px; border: 1px solid #bbb; background: #f4f4f4; font-weight: bold; }
+	.Actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+	.Error { margin: 0 0 16px; }
+	form { margin-bottom: 16px; }
+	form > button { margin-top: 16px; }
+}

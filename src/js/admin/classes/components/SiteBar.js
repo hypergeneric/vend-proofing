@@ -50,35 +50,33 @@ classes.components.SiteBar = (function () {
 				
 				// logo
 				xhtml += 	'<div id="logo">';
-				xhtml += 		'<img src="' + NAMESPACE + '-core/graphics/admin/' + Admin.config().setup.product_badge._value + '" width="' + Admin.config().setup.product_badge._attributes.width + '" height="' + Admin.config().setup.product_badge._attributes.height + '" />';
+				xhtml += 		'<img src="' + NAMESPACE + '-core/graphics/admin/' + Admin.config().badge.file + '" width="' + Admin.config().badge.width + '" height="' + Admin.config().badge.height + '" />';
 				xhtml += 		'<div class="Clear"></div>';
 				xhtml += 	'</div>';
 				xhtml += 	'<div class="Clear"></div>';
 				// sidebar nav
 				xhtml += 	'<ul id="nav">';
-			for (var i=0; i<Admin.config().setup.sitebar.tab.length; ++i) {
-				var tab = Admin.config().setup.sitebar.tab[i];
-				xhtml += 		'<li data-key="/' + tab._attributes.key + '/">';
-				xhtml += 			'<a>' + '<span class="glyphicon glyphicon-' + tab._attributes.icon + '"></span>&nbsp;&nbsp;' + Lang.lookup(tab._attributes.key) + '</a>';
-				if (tab.tab) {
-					var tabs = tab.tab;
+			for (var i=0; i<Admin.config().tabs.length; ++i) {
+				var tab = Admin.config().tabs[i];
+				xhtml += 		'<li data-key="/' + tab.key + '/">';
+				xhtml += 			'<a>' + '<span class="glyphicon glyphicon-' + tab.icon + '"></span>&nbsp;&nbsp;' + Lang.lookup(tab.key) + '</a>';
+				if (tab.tabs) {
+					var tabs = tab.tabs;
 				xhtml += 			'<ul>';
 					for (var j=0; j<tabs.length; ++j) {
 						var tab = tabs[j];
-				xhtml += 				'<li data-key="/' + tab._attributes.key + '/">';
-				xhtml += 					'<a class="HardSub">' + Lang.lookup(tab._attributes.key) + '</a>';
+				xhtml += 				'<li data-key="/' + tab.key + '/">';
+				xhtml += 					'<a class="HardSub">' + Lang.lookup(tab.key) + '</a>';
 				xhtml += 				'</li>';
 					}
 				xhtml += 			'</ul>';
 				}
 				xhtml += 		'</li>';
 			}
-			if ( Admin.config().setup.standalone._value=="true" && Admin.config().setup.hub._value!="true" ) {
-				// logout
-				xhtml += 		'<li data-key="/logout/">';
-				xhtml += 			'<a>' + '<span class="glyphicon glyphicon-off"></span>&nbsp;&nbsp;' + Lang.lookup("Logout") + '</a>';
-				xhtml += 		'</li>';
-			}
+			// logout
+			xhtml += 		'<li data-key="/logout/">';
+			xhtml += 			'<a>' + '<span class="glyphicon glyphicon-off"></span>&nbsp;&nbsp;' + Lang.lookup("Logout") + '</a>';
+			xhtml += 		'</li>';
 			/*if (  is dev  true ) {
 				// lang out
 				xhtml += 		'<li data-key="trace_lang_log">';
@@ -88,27 +86,25 @@ classes.components.SiteBar = (function () {
 				xhtml += 	'</ul>';
 				// dropdown
 				xhtml += 	'<select>';
-			for (var i=0; i<Admin.config().setup.sitebar.tab.length; ++i) {
-				var tab = Admin.config().setup.sitebar.tab[i];
-				xhtml += 		'<option data-key="/' + tab._attributes.key + '/">';
-				xhtml += 			Lang.lookup(tab._attributes.key);
+			for (var i=0; i<Admin.config().tabs.length; ++i) {
+				var tab = Admin.config().tabs[i];
+				xhtml += 		'<option data-key="/' + tab.key + '/">';
+				xhtml += 			Lang.lookup(tab.key);
 				xhtml += 		'</option>';
-				if (tab.tab) {
-					var tabs = tab.tab;
+				if (tab.tabs) {
+					var tabs = tab.tabs;
 					for (var j=0; j<tabs.length; ++j) {
 						var tab = tabs[j];
-				xhtml += 		'<option data-key="/' + tab._attributes.key + '/">';
-				xhtml += 			" -- " + Lang.lookup(tab._attributes.key);
+				xhtml += 		'<option data-key="/' + tab.key + '/">';
+				xhtml += 			" -- " + Lang.lookup(tab.key);
 				xhtml += 		'</option>';
 					}
 				}
 			}
-			if ( Admin.config().setup.standalone._value=="true" && Admin.config().setup.hub._value!="true" ) {
-				// logout
-				xhtml += 		'<option data-key="/logout/">';
-				xhtml += 			Lang.lookup("Logout");
-				xhtml += 		'</option>';
-			}
+			// logout
+			xhtml += 		'<option data-key="/logout/">';
+			xhtml += 			Lang.lookup("Logout");
+			xhtml += 		'</option>';
 				xhtml += 	'</select>';
 				xhtml += 	'<div class="Clear"></div>';
 				// dropdown
@@ -117,11 +113,6 @@ classes.components.SiteBar = (function () {
 				
 			$('#container').append(xhtml);
 			
-			if ( Admin.config().setup.standalone._value=="false" ) {
-				$('#logo').css("cursor", "pointer").click(function () {
-					Func.back();
-				});
-			}
 			
 			$('#navigation ul li a').click(function (event) {
 				var key = $(this).parent().data("key");

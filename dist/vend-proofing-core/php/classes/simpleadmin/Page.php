@@ -72,7 +72,7 @@
 		protected $flag_special_type;
 		protected $flag_cache = false;
 		protected $flag_is_home = false;
-		protected $home_uri = "/init/";
+		protected $home_uri = "/";
 		protected $render_type = "";
 		protected $page_object = array();
 		protected $data_types = array();
@@ -302,7 +302,6 @@
 			$this->page_object["fragments"] = $query_fragments;
 			/* load up our data sets
 				*/
-			$this->checkForInit();
 			/* draw it up
 				*/
 			$query_actual = "";
@@ -314,14 +313,6 @@
 				$this->render_type = "xml";
 				$this->cache(false);
 				$query_actual = "/cronjob/";
-				break;
-			 case "init" :
-				$this->cache(false);
-				$query_actual = "/init/";
-				break;
-			 case "admin" :
-				$this->cache(false);
-				$query_actual = "/admin/";
 				break;
 			 case "order" :
 				$this->cache(false);
@@ -527,16 +518,6 @@
 				*/
 			if ($size>0) {
 				header('Content-Length: '. $size);
-			}
-		}
-
-		protected function checkForInit () {
-			global $CONFIG;
-			$hasAuth = AdminAccount::exists();
-			$hasContent = count($this->data_lookup["page"])>0;
-			if ( !$hasAuth && !$hasContent && $this->render_type=="html" && $this->flag_is_home ) {
-				header("Location: " . Func::getBaseUrl() . "/" . SA_DIR_INDEXPATH . "?/init/");
-				exit();
 			}
 		}
 

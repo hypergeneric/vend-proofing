@@ -1,0 +1,94 @@
+<?php
+if (PHP_SAPI !== 'cli' || getcwd() !== '/app/dist') exit(2);
+function check (bool $ok, string $message): void { if (!$ok) throw new RuntimeException($message); }
+function request (array &$cookies, string $route = '?/setup/', ?array $data = null): array {
+	$options = ['method' => $data === null ? 'GET' : 'POST', 'ignore_errors' => true, 'follow_location' => 0,
+		'header' => 'Cookie: ' . implode('; ', $cookies) . "\r\nContent-Type: application/x-www-form-urlencoded\r\n"];
+	if ($data !== null) $options['content'] = http_build_query($data);
+	$html = file_get_contents('http://127.0.0.1:8080/' . $route, false, stream_context_create(['http' => $options]));
+	foreach ($http_response_header as $header) if (preg_match('/^Set-Cookie: ([^=]+)=([^;]*)/', $header, $m)) $cookies[$m[1]] = $m[1] . '=' . $m[2];
+	preg_match('~HTTP/\S+ (\d+)~', $http_response_header[0], $m);
+	return [(int) $m[1], $html, implode("\n", $http_response_header)];
+}
+function form (array &$cookies): array {
+	[$status, $html] = request($cookies);
+	check($status === 200, 'Setup did not render');
+	preg_match('/name="setup_csrf" value="([a-f0-9]{64})"/', $html, $csrf);
+	preg_match('/name="step" value="(\d)"/', $html, $step);
+	check(isset($csrf[1], $step[1]), 'Missing setup form fields');
+	return ['setup_csrf' => $csrf[1], 'step' => $step[1]];
+}
+copy('vend-proofing-core/lang/en.json', 'vend-proofing-core/lang/es.json');
+$cookies = [];
+check(request($cookies, '?/admin/')[0] === 302, 'Uninstalled admin not redirected');
+check(request($cookies, '')[0] === 302, 'Uninstalled home not redirected');
+$step1 = form($cookies);
+check(!is_file('vend-proofing-data/auth/vend.sqlite'), 'GET created database');
+$settings = ['language' => 'es', 'indexpath' => '', 'basepath' => './', 'baseurl' => 'https://example.invalid/proofs'];
+check(str_contains(request($cookies, '?/setup/', ['step' => '1'] + $settings)[1], 'form expired'), 'Missing CSRF accepted');
+check(!is_file('vend-proofing-data/auth/vend.sqlite'), 'Invalid POST created database');
+check(str_contains(request($cookies, '?/setup/', $step1 + ['baseurl' => 'javascript:alert(1)'] + $settings)[1], 'public HTTPS URL'), 'Invalid URL accepted');
+check(str_contains(request($cookies, '?/setup/', $step1 + ['language' => '../en'] + $settings)[1], 'available language'), 'Invalid language accepted');
+check(request($cookies, '?/setup/', $step1 + $settings)[0] === 303, 'Step 1 failed');
+check(str_contains(request($cookies)[1], 'lang="es"'), 'Selected language not applied');
+$db = new PDO('sqlite:vend-proofing-data/auth/vend.sqlite');
+check((int) $db->query("SELECT COUNT(*) FROM configuration_documents WHERE type='installation'")->fetchColumn() === 1, 'Installation not saved');
+$other = []; $other1 = form($other);
+check(request($other, '?/setup/', $other1 + $settings)[0] === 303, 'Competing draft setup failed');
+$step2 = form($cookies);
+$credentials = ['username' => 'wizardadmin', 'email' => 'owner@example.invalid', 'password' => 'SyntheticSetupPassword123!', 'confirm_password' => 'SyntheticSetupPassword123!'];
+check(str_contains(request($cookies, '?/setup/', $step2 + ['confirm_password' => 'wrong'] + $credentials)[1], 'Passwords must match'), 'Confirmation not checked');
+check(request($cookies, '?/setup/', $step2 + $credentials)[0] === 303, 'Step 2 failed');
+check((int) $db->query('SELECT COUNT(*) FROM administrators')->fetchColumn() === 0, 'Draft account prematurely finished setup');
+foreach (glob('vend-proofing-data/auth/setup-sessions/*') as $file) check(!str_contains(file_get_contents($file), $credentials['password']), 'Plain password persisted');
+$other2 = form($other);
+check(request($other, '?/setup/', $other2 + ['username' => 'otheradmin'] + $credentials)[0] === 303, 'Second account draft failed');
+$other3 = form($other);
+$step3 = form($cookies);
+$contact = ['email' => 'business@example.invalid', 'name' => 'Owner', 'website_name' => 'Studio', 'website' => 'https://example.invalid/?one=1;two=2', 'phone' => '+1 555 0100', 'address' => "Line one\nLine two"];
+check(str_contains(request($cookies, '?/setup/', $step3 + ['email' => 'bad'] + $contact)[1], 'Email'), 'Invalid primary email accepted');
+check(request($cookies, '?/setup/', $step3 + $contact)[0] === 303, 'Finish failed');
+$row = $db->query('SELECT * FROM administrators')->fetch(PDO::FETCH_ASSOC);
+check($row['username'] === 'wizardadmin' && password_verify($credentials['password'], $row['password_hash']), 'Account not committed');
+$stored = json_decode($db->query("SELECT json_text FROM configuration_documents WHERE type='contact'")->fetchColumn(), true);
+check($stored['data']['details']['your_email']['_attributes']['href'] === $contact['email'], 'Primary email not saved');
+check($stored['data']['details']['your_website_url']['_attributes']['href'] === $contact['website'], 'Website URL damaged');
+check(request($other, '?/setup/', $other3 + ['email' => 'attacker@example.invalid'] + $contact)[0] === 302, 'Completed setup accepted competing POST');
+check((int) $db->query('SELECT COUNT(*) FROM administrators')->fetchColumn() === 1, 'Second admin created via setup');
+check(request($cookies)[0] === 302, 'Completed setup did not redirect');
+check(str_contains(request($cookies, '?/admin/')[1], 'classes.Admin.initialize'), 'Admin not available');
+$db->exec("DELETE FROM configuration_documents WHERE type='contact'");
+check(str_contains(request($cookies, '?/admin/')[1], 'classes.Admin.initialize'), 'Contact removal blocked admin');
+$installation = $db->query("SELECT json_text FROM configuration_documents WHERE type='installation'")->fetchColumn();
+$db->exec("DELETE FROM configuration_documents WHERE type='installation'");
+check(request($cookies, '?/admin/')[0] === 302, 'Missing installation not detected');
+[$status, $html] = request($cookies);
+check(str_contains($html, 'Sign in with that account'), 'Incomplete installation allowed anonymous account takeover');
+$db->prepare("INSERT INTO configuration_documents VALUES ('installation', '', ?, ?)")->execute([$installation, time()]);
+// Resetting saved installation data must invalidate an in-progress wizard too.
+$db->exec('DELETE FROM administrators');
+$db->exec("DELETE FROM configuration_documents WHERE type='installation'");
+$resetCookies = [];
+$reset1 = form($resetCookies);
+check(request($resetCookies, '?/setup/', $reset1 + $settings)[0] === 303, 'Reset fixture step 1 failed');
+$reset2 = form($resetCookies);
+check($reset2['step'] === '2', 'Reset fixture did not reach step 2');
+$db->exec("DELETE FROM configuration_documents WHERE type='installation'");
+$restart1 = form($resetCookies);
+check($restart1['step'] === '1', 'Missing installation resumed step 2');
+check($restart1['setup_csrf'] !== $reset2['setup_csrf'], 'Reset retained stale CSRF');
+check((int) $db->query("SELECT COUNT(*) FROM configuration_documents WHERE type='installation'")->fetchColumn() === 0, 'Reset GET recreated installation');
+check(request($resetCookies, '?/setup/', $restart1 + $settings)[0] === 303, 'Restarted settings failed');
+$reset2 = form($resetCookies);
+check(request($resetCookies, '?/setup/', $reset2 + $credentials)[0] === 303, 'Reset fixture account draft failed');
+$reset3 = form($resetCookies);
+check($reset3['step'] === '3', 'Reset fixture did not reach step 3');
+$db->exec("DELETE FROM configuration_documents WHERE type='installation'");
+[$status, $html] = request($resetCookies, '?/setup/', $reset3 + $contact);
+check(str_contains($html, 'form expired') && str_contains($html, 'name="step" value="1"'), 'Stale finish POST did not restart setup');
+check((int) $db->query('SELECT COUNT(*) FROM administrators')->fetchColumn() === 0, 'Stale draft created an administrator');
+check((int) $db->query("SELECT COUNT(*) FROM configuration_documents WHERE type='installation'")->fetchColumn() === 0, 'Stale draft recreated installation');
+$sessionId = substr($resetCookies['VEND_SETUP'], strlen('VEND_SETUP='));
+check(!str_contains(file_get_contents('vend-proofing-data/auth/setup-sessions/sess_' . $sessionId), '"hash"'), 'Reset retained the account draft');
+echo "PASS setup reset: missing installation restarts steps 2/3, rotates CSRF, clears account draft, and rejects stale finish POST\n";
+echo "PASS setup: empty install, CSRF, validation, steps, hash-only draft, SQLite settings/contact/account, competing completion, redirects, and contact independence\n";

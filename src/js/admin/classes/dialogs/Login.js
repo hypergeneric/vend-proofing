@@ -83,7 +83,7 @@ classes.dialogs.Login = function () {
 			xhtml += 		'<div class="Response">&nbsp;</div>';
 			xhtml += 		'<div class="Clear"></div>';
 			xhtml += 	'</form>';
-			xhtml += '<p><a href="?/admin/&amp;recover=1">' + Lang.lookup('Forgot Password') + '</a></p>';
+			xhtml += '<p><a class="Recover" href="?/admin/&amp;recover=1">' + Lang.lookup('Forgot Password') + '</a></p>';
 			xhtml += '</div>';
 			
 		_parent.html(xhtml);
@@ -98,6 +98,10 @@ classes.dialogs.Login = function () {
 		
 		error_label.css("margin-left", login.outerWidth()+15);
 		
+		_parent.find(".Recover").on("click", function (event) {
+			event.preventDefault();
+			classes.Admin.recover();
+		});
 		formobj.submit(do_login);
 		remember_check.change(toggle_remember);
 		screen.click(Func.stop);
@@ -109,6 +113,7 @@ classes.dialogs.Login = function () {
 		_parent = obj;
 	};
 	this.destroy = function () {
+		_parent.find(".Recover").off();
 		formobj.off();
 		remember_check.off();
 		screen.off();

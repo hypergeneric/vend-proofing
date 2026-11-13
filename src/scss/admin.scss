@@ -10,6 +10,7 @@
 @use "admin/08-xmlpanel" as component8;
 @use "admin/09-form-editor" as component9;
 @use "admin/10-stat-viewer" as component10;
+@use "admin/11-pages" as pages;
 
 #container {
 	background: url("../graphics/admin/ajax-loader.gif") no-repeat center center;

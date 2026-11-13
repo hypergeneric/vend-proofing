@@ -1,5 +1,55 @@
 # Vend modernization log
 
+## Installation values in System Info (2026-11-13)
+
+Added product, language, index path, base path, and base URL to `getSystemInfo`, alongside the existing installation version and last-updated fields. Values come through `AppConfig` from the installation configuration; the existing panel renders the rows and translates their labels through Lang lookup. PHP syntax and whitespace checks pass. No persistence or asset changes were needed.
+
+## Password recovery inside the admin app (2026-11-13)
+
+Replaced the standalone recovery template with `classes.dialogs.PasswordRecovery`, using the existing Dialog/DialogForm, Auth.send, and Lang lookup patterns. Forgot Password swaps the login dialog in place; emailed links select reset mode before authentication starts. The app scrubs the fragment token immediately, handles subsequent same-document reset links, and keeps recovery visible when auth polling or history events occur. The dialog displays generic request confirmation, password validation, reset success, and invalid/expired/reused-token responses. Back to Login returns to the ordinary admin entry. No secret questions or client-side password hashing were restored.
+
+Added public POST-only `recovery_form`, `recovery_request`, and `recovery_reset` Gateway actions through `RecoveryGateway`. They retain separate cookie-based CSRF protection and call the existing PasswordRecovery implementation for rate limits, hashes, expiry, account-version binding, atomic consumption/session invalidation, and mail composition. Passwords use raw POST values to preserve backslashes. Admin pages and recovery responses send privacy headers. Removed `1.page.recovery.tmpl` and its obsolete JavaScript-required copy; rebuilt the admin bundle.
+
+Passed isolated foundation/auth/users/recovery/Gateway smoke, including reset CSRF, GET rejection, confirmation/length, password backslashes, replay, generic responses, and SPA entry. Chrome verified in-app request without reload, reset while another account is signed in, fragment cleanup, confirmation errors, successful reset/new-password login, same-document replay rejection, and mobile layout without JavaScript errors or horizontal overflow. The mobile screenshot was inspected. No external email was sent and no local account data changed.
+
+## Restart setup after removing installation settings (2026-11-13)
+
+The wizard now resets an in-progress session to step 1 when the saved installation document is missing, even if the database file still exists. Resetting also clears the drafted account/settings, rotates the session and CSRF token, and prevents an old step-3 POST from recreating settings or creating an administrator. Existing administrators still require authentication when restoring missing installation settings.
+
+Passed the isolated setup HTTP suite with new step-2 GET and step-3 stale-POST regression cases, including no writes on reset, account-draft removal, and CSRF rotation. `git diff --check` passes. No local records were modified; a page reload applies the fix to existing wizard sessions.
+
+## Public three-step setup and one admin stylesheet (2026-11-13)
+
+Extracted `1.page.setup.tmpl` and `SetupWizard`. Uninstalled page requests redirect to setup; readiness means the database, saved installation document, and an administrator exist. Regular admin is now a small SPA template. A completed installation redirects setup GETs and POSTs to admin. Missing contact settings no longer force administrators into a contact form. Recovery retains its unauthenticated page and existing URL, using the same admin CSS.
+
+Step 1 lists shipped language catalogs, suggests index/base paths and a public HTTPS URL, validates confirmation, creates SQLite when needed, and saves installation settings. Step 2 validates the first account and retains only a password hash in a private setup session. Step 3 requires the primary business email and saves the optional sender/site names, website URL, phone, and physical address. Contact, installation settings, and the first account commit together; postponing account creation until completion prevents readiness from skipping the last screen. Setup uses expiring private filesystem sessions before a database exists, CSRF tokens, serialized writes, and a transactional first-account check. Existing administrators must authenticate to repair missing installation settings. No test email is sent. Local application data was not reset.
+
+Removed the FTP-era init template and old setup labels. Its unrelated mail-test/Dropbox/download notices now use a small message page. Deleted the admin-shell sources/generated files and bundle entry. Setup, recovery, and messages use main admin dialog styling with a small responsive page-layout module in `admin.css`. New UI text uses Lang lookup, catalog exceptions only, and brace placeholders.
+
+Passed empty-install HTTP tests (redirects, database seeding, shipped-language selection, invalid URLs/languages, CSRF, password confirmation, no plaintext stored password, required business email, competing setup sessions, completion lockout, and missing-contact independence), foundation/auth/users/recovery/Gateway smoke, gallery/checkout/media smoke, four-bundle CSS assets and 32 theme variants. Chrome completed the wizard, signed in with the new account, verified setup lockout and recovery, and showed no JavaScript errors or mobile overflow; desktop/mobile screenshots were inspected. Existing curl 23 truncated-pipeline noise remains in older gallery checks. CLI installation remains available. Alternate database backends and moving recovery into the SPA are deferred.
+
+## Installation settings in SQLite and one admin runtime attribute (2026-11-12)
+
+Renamed the remaining `defaults/admin.json` to `defaults/installation.json` and wrapped its settings in the existing configuration-document format. Fresh database installation seeds an `installation` row in `configuration_documents`. `AppConfig` now delegates reads to `Configuration`, using saved SQLite settings with the normal source-default fallback (also allowing pre-install rendering). Schema replay does not overwrite saved installation settings. No upgrade migration or automatic database creation was added.
+
+The admin template now emits one HTML-escaped JSON `data-config` object with only language, basepath, and indexpath. `Admin.js` parses it at startup. Canonical URLs and other server settings are not exported to this object. Updated developer/operator guidance and isolated URL tests to use saved SQLite settings.
+
+Passed fresh-install foundation/auth/users/recovery/Gateway HTTP checks, saved installation-setting/seed/replay assertions, canonical URL bootstrap cases, JavaScript/runtime/language checks, payment smoke, and whitespace checks. Chrome verified login, navigation, badge, and logout with the new runtime object. All tests used disposable synthetic databases. Existing local records/media were not reset. The new-install on-ramp remains the next bounded task; database reset alone does not remove media or automatically reinstall the schema.
+
+## Compact admin definition owned by Admin.js (2026-11-12)
+
+Removed `VEND_ADMIN_CONFIG` entirely. `Admin.js` now owns a compact object with ordinary title/badge properties and tab/content-type arrays, replacing the XML-shaped `_value`/`_attributes` structure. Updated sidebar, set editor, and set tabs to consume plain properties and boolean flags. Runtime language and paths are read directly from the admin page attributes at startup. The bootstrap retains only namespace, browser flags, and class scaffolding.
+
+Rebuilt JavaScript; asset/source-map checks, foundation/auth/users/recovery/Gateway HTTP smoke, and whitespace checks pass. Chrome verified login, navigation, badge rendering, all three content-type definitions, absence of the global config, and logout without JavaScript errors using a disposable fixture. Installation configuration and setup wizard remain deferred.
+
+## Vend-owned admin bootstrap and retired shared-admin modes (2026-11-12)
+
+Moved the sidebar, content types, product badge, and fixed Vend title/namespace into `src/js/admin/bootstrap.js`. Removed `2.config-admin.tmpl` and the public `AppConfig::adminConfig()` export. The admin page supplies only escaped language/basepath/indexpath attributes; installation settings and shared product metadata remain in `defaults/admin.json` pending the installation-configuration work. Storefront configuration is unchanged.
+
+Removed the hub and standalone settings and all first-party checks of them. Retained standalone navigation/history, desktop/mobile logout, page-link selection, and site links directly. Removed embedded parent-frame back/refresh helpers and their otherwise-empty data-change listeners. Gateway system information is always available to authenticated admins, and image overlays select Imagick by extension availability alone. Third-party libraries were left intact.
+
+Passed rebuilt JavaScript and asset/configuration/language checks, isolated foundation/auth/users/recovery/Gateway HTTP smoke, and `git diff --check`. Headless Chrome verified login, navigation across Sets/Mail/Music/Setup/Dashboard, the badge, absence of inline admin configuration and retired flags, and logout without JavaScript errors. Used disposable synthetic records only. The setup wizard and moving installation configuration into SQLite remain separate follow-ups.
+
 ## Distribution webroot and language catalogs (2026-11-12)
 
 Moved the web entry points, access-control files, EULA, core runtime, and existing ignored application data into `dist/`. Source assets, scripts, npm tooling, and documentation stay at the repository root. Updated CSS/JavaScript build destinations, source-map paths, vendor asset rebasing, template watches, CLI paths, isolated fixtures, ignore rules, and Lando document root/error-log location. Public URLs remain unchanged. Rebuilt Lando successfully and verified the storefront/admin and static assets over HTTPS; repository scripts, source, docs, and package metadata return 404, while the private database returns 403. Existing data was moved intact.

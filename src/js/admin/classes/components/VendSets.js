@@ -121,10 +121,10 @@ classes.components.VendSets = function () {
 		/* see what the big man has to day
 			*/
 		var content_settings;
-		for (var i=0; i<Admin.config().setup.content.type.length; ++i) {
-			var content_type = Admin.config().setup.content.type[i];
-			if (content_type._attributes.key.toLowerCase()==_type) {
-				content_settings = content_type._attributes;
+		for (var i=0; i<Admin.config().contentTypes.length; ++i) {
+			var content_type = Admin.config().contentTypes[i];
+			if (content_type.key.toLowerCase()==_type) {
+				content_settings = content_type;
 				break;
 			}
 		}
@@ -184,14 +184,14 @@ classes.components.VendSets = function () {
 			create the tab data
 			*/
 		_tabdata = []; // save the first app
-		if (content_settings.tabs=="true") {
+		if (content_settings.tabs===true) {
 			for (var prop in _reference.data) {
 				if (prop=="_attributes") continue;
 				if (prop=="_value") continue;
 				if (prop=="__proto__") continue;
 				if (prop=="#text") continue;
 				if (prop=="#cdata-section") continue;
-				if (prop=="child"&&content_settings.children=="true") continue;
+				if (prop=="child"&&content_settings.children===true) continue;
 				_tabdata.push({
 					label: Lang.lookup(prop),
 					key: prop,

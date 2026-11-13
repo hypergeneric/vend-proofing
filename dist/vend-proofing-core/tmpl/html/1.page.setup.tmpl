@@ -1,0 +1,142 @@
+<?php
+	if (SetupWizard::ready()) {
+		header('Location: ?/admin/');
+		exit;
+	}
+	header('Cache-Control: no-store');
+	header('Referrer-Policy: no-referrer');
+	header('X-Robots-Tag: noindex, nofollow');
+	$escape = static fn ($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+	$text = static fn (string $key): string => $escape($LANG->lookup($key));
+	$field = static fn (string $key): string => isset($_POST[$key]) && is_string($_POST[$key]) ? $_POST[$key] : '';
+	$sessionDir = SA_DIR_AUTH . '/setup-sessions';
+	$message = '';
+	try {
+		if (!is_dir($sessionDir) && !mkdir($sessionDir, 0700, true) && !is_dir($sessionDir)) throw new RuntimeException();
+		session_name('VEND_SETUP');
+		session_save_path($sessionDir);
+		ini_set('session.use_strict_mode', '1');
+		ini_set('session.use_only_cookies', '1');
+		session_set_cookie_params(['path' => '/', 'httponly' => true, 'samesite' => 'Strict',
+			'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https']);
+		if (!session_start()) throw new RuntimeException();
+		if (!isset($_SESSION['wizard']) || $_SESSION['wizard']['expires'] < time()
+			|| ($_SESSION['wizard']['step'] > 1
+				&& !(Configuration::getDocument('installation', null, true) instanceof ConfigurationDocument))) {
+			session_regenerate_id(true);
+			$_SESSION['wizard'] = ['step' => 1, 'csrf' => bin2hex(random_bytes(32)), 'expires' => time() + 3600,
+				'settings' => SetupWizard::guesses()];
+		}
+		$wizard = &$_SESSION['wizard'];
+		$existing = AdminAccount::exists();
+		$unlock = $existing && !(new Auth())->sessionAuthenticated();
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			try {
+				if (!hash_equals($wizard['csrf'], $field('setup_csrf'))) throw new InvalidArgumentException('Setup Form Expired');
+				if ($unlock) {
+					if ((new Auth())->login($field('username'), $field('password')) === '') throw new InvalidArgumentException('Setup Sign In Required');
+				} else {
+					if ((string) $wizard['step'] !== $field('step')) throw new InvalidArgumentException('Setup Form Expired');
+					if ($field('back') !== '') {
+						$wizard['step'] = max(1, $wizard['step'] - 1);
+						unset($wizard['account']);
+					} elseif ($wizard['step'] === 1) {
+						foreach (['language', 'indexpath', 'basepath', 'baseurl'] as $key) $wizard['settings'][$key] = trim($field($key));
+						SetupWizard::saveSettings($wizard['settings']);
+						$wizard['step'] = 2;
+					} elseif ($wizard['step'] === 2) {
+						if ($field('password') !== $field('confirm_password')) throw new InvalidArgumentException('Account Password Mismatch');
+						$wizard['account'] = AdminAccount::prepareFirst(trim($field('username')), trim($field('email')), $field('password'));
+						$wizard['step'] = 3;
+					} else {
+						$contact = [];
+						foreach (['email', 'name', 'website', 'website_name', 'phone', 'address'] as $key) $contact[$key] = trim($field($key));
+						SetupWizard::finish($wizard['settings'], $wizard['account'], $contact);
+						$_SESSION = [];
+						session_destroy();
+						header('Location: ?/admin/', true, 303);
+						exit;
+					}
+				}
+				$wizard['csrf'] = bin2hex(random_bytes(32));
+				header('Location: ?/setup/', true, 303);
+				exit;
+			} catch (InvalidArgumentException $error) {
+				$message = $error->getMessage();
+			} catch (Throwable $error) {
+				$message = 'Setup Storage Failed';
+				error_log('Vend setup could not save installation data. Check directory permissions and database availability.');
+			}
+		}
+		$step = $wizard['step'];
+		$csrf = $wizard['csrf'];
+		$settings = $wizard['settings'];
+		$account = $wizard['account'] ?? [];
+		session_write_close();
+	} catch (Throwable $error) {
+		$message = 'Setup Storage Failed';
+		$step = 0;
+	}
+	$input = static function (string $name, string $label, string $type = 'text', string $value = '', bool $required = false) use ($escape, $text): void {
+		echo '<label for="setup-' . $name . '">' . $text($label) . '</label>';
+		echo '<input id="setup-' . $name . '" name="' . $name . '" type="' . $type . '" value="' . $escape($value) . '"'
+			. ($required ? ' required' : '') . ($type === 'password' ? ' minlength="12" maxlength="4096" autocomplete="new-password"' : ' maxlength="2000"') . '>';
+	};
+?>
+<!doctype html>
+<html lang="<?php echo $escape($LANG->code); ?>">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><?php echo $text('Set Up Vend'); ?></title>
+	<link rel="stylesheet" href="<?php echo SA_DIR_COREPATH; ?>/css/admin.css?v=<?php echo filemtime(SA_DIR_COREPATH . '/css/admin.css'); ?>">
+</head>
+<body class="AdminPage">
+	<main class="Dialog">
+		<h1 class="Header"><?php echo $text('Set Up Vend'); ?></h1>
+		<div class="Content">
+			<?php if ($message !== '') { ?><p class="Error" role="alert"><?php echo $text($message); ?></p><?php } ?>
+			<?php if ($step > 0) { ?>
+			<form action="?/setup/" method="post">
+				<input type="hidden" name="setup_csrf" value="<?php echo $escape($csrf); ?>">
+				<input type="hidden" name="step" value="<?php echo $step; ?>">
+				<?php if ($unlock) { ?>
+					<p><?php echo $text('Setup Sign In Required'); ?></p>
+					<?php $input('username', 'Username', 'text', '', true); $input('password', 'Password', 'password', '', true); ?>
+				<?php } else { ?>
+					<p class="Progress"><?php echo $escape(str_replace(['{STEP}', '{TOTAL}'], [$step, 3], $LANG->lookup('Setup Progress'))); ?></p>
+					<?php if ($step === 1) { ?>
+						<h2><?php echo $text('Vend Settings'); ?></h2>
+						<p><?php echo $text('Setup Settings Description'); ?></p>
+						<label for="setup-language"><?php echo $text('Language'); ?></label>
+						<select id="setup-language" name="language">
+						<?php foreach (SetupWizard::languages() as $code) { ?><option value="<?php echo $escape($code); ?>" <?php if ($settings['language'] === $code) echo 'selected'; ?>><?php echo $escape(strtoupper($code)); ?></option><?php } ?>
+						</select>
+						<?php $input('indexpath', 'Index Path', 'text', $settings['indexpath']); ?>
+						<?php $input('basepath', 'Base Path', 'text', $settings['basepath'], true); ?>
+						<?php $input('baseurl', 'Base URL', 'url', $settings['baseurl'], true); ?>
+					<?php } elseif ($step === 2) { ?>
+						<h2><?php echo $text('First Administrator'); ?></h2>
+						<p><?php echo $text('Account Password Length'); ?></p>
+						<?php $input('username', 'Username', 'text', $field('username'), true); $input('email', 'Email', 'email', $field('email'), true); ?>
+						<?php $input('password', 'Password', 'password', '', true); $input('confirm_password', 'Confirm Password', 'password', '', true); ?>
+					<?php } else { ?>
+						<h2><?php echo $text('Business Details'); ?></h2>
+						<p><?php echo $text('Setup Contact Description'); ?></p>
+						<?php $input('email', 'Primary Email', 'email', $_SERVER['REQUEST_METHOD'] === 'POST' ? $field('email') : ($account['email'] ?? ''), true); ?>
+						<?php $input('name', 'Email Sender Name', 'text', $field('name')); $input('website_name', 'Website Name', 'text', $field('website_name')); ?>
+						<?php $input('website', 'Website URL', 'url', $field('website')); $input('phone', 'Phone Number', 'tel', $field('phone')); ?>
+						<label for="setup-address"><?php echo $text('Physical Address'); ?></label>
+						<textarea id="setup-address" name="address" rows="3" maxlength="2000"><?php echo $escape($field('address')); ?></textarea>
+					<?php } ?>
+				<?php } ?>
+				<div class="Actions">
+					<?php if (!$unlock && $step > 1) { ?><button name="back" value="1" formnovalidate><?php echo $text('Back'); ?></button><?php } ?>
+					<button type="submit"><?php echo $text($unlock ? 'Sign In' : ($step === 3 ? 'Finish Setup' : 'Continue')); ?></button>
+				</div>
+			</form>
+			<?php } ?>
+		</div>
+	</main>
+</body>
+</html>

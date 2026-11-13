@@ -1,0 +1,23 @@
+{
+	"data": {
+		"setup": {
+			"last_updated": {},
+			"product": {
+				"_value": "vend-proofing"
+			},
+			"product_version": {
+				"_value": "1.0.00"
+			},
+			"language": {
+				"_value": "en"
+			},
+			"indexpath": {},
+			"basepath": {
+				"_value": "./"
+			},
+			"baseurl": {
+				"_value": ""
+			}
+		}
+	}
+}

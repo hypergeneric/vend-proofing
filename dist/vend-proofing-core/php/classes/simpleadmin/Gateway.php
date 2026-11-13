@@ -80,6 +80,8 @@
 			$props = array(
 				"last_updated" => 				is_numeric( $last_updated ) ? @date("m/d/Y", $CONFIG->getNodeVal("setup.last_updated")/1000) : "N/A",
 				"product_version" => 			$CONFIG->getNodeVal("setup.product_version"),
+				"language" => 					$CONFIG->getNodeVal("setup.language"),
+				"base_url" => 					$CONFIG->getNodeVal("setup.baseurl"),
 				"user_generated_storage" => 	Func::bytesToSize(Filesystem::getDirSize(SA_DIR_STORAGE)),
 				"temporary_storage" => 			Func::bytesToSize(Filesystem::getDirSize(SA_DIR_TEMP)),
 				"php_version" => 				preg_replace('/[a-z-]/', '', phpversion()),
@@ -90,14 +92,6 @@
 				"gd_library_version" => 		$gdv,
 				"imagick_library_version" => 	$imagick_version
 			);
-			if ($CONFIG->getNodeVal("setup.hub")=="true") {
-				unset($props["php_version"]);
-				unset($props["php_os"]);
-				unset($props["server_api"]);
-				unset($props["curl_library_version"]);
-				unset($props["gd_library_version"]);
-				unset($props["imagick_library_version"]);
-			}
 			$response = "";
 			foreach ($props as $key => $value) {
 				$response .= $response=="" ? $key . "=" . $value : "&" . $key . "=" . $value;
@@ -121,7 +115,6 @@
 		/* ---- Public Execution ---- */
 
 		protected function runPublic () {
-			global $CONFIG;
 			global $LANG;
 			switch ($this->action) {
 			 case "image_colorize" :
@@ -172,8 +165,7 @@
 				/* ok, let's create it
 					*/
 				$imagick_installed = extension_loaded("Imagick");
-				$is_hub = $CONFIG->getNodeVal("setup.hub")=="true";
-				$use_imagick = ($is_hub||$imagick_installed) && $effect=="overlay";
+				$use_imagick = $imagick_installed && $effect=="overlay";
 				if (!$use_imagick) {
 					switch($extension) {
 						case 'png' :
@@ -255,6 +247,11 @@
 						));
 				}
 				break;
+			 case "recovery_form" :
+			 case "recovery_request" :
+			 case "recovery_reset" :
+				$this->respond(RecoveryGateway::handle($this->action));
+				break;
 			 case "login" :
 				$username = $this->getRequestVariable("username");
 				$password = isset($_POST["password"]) && is_string($_POST["password"]) ? $_POST["password"] : "";
@@ -287,7 +284,6 @@
 		/* ---- Private Execution ---- */
 
 		protected function runPrivate () {
-			global $CONFIG;
 			switch ($this->control) {
 			 case "upload" :
 				$cookie_name = md5($CONFIG->getNodeVal("setup.product"));

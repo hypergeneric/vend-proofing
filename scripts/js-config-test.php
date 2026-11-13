@@ -4,9 +4,6 @@
 class Func {
 	public static function getBaseUrl() { return 'https://fixture.invalid/subdirectory'; }
 }
-class AppConfig {
-	public static function adminConfig() { return ['setup' => ['product_title' => ['_value' => 'A "title" </script>']]]; }
-}
 class JsConfigDocument {
 	public function __construct(private array $values) {}
 	public function getNodeVal($path) { return $this->values[$path] ?? ''; }
@@ -70,5 +67,4 @@ checkJs($config['language']['general']['plain'] === htmlspecialchars("Quotes ' \
 checkJs($config['language']['general']['lines'] === 'First<br />Second', 'Multiline translation');
 checkJs($config['language']['general']['markdown'] === "<p>Owner's**text**</p>", 'Markdown translation');
 checkJs(!isset($config['language']['general']['_value']), 'Internal language fields');
-checkJs($LANG->render('admin')['adminConfig'] === AppConfig::adminConfig(), 'Admin config');
 echo "PASS inline runtime configuration, typed settings, translations, escaping, and private-field exclusion\n";

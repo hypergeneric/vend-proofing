@@ -2,11 +2,11 @@
 
 	require_once __DIR__ . "/ConfigurationDocument.php";
 
-	/** Saved configuration lives in SQLite; source defaults live beside admin.json. */
+	/** Saved configuration lives in SQLite; source defaults live in the core defaults directory. */
 	class Configuration {
 
 		private static function defaultPath (string $type): ?string {
-			if (!preg_match('/^[a-z]+$/', $type) || $type==="admin") return null;
+			if (!preg_match('/^[a-z]+$/', $type)) return null;
 			$path = SA_DIR_DEFAULTS . "/$type.json";
 			return is_file($path) ? $path : null;
 		}

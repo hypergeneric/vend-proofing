@@ -18,21 +18,69 @@ classes.Admin = (function () {
 			
 		var _instance = 		this;
 		var _inited = 			false;
+		var _recovering = false;
+		var _recoveryToken = "";
+		var _dialogsReady = false;
 		var _application = 		null;
 		var _view = 			null;
 		var _state = 			null;
-		var _config = 			null;
+		var _config = {
+			title: "Vend",
+			badge: {file: "vend.png", width: 125, height: 50},
+			tabs: [
+				{key: "dashboard", icon: "dashboard"},
+				{key: "orders", icon: "usd"},
+				{key: "sets", icon: "list-alt"},
+				{key: "mailpanel", icon: "envelope"},
+				{key: "pricing", icon: "tags"},
+				{key: "setup", icon: "cog", tabs: [
+					{key: "setup"}, {key: "ordering"}, {key: "splash"},
+					{key: "policies"}, {key: "discounts"}, {key: "cron"}, {key: "musicpanel"}
+				]},
+				{key: "design", icon: "tint"},
+				{key: "language", icon: "globe"}
+			],
+			contentTypes: [
+				{key: "UploadSet", images: true, audio: true, children: false, tabs: true},
+				{key: "CategorySet", images: true, audio: true, children: false, tabs: true},
+				{key: "DropboxSet", images: false, audio: true, children: false, tabs: true}
+			]
+		};
 		
 		/* private methods
 			*/
 		
 		function onLoaded () {
 			Dialog.initialize();
+			_dialogsReady = true;
+			if (_recovering) { showRecovery(); return; }
 			Auth.subscribe("valid", valid);
 			Auth.subscribe("invalid", invalid);
 			Auth.start();
 		}
+		function readRecoveryLink () {
+			if (window.location.hash.indexOf("#token=") !== 0) return;
+			_recoveryToken = window.location.hash.substring(7);
+			_recovering = true;
+			window.history.replaceState(null, "", window.location.pathname + window.location.search);
+			if (_dialogsReady) showRecovery();
+		}
+		function showRecovery () {
+			_recovering = true;
+			Dialog.kill();
+			Dialog.create({
+				size: "420x*",
+				title: Lang.lookup("Password Recovery"),
+				content: classes.dialogs.PasswordRecovery,
+				init: {resetToken: _recoveryToken},
+				owner: this,
+				options: []
+			});
+			_recoveryToken = "";
+			document.title = "Vend » " + Lang.lookup("Password Recovery");
+		}
 		function invalid (eo) {
+			if (_recovering) return;
 			Dialog.create({
 				size: "420x*",
 				title: Lang.lookup("User Authentication"),
@@ -40,9 +88,10 @@ classes.Admin = (function () {
 				owner: this,
 				options: []
 			});
-			document.title = $("<div>" + _config.setup.product_title._value + " » " + Lang.lookup("User Authentication") + "</div>").text();
+			document.title = $("<div>" + _config.title + " » " + Lang.lookup("User Authentication") + "</div>").text();
 		}
 		function valid (eo) {
+			if (_recovering) return;
 			/* a successfull login after not being logged in
 				kill any dialog screens if they exist
 				*/
@@ -74,12 +123,8 @@ classes.Admin = (function () {
 			if (lastpage=="") {
 				lastpage = "/dashboard/";
 			}
-			if ( _config.setup.standalone._value=="false" ) {
-				history(lastpage);
-			} else {
-				History.subscribe("history", history);
-				History.initialize(lastpage);
-			}
+			History.subscribe("history", history);
+			History.initialize(lastpage);
 		}
 		function click (hash) {
 			/* we're gonna try and catch any user-error stuff by checking to see
@@ -107,11 +152,7 @@ classes.Admin = (function () {
 			}
 		}
 		function proceed (hash) {
-			if ( _config.setup.standalone._value=="false" ) {
-				history(hash);
-			} else {
-				History.setHistory(hash);
-			};
+			History.setHistory(hash);
 		}
 		function getContentClass (view) {
 			for (var prop in classes.applications) {
@@ -124,6 +165,7 @@ classes.Admin = (function () {
 			return false;
 		}
 		function history (hash) {
+			if (_recovering) return;
 			if (hash.charAt(0)!="/") {
 				hash = "/" + hash + "/";
 				proceed(hash);
@@ -197,31 +239,32 @@ classes.Admin = (function () {
 			document.location = Auth.basepath() + Auth.indexpath() + "?/admin/";
 		}
 		function start () {
+			var runtime = JSON.parse(document.documentElement.getAttribute("data-config"));
 			Auth.initialize();
-			Auth.basepath( _config.setup.basepath._value );
+			Auth.basepath( runtime.basepath );
 			Auth.corepath( NAMESPACE + "-core" );
 			Auth.datapath( NAMESPACE + "-data");
-			Auth.indexpath( _config.setup.indexpath._value || "" );
+			Auth.indexpath( runtime.indexpath || "" );
 			/* the Lang class converts all our translation stuff.
 				it should have been called L10n, but because we started using it tooo late ...
 				*/
 			Lang.initialize();
 			Lang.subscribe("onLoaded", onLoaded);
-			Lang.code( _config.setup.language._value );
+			Lang.code( runtime.language );
 		}
 		function render () {
 			$('html,body,#container').css("height", "auto");
 			$('#container').css("background", "none");
-			_config = VEND_ADMIN_CONFIG;
 			start();
 		}
 		
 		/* public methods
 			*/
 			
+		this.recover = function () { showRecovery(); };
 		this.title = function (str) {
 			$("#title").html(str);
-			document.title = $("<div>" + _config.setup.product_title._value + " » " + str + "</div>").text();
+			document.title = $("<div>" + _config.title + " » " + str + "</div>").text();
 		}
 		this.state = function (view, state) {
 			var hash = "/";
@@ -248,6 +291,9 @@ classes.Admin = (function () {
 			Func = classes.helpers.Func;
 			Dialog = classes.components.Dialog;
 			SiteBar = classes.components.SiteBar;
+			_recovering = new URLSearchParams(window.location.search).has("recover");
+			readRecoveryLink();
+			window.addEventListener("hashchange", readRecoveryLink);
 			render();
 		};
 	}

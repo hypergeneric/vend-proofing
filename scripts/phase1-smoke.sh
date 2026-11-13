@@ -51,8 +51,8 @@ php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr
 server_pid=$!
 trap "kill $server_pid" EXIT
 sleep 1
-curl -fsS "http://127.0.0.1:8080/?/admin/" | grep -q "scripts/admin-account.php create USERNAME EMAIL"
-echo "PASS existing init template before administrator creation"
+[ "$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8080/?/admin/")" = 302 ]
+echo "PASS admin redirects to setup before administrator creation"
 printf "%s\n" "SyntheticAdminPassword123!" | php ../scripts/admin-account.php create testadmin owner@example.invalid
 php ../scripts/foundation-auth-test.php
 for route in / /?/admin/ /?/set/875c/test-gallery/ /?/order/ /vend-proofing-core/js/admin.js /?/xml/cronjob/ /?/xml/sitemap/; do
@@ -65,7 +65,7 @@ for route in / /?/admin/ /?/set/875c/test-gallery/ /?/order/ /vend-proofing-core
     /) grep -q "<html" /tmp/vend-response.html ;;
     /?/admin/) grep -q "classes.Admin.initialize" /tmp/vend-response.html || { head -c 725 /tmp/vend-response.html; exit 1; } ;;
     /?/set/*) grep -q "data-suid=\"875c\"" /tmp/vend-response.html || { head -c 500 /tmp/vend-response.html; exit 1; } ;;
-    /vend-proofing-core/js/admin.js) grep -q "classes.Admin" /tmp/vend-response.html; grep -q "VEND_ADMIN_CONFIG" /tmp/vend-response.html ;;
+    /vend-proofing-core/js/admin.js) grep -q "classes.Admin" /tmp/vend-response.html ;;
     /?/xml/cronjob/) grep -q "recipients=\"0\"" /tmp/vend-response.html ;;
   esac
 done
@@ -127,12 +127,8 @@ reverted_splash=$(curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-url
 case "$reverted_splash" in *SQLite%20only*) echo "FAIL JSON revert retained the override"; exit 1 ;; esac
 php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $db->prepare("DELETE FROM configuration_documents WHERE type = ? AND scope_id = ?")->execute(array("contact", ""));'\''
 contact_setup=$(curl -fsS -b /tmp/vend-cookies "http://127.0.0.1:8080/?/admin/")
-case "$contact_setup" in *admin_csrf*) ;; *) echo "FAIL first-admin contact form did not appear"; exit 1 ;; esac
-contact_status=$(curl -s -o /dev/null -w "%{http_code}" -b /tmp/vend-cookies --data-urlencode "admin_csrf=$csrf" --data-urlencode "your_name=Owner" --data-urlencode "your_email=owner@example.invalid" --data-urlencode "submit=Save" "http://127.0.0.1:8080/?/admin/")
-[ "$contact_status" = 302 ]
-php -r '\''$db=new PDO("sqlite:vend-proofing-data/auth/vend.sqlite"); $query=$db->prepare("SELECT json_text FROM configuration_documents WHERE type = ? AND scope_id = ?"); $query->execute(array("contact", "")); if(!str_contains($query->fetchColumn(), "owner@example.invalid")) exit(1);'\''
-test ! -e vend-proofing-data/storage/contact.xml
-echo "PASS first-admin contact setup writes SQLite"
+case "$contact_setup" in *classes.Admin.initialize*) ;; *) echo "FAIL missing contact blocked admin"; exit 1 ;; esac
+echo "PASS missing contact does not block admin"
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=set_list" --data-urlencode "name=page" --data-urlencode "token=$csrf" "$gateway" | grep -q "Test%20Gallery"
 tax_data=$(printf "California\t\t7.25")
 curl -fsS -c /tmp/vend-cookies -b /tmp/vend-cookies --data-urlencode "action=set_create" --data-urlencode "name=ustaxchart" --data-urlencode "suid=CA" --data-urlencode "data=$tax_data" --data-urlencode "token=$csrf" "$gateway" | grep -q "s=true"

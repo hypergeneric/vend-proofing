@@ -8,7 +8,6 @@ classes.helpers.Func = (function () {
 		var self = this;
 		var id = 0;
 		var browser_title_pattern = "";
-		var _history_init = history.length;
 		/* private methods
 			*/
 		/* public methods
@@ -52,32 +51,6 @@ classes.helpers.Func = (function () {
 			while (result.split('.')[1].length < length)
 				result += '0';
 			return result;
-		};
-		this.back = function() {
-			var index = _history_init - history.length - 1;
-			if (index==-1) {
-				var current = parent.location.href;
-					current = current.split("/");
-					current.pop();
-					current = current.join("/");
-				parent.location.href = current;
-			} else {
-				history.go ( index );
-			}
-		};
-		this.refresh = function() {
-			parent.FramePreview.location.reload();
-			/*if (ssl) {
-				document.getElementById(str_frame_id).src = url;
-			} else {
-				if(window.document.getElementById(str_frame_id).location ) {
-					window.document.getElementById(str_frame_id).location.reload(true);
-				} else if (window.document.getElementById(str_frame_id).contentWindow.location ) {
-					window.document.getElementById(str_frame_id).contentWindow.location.reload(true);
-				} else if (window.document.getElementById(str_frame_id).src){
-					window.document.getElementById(str_frame_id).src = window.document.getElementById(str_frame_id).src;
-				}
-			}*/
 		};
 		this.cleanTitleFragment = function(str) {
 			str = classes.helpers.Func.remove_accent(str);

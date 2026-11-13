@@ -1,8 +1,20 @@
 {
 	"data": {
+		"base_url": {"_attributes": {"name": "Base URL"}},
+		"recovery_unavailable": {"_attributes": {"name": "Unable to load password recovery. Please try again."}},
+		"setup_progress": {"_attributes": {"name": "Step {STEP} of {TOTAL}"}},
+		"setup_settings_description": {"_attributes": {"name": "Choose your language and confirm the suggested installation paths and public HTTPS URL. These guesses are saved only when you continue."}},
+		"setup_contact_description": {"_attributes": {"name": "Vend uses this primary email for business correspondence. You can change these details later in Contact."}},
+		"setup_invalid_language": {"_attributes": {"name": "Choose an available language."}},
+		"setup_invalid_paths": {"_attributes": {"name": "Use an empty index path or a PHP filename. Use ./ or a local absolute directory ending in / for the base path."}},
+		"setup_invalid_url": {"_attributes": {"name": "Enter the public HTTPS URL without credentials, a query string, or a fragment."}},
+		"setup_invalid_website": {"_attributes": {"name": "Enter a website URL beginning with http:// or https://."}},
+		"setup_storage_failed": {"_attributes": {"name": "Unable to save setup. Check that the application data directory is writable, then try again."}},
+		"setup_form_expired": {"_attributes": {"name": "This setup form expired. Reload the page and try again."}},
+		"setup_already_complete": {"_attributes": {"name": "Vend is already set up. Continue to the admin sign-in page."}},
+		"setup_sign_in_required": {"_attributes": {"name": "An administrator already exists. Sign in with that account to restore installation settings."}},
 		"password_recovery_subject": {"_attributes": {"name": "Password Recovery Email Subject"}},
 		"password_recovery_message_body": {"_attributes": {"name": "Password Recovery Email Body"}},
-		"recovery_javascript_required": {"_attributes": {"name": "Enable JavaScript to open the password reset link."}},
 		"account_delete_confirmation": {"_attributes": {"name": "Delete this account and end all its sessions?"}},
 		"account_load_failed": {"_attributes": {"name": "Unable to load users. Please sign in again."}},
 		"account_save_failed": {"_attributes": {"name": "Unable to save. Please try again."}},
@@ -856,12 +868,6 @@
 			}
 		},
 		"site_footer_text": {"_attributes": {"name": "© Copyright <a href='http://intothedarkroom.com' target='_blank'><u>intothedarkroom.com</u></a>"}},
-		"init_title": {"_attributes": {"name": "Setup Required"}},
-		"init_description": {
-			"_attributes": {
-				"name": "Vend needs an administrator before you can use the admin interface. On the server, run php scripts/admin-account.php create USERNAME EMAIL, then reload this page."
-			}
-		},
 		"you_must_supply_a_valid_email_address": {"_attributes": {"name": "You must supply a valid Email Address!"}},
 		"yes_delete": {"_attributes": {"name": "Yes, DELETE"}},
 		"yes_revert": {"_attributes": {"name": "Yes, REVERT"}},

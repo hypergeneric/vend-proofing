@@ -7,7 +7,6 @@ classes.applications.MusicPanel = function () {
 	var XMLTabs;
 	var Lang;
 	var Admin;
-	var Func;
 	var SiteBar;
 	/* private properites
 		*/
@@ -21,11 +20,6 @@ classes.applications.MusicPanel = function () {
 		SiteBar.register(_view, _panel.tabdata());
 		if (_state=="") {
 			Admin.state(null, _panel.tabdata()[0].key);
-		}
-	}
-	function onDataChanged () {
-		if ( Admin.config().setup.standalone._value=="false" ) {
-			Func.refresh();
 		}
 	}
 	function render () {
@@ -58,7 +52,6 @@ classes.applications.MusicPanel = function () {
 			key: "library",
 			options: []
 		});
-		_panel.addEventListener("onDataChanged", onDataChanged);
 		_panel.revert_is_delete(true);
 		_panel.type("soundtrack");
 		_panel.parent($('#application'));
@@ -91,12 +84,10 @@ classes.applications.MusicPanel = function () {
 	};
 	this.destroy = function () {
 		_panel.removeEventListener("onTabData", onTabData);
-		_panel.removeEventListener("onDataChanged", onDataChanged);
 		_panel.destroy();
 	};
 	this.initialize = function () {
 		Admin = classes.Admin;
-		Func = classes.helpers.Func;
 		Lang = classes.data.Lang;
 		XMLTabs = classes.components.XMLTabs;
 		SiteBar = classes.components.SiteBar;

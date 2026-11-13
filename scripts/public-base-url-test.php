@@ -25,13 +25,14 @@ $cases = [
 	'https://example.invalid?' => null,
 	'https://example.invalid#' => null,
 ];
-$path = dirname(__DIR__) . '/dist/vend-proofing-core/defaults/admin.json';
-$original = file_get_contents($path);
+$db = new PDO('sqlite:' . dirname(__DIR__) . '/dist/vend-proofing-data/auth/vend.sqlite');
+$original = $db->query("SELECT json_text FROM configuration_documents WHERE type = 'installation' AND scope_id = ''")->fetchColumn();
+$save = $db->prepare("UPDATE configuration_documents SET json_text = ? WHERE type = 'installation' AND scope_id = ''");
 $config = json_decode($original, true, 512, JSON_THROW_ON_ERROR);
 try {
 	foreach ($cases as $input => $expected) {
-		$config['setup']['baseurl']['_value'] = $input;
-		file_put_contents($path, json_encode($config, JSON_THROW_ON_ERROR));
+		$config['data']['setup']['baseurl']['_value'] = $input;
+		$save->execute([json_encode($config, JSON_THROW_ON_ERROR)]);
 		$process = proc_open([PHP_BINARY, '-d', 'error_reporting=24575', __FILE__, 'case'], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname(__DIR__) . '/dist');
 		$output = stream_get_contents($pipes[1]);
 		$error = stream_get_contents($pipes[2]);
@@ -43,6 +44,6 @@ try {
 		}
 	}
 } finally {
-	file_put_contents($path, $original);
+	$save->execute([$original]);
 }
-echo "PASS shared bootstrap URL: admin.json, normalization, subdirectory, port, missing/invalid URLs, and Host-header isolation\n";
+echo "PASS shared bootstrap URL: SQLite installation settings, normalization, subdirectory, port, missing/invalid URLs, and Host-header isolation\n";
