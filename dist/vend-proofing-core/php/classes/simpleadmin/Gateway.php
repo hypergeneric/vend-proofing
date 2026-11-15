@@ -284,6 +284,7 @@
 		/* ---- Private Execution ---- */
 
 		protected function runPrivate () {
+			global $CONFIG;
 			switch ($this->control) {
 			 case "upload" :
 				$cookie_name = md5($CONFIG->getNodeVal("setup.product"));

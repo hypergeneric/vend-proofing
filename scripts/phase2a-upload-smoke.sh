@@ -31,6 +31,12 @@ sleep 1
 login_result=$(curl -fsS -c /tmp/vend-upload-cookies -b /tmp/vend-upload-cookies --data-urlencode "action=login" --data-urlencode "username=testadmin" --data-urlencode "password=SyntheticAdminPassword123!" http://127.0.0.1:8080/vend-proofing-gateway.php)
 case "$login_result" in *"s=true"*) ;; *) echo "FAIL upload login"; exit 1 ;; esac
 csrf="${login_result#*r=}"
+upload_info=$(curl -fsS -c /tmp/vend-upload-cookies -b /tmp/vend-upload-cookies --data-urlencode "action=upload_info" --data-urlencode "token=$csrf" http://127.0.0.1:8080/vend-proofing-gateway.php)
+case "$upload_info" in s=true\&r=*) ;; *) echo "FAIL upload info: $upload_info"; exit 1 ;; esac
+upload_limit="${upload_info#*r=}"
+case "$upload_limit" in ""|*[!0-9]*) echo "FAIL upload limit is not numeric"; exit 1 ;; esac
+test "$upload_limit" -gt 0
+echo "PASS upload dialog size-limit request"
 for category in Outside Inside; do
   response=$(curl -fsS -c /tmp/vend-upload-cookies -b /tmp/vend-upload-cookies -F action=image_upload -F "token=$csrf" -F name=page -F suid=875c -F "path=Batch/$category/photo.jpg" -F "Filedata=@/tmp/upload-test.jpg;filename=$category.jpg;type=image/jpeg" http://127.0.0.1:8080/vend-proofing-gateway.php)
   case "$response" in s=true*) echo "PASS upload $category" ;; *) echo "FAIL upload $category: $response"; exit 1 ;; esac

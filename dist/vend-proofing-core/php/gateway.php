@@ -365,6 +365,9 @@
 				if (is_file($asset_path) && !is_link($asset_path) && !is_link(SA_DIR_STORAGE . "/" . $folder)) {
 					$file_extension = strtolower(substr(strrchr($filename,"."),1));
 					switch ($file_extension) {
+						case "mp4": case "m4v": $ctype="video/mp4"; break;
+						case "webm": $ctype="video/webm"; break;
+						case "ogg": case "ogv": $ctype="video/ogg"; break;
 						case "pdf": $ctype="application/pdf"; break;
 						case "zip": $ctype="application/zip"; break;
 						case "gif": $ctype="image/gif"; break;
@@ -374,6 +377,7 @@
 						default: $ctype="application/force-download";
 					}
 					header("Content-Type: $ctype");
+					header("Content-Length: " . filesize($asset_path));
 					readfile($asset_path);
 					exit();
 				} else {

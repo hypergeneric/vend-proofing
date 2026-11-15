@@ -21,7 +21,7 @@ class RecoveryGateway {
 		}
 		if ($action === 'recovery_request') {
 			try {
-				PasswordRecovery::request($field('username'), $_SERVER['REMOTE_ADDR'] ?? 'unknown');
+				PasswordRecovery::request($field('email'), $_SERVER['REMOTE_ADDR'] ?? 'unknown');
 			} catch (Throwable $error) {
 				error_log('Vend administrator recovery unavailable; check database and mail configuration.');
 			}

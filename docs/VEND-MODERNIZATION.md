@@ -1,5 +1,23 @@
 # Vend modernization log
 
+## Distribution htaccess cleanup (2026-11-14)
+
+Reduced `dist/.htaccess` to `Options -Indexes`. Removed IE/Chrome Frame headers, the old ModSecurity-disable directives, legacy MIME overrides, and the ITDR rewrite marker/disable directive. The private-data access rules remain in `vend-proofing-data/.htaccess`. Verified local Apache returns 200 for admin and 403 for both the database URL and a directory listing. No asset rebuild is needed.
+
+## Video snapshot asset URL (2026-11-14)
+
+Changed the Snapshot dialog from a direct private-storage URL to the existing listed-asset Gateway endpoint, preserving storage access restrictions. The endpoint now serves video MIME types and content length; the dialog declares MP4, WebM, or Ogg according to the selected file instead of always declaring MP4. Rebuilt JavaScript. Synthetic HTTP checks verify video response bodies, MIME types, content length, and rejection of unlisted/traversal paths; asset checks pass. Actual playback of the user's uploaded codec remains unverified. No local media changed.
+
+## Upload dialog configuration scope fix (2026-11-14)
+
+Restored the `$CONFIG` global declaration in `Gateway::runPrivate()`. Its upload branch reads the installation product value before answering `upload_info`; the missing declaration caused an HTTP 500 before the browser could send files. Extended the isolated upload smoke to request and validate the positive numeric upload limit before multipart uploads. The full synthetic upload suite passes, including category uploads, persistence after restart, resizing, source validation, reorder, and deletion. Whitespace checks pass. No local media or database records were changed.
+
+## Email-based password recovery and local schema repair (2026-11-13)
+
+Recovery now accepts an account email address, normalizes case/whitespace, and limits requests by email. Accounts sharing an address receive separate account-bound links. Updated the dialog, Gateway field, localized copy, and operator guidance. Tests cover email selection, username rejection, shared-address accounts, reset protections, and existing mail composition. Rebuilt the admin bundle.
+
+Diagnosed local delivery failure before mail transport: both recovery tables were absent although their initial schema version was marked applied. Backed up the local database under `/tmp` and restored only the two missing tables and expiry index from the existing initial schema; integrity check passed. No accounts/settings were reset, no upgrade migration was added, and no real recovery email was sent by the agent. Real inbox delivery remains for user verification.
+
 ## Installation values in System Info (2026-11-13)
 
 Added product, language, index path, base path, and base URL to `getSystemInfo`, alongside the existing installation version and last-updated fields. Values come through `AppConfig` from the installation configuration; the existing panel renders the rows and translates their labels through Lang lookup. PHP syntax and whitespace checks pass. No persistence or asset changes were needed.

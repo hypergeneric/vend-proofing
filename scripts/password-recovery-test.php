@@ -44,9 +44,11 @@ try {
 	$auth->login('recoveryuser', 'OriginalPassword123!');
 	$captured = [];
 	$delivery = static function ($account, $token) use (&$captured): bool { $captured[] = [$account, $token]; return true; };
-	PasswordRecovery::request('unknown', '127.0.0.1', $delivery);
-	recoveryCheck(count($captured) === 0, 'Unknown account received email');
 	PasswordRecovery::request('recoveryuser', '127.0.0.1', $delivery);
+	recoveryCheck(count($captured) === 0, 'Username accepted as recovery email');
+	PasswordRecovery::request('unknown@example.invalid', '127.0.0.1', $delivery);
+	recoveryCheck(count($captured) === 0, 'Unknown account received email');
+	PasswordRecovery::request(' RECOVERY@example.invalid ', '127.0.0.1', $delivery);
 	$token = $captured[0][1];
 	$row = $db->query('SELECT * FROM administrator_password_resets')->fetch();
 	recoveryCheck($row['token_hash'] === hash('sha256', $token) && !str_contains(json_encode($row), $token), 'Raw reset token persisted');
@@ -55,13 +57,13 @@ try {
 	recoveryCheck(!PasswordRecovery::reset(str_repeat('0', 64), 'ReplacementPassword123!'), 'Forged token accepted');
 	$db->exec('UPDATE administrator_password_resets SET expires_at = 1');
 	recoveryCheck(!PasswordRecovery::reset($token, 'ReplacementPassword123!'), 'Expired token accepted');
-	PasswordRecovery::request('recoveryuser', '127.0.0.1', $delivery);
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1', $delivery);
 	$staleToken = end($captured)[1];
 	AdminAccount::resetPassword('recoveryuser', 'OriginalPassword123!');
 	recoveryCheck(!PasswordRecovery::reset($staleToken, 'ReplacementPassword123!'), 'CLI reset did not invalidate link');
-	PasswordRecovery::request('recoveryuser', '127.0.0.1', $delivery);
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1', $delivery);
 	$token = end($captured)[1];
-	PasswordRecovery::request('recoveryuser', '127.0.0.2', $delivery);
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.2', $delivery);
 	recoveryCheck(count($captured) === 3, 'Account request limit failed across IPs');
 	$auth->login('recoveryuser', 'OriginalPassword123!');
 	recoveryCheck(PasswordRecovery::reset($token, 'Replacement\\Password123!'), 'Valid token rejected');
@@ -70,9 +72,9 @@ try {
 	recoveryCheck(AdminAccount::verify('recoveryuser', 'Replacement\\Password123!') !== null, 'New password failed');
 	recoveryCheck(AdminAccount::verify('recoveryuser', 'OriginalPassword123!') === null, 'Old password retained');
 	$db->exec('DELETE FROM administrator_recovery_limits');
-	PasswordRecovery::request('otheruser', '127.0.0.1', $delivery);
+	PasswordRecovery::request('other@example.invalid', '127.0.0.1', $delivery);
 	$old = end($captured)[1];
-	PasswordRecovery::request('otheruser', '127.0.0.1', $delivery);
+	PasswordRecovery::request('other@example.invalid', '127.0.0.1', $delivery);
 	$token = end($captured)[1];
 	recoveryCheck(!PasswordRecovery::reset($old, 'ReplacementPassword123!'), 'Replaced token retained');
 	$workers = [];
@@ -89,20 +91,20 @@ try {
 	}
 	recoveryCheck($wins === 1, 'Concurrent token redemption was not single-use');
 	$db->exec('DELETE FROM administrator_recovery_limits');
-	PasswordRecovery::request('recoveryuser', '127.0.0.1', static function (): bool { return false; });
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1', static function (): bool { return false; });
 	recoveryCheck((int) $db->query('SELECT COUNT(*) FROM administrator_password_resets')->fetchColumn() === 0, 'Failed delivery retained token');
 	$db->exec('DELETE FROM administrator_recovery_limits');
-	for ($i = 0; $i < 10; ++$i) PasswordRecovery::request('missing' . $i, '127.0.0.1', $delivery);
+	for ($i = 0; $i < 10; ++$i) PasswordRecovery::request('missing' . $i . '@example.invalid', '127.0.0.1', $delivery);
 	$count = count($captured);
-	PasswordRecovery::request('recoveryuser', '127.0.0.1', $delivery);
-	recoveryCheck(count($captured) === $count, 'IP limit bypassed with different usernames');
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1', $delivery);
+	recoveryCheck(count($captured) === $count, 'IP limit bypassed with different email addresses');
 	$db->exec('DELETE FROM administrator_recovery_limits');
-	PasswordRecovery::request('recoveryuser', '127.0.0.1', $delivery);
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1', $delivery);
 	$beforeEdit = end($captured)[1];
 	AdminAccount::updateSelf(1, 1, 'recoveryuser', 'recovery@example.invalid', '', 'Replacement\\Password123!');
 	recoveryCheck(!PasswordRecovery::reset($beforeEdit, 'StaleLinkPassword123!'), 'Account edit did not invalidate recovery link');
 	AdminAccount::create('deleteduser', 'deleted@example.invalid', 'DeletedPassword123!');
-	PasswordRecovery::request('deleteduser', '127.0.0.1', $delivery);
+	PasswordRecovery::request('deleted@example.invalid', '127.0.0.1', $delivery);
 	$beforeDelete = end($captured)[1];
 	AdminAccount::deleteOther(1, (int) AdminAccount::find('deleteduser')['id']);
 	recoveryCheck(!PasswordRecovery::reset($beforeDelete, 'DeletedPassword456!'), 'Deleted account recovery survived');
@@ -112,7 +114,7 @@ try {
 	$contact->editNode('data.mailer_settings.mail_provider', 'smtp');
 	$contact->editNode('data.mailer_settings.log_all_messages_bool', 'true');
 	Configuration::save('contact', null, $contact->toString());
-	PasswordRecovery::request('recoveryuser', '127.0.0.1');
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1');
 	recoveryCheck(count(PHPMailer::$sent) === 1, 'Existing SMTP mailer was not used');
 	$mail = PHPMailer::$sent[0];
 	recoveryCheck($mail->recipient === 'recovery@example.invalid', 'Wrong email recipient');
@@ -122,6 +124,15 @@ try {
 	recoveryCheck((int) $db->query('SELECT COUNT(*) FROM messages')->fetchColumn() === 0, 'Reset link leaked to message log');
 	preg_match('/#token=([a-f0-9]{64})/', $mail->AltBody, $matches);
 	recoveryCheck(PasswordRecovery::reset($matches[1], 'EmailedPassword123!'), 'Composed email token unusable');
+	$db->exec('DELETE FROM administrator_recovery_limits');
+	AdminAccount::create('sharedemail', 'recovery@example.invalid', 'SharedEmailPassword123!');
+	$captured = [];
+	PasswordRecovery::request('recovery@example.invalid', '127.0.0.1', $delivery);
+	recoveryCheck(count($captured) === 2 && $captured[0][1] !== $captured[1][1], 'Shared email did not receive separate account links');
+	foreach ($captured as [$account, $token]) {
+		recoveryCheck(PasswordRecovery::reset($token, 'SharedResetPassword123!'), 'Shared email token failed');
+		recoveryCheck(AdminAccount::verify($account['username'], 'SharedResetPassword123!') !== null, 'Shared email reset wrong account');
+	}
 	echo "PASS recovery: expiry, hashed tokens, reuse, concurrency, throttling, session invalidation, CLI reset, failure cleanup, trusted mail URL, localization, and no message-log leak\n";
 } finally {
 	foreach (glob(SA_DIR_AUTH . '/*') as $file) unlink($file);

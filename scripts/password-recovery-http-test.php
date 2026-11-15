@@ -47,7 +47,7 @@ recoveryHttpCheck($response['s'] === 'true' && $response['r'] === 'Recovery Comp
 recoveryHttpCheck(AdminAccount::verify('resetfixture', $newPassword) !== null, 'Password backslashes changed');
 [$response] = recoveryHttp($cookies, ['recovery_csrf' => $csrf] + $values);
 recoveryHttpCheck($response['s'] === 'false' && $response['r'] === 'Recovery Link Invalid', 'Used link accepted');
-[$response] = recoveryHttp($cookies, ['action' => 'recovery_request', 'recovery_csrf' => $csrf, 'username' => 'unknownfixture']);
+[$response] = recoveryHttp($cookies, ['action' => 'recovery_request', 'recovery_csrf' => $csrf, 'email' => 'unknown@example.invalid']);
 recoveryHttpCheck($response['s'] === 'true' && $response['r'] === 'Recovery Request Sent', 'Generic request response missing');
 $page = file_get_contents('http://127.0.0.1:8080/?/admin/&recover=1');
 recoveryHttpCheck(str_contains($page, 'classes.Admin.initialize') && !str_contains($page, 'id="recovery-request"'), 'Recovery did not use admin SPA');

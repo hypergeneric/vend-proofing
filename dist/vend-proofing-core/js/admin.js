@@ -9410,7 +9410,7 @@ classes.dialogs.Snapshot = function () {
 	function render () {
 		/* create the realpath to the video/object
 			*/
-		_realpath = Auth.basepath() + NAMESPACE + "-data/storage/" + (_suid==""?_key:_suid) + "/" + _filename;
+		_realpath = Auth.basepath() + NAMESPACE + "-gateway.php?action=get_public_asset&folder=" + encodeURIComponent(_suid==""?_key:_suid) + "&filename=" + encodeURIComponent(_filename);
 		_extension = _filename.split(".").pop().toLowerCase();
 		/* draw up our stuff
 			*/
@@ -9420,7 +9420,7 @@ classes.dialogs.Snapshot = function () {
 		if ( _extension=="mp4" || _extension=="webm" || _extension=="ogg" ) {
 			xhtml += 	'<div class="Group Video">';
 			xhtml += 		'<video style="display:block" controls autoload muted preload="metadata">';
-			xhtml += 			'<source src="' + _realpath + '" type="video/mp4">';
+			xhtml += 			'<source src="' + _realpath + '" type="video/' + _extension + '">';
 			xhtml += 		'</video>';
 			xhtml += 	'</div>';
 			xhtml += 	'<div class="Submit">';
@@ -10632,7 +10632,7 @@ classes.dialogs.PasswordRecovery = function () {
 			confirm_password: form.find('[name="confirm_password"]').val()
 		} : {
 			action: "recovery_request",
-			username: form.find('[name="username"]').val()
+			email: form.find('[name="email"]').val()
 		};
 		if (_token && values.password !== values.confirm_password) {
 			message("Account Password Mismatch", false);
@@ -10666,14 +10666,14 @@ classes.dialogs.PasswordRecovery = function () {
 		var definitions = _token ? [
 			{name: "password", label: "New Password", type: "password"},
 			{name: "confirm_password", label: "Confirm Password", type: "password"}
-		] : [{name: "username", label: "Username", type: "text"}];
+		] : [{name: "email", label: "Email", type: "email"}];
 		for (var i = 0; i < definitions.length; i++) {
 			var field = definitions[i];
 			var group = $('<div class="Group Input"></div>').appendTo(fields);
 			$('<label></label>').attr("for", "recovery-" + field.name).text(Lang.lookup(field.label)).appendTo(group);
 			$('<input required>').attr({id: "recovery-" + field.name, name: field.name, type: field.type,
-				autocomplete: field.type === "password" ? "new-password" : "username",
-				maxlength: field.type === "password" ? 4096 : 80
+				autocomplete: field.type === "password" ? "new-password" : "email",
+				maxlength: field.type === "password" ? 4096 : 254
 			}).prop("minLength", field.type === "password" ? 12 : 1).appendTo(group);
 		}
 		submit = $('<input type="submit">').val(Lang.lookup(_token ? "Reset Password" : "Send Reset Link"))

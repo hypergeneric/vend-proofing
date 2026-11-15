@@ -16,6 +16,9 @@ DATA
 mkdir -p "$fixture_dir/dist/vend-proofing-data/storage/875c"
 mkdir -p "$fixture_dir/dist/vend-proofing-data/storage/asset"
 printf 'public asset' > "$fixture_dir/dist/vend-proofing-data/storage/asset/test.png"
+for extension in mp4 webm ogg; do
+  printf 'synthetic video response' > "$fixture_dir/dist/vend-proofing-data/storage/asset/test.$extension"
+done
 printf 'not listed' > "$fixture_dir/dist/vend-proofing-data/storage/asset/unlisted.png"
 mkdir -p "$fixture_dir/scripts"
 cp "$project_dir/scripts/phase1-storage.php" "$fixture_dir/scripts/phase1-storage.php"
@@ -46,7 +49,7 @@ php ../scripts/foundation-test.php
 php ../scripts/public-base-url-test.php
 php -d error_reporting=24575 -d disable_functions=checkdnsrr ../scripts/password-recovery-test.php
 php ../scripts/configuration-test.php
-php -r '\''define("SA_DIR_AUTH", "/app/dist/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Test Gallery", "UploadSet", 0]); Records::addMedia("asset", "asset", ["test.png", "test.png", "1x1"]); unlink("vend-proofing-data/storage/set.page.table");'\''
+php -r '\''define("SA_DIR_AUTH", "/app/dist/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Test Gallery", "UploadSet", 0]); Records::addMedia("asset", "asset", ["test.png", "test.png", "1x1"]); foreach (["mp4", "webm", "ogg"] as $extension) Records::addMedia("asset", "asset", ["test.$extension", "test.$extension", "1x1"]); unlink("vend-proofing-data/storage/set.page.table");'\''
 php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-server.log 2>&1 &
 server_pid=$!
 trap "kill $server_pid" EXIT
@@ -90,7 +93,13 @@ done
 [ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=validate_login" --data-urlencode "suid=../auth" "$gateway")" = 400 ]
 curl -fsS "$gateway?action=get_public_asset&folder=asset&filename=test.png" | grep -q "public asset"
 [ "$(curl -s -o /dev/null -w "%{http_code}" --data-urlencode "action=get_public_asset" --data-urlencode "folder=asset" --data-urlencode "filename=unlisted.png" "$gateway")" = 404 ]
-echo "PASS public Gateway and asset boundaries"
+for extension in mp4 webm ogg; do
+  curl -fsS -D /tmp/vend-video-headers "$gateway?action=get_public_asset&folder=asset&filename=test.$extension" -o /tmp/vend-video-body
+  grep -qi "Content-Type: video/$extension" /tmp/vend-video-headers
+  grep -qi "Content-Length: 24" /tmp/vend-video-headers
+  test "$(cat /tmp/vend-video-body)" = "synthetic video response"
+done
+echo "PASS public Gateway, video MIME types, and asset boundaries"
 php -r '\''define("SA_DIR_AUTH", "vend-proofing-data/auth"); define("SA_DIR_DEFAULTS", "vend-proofing-core/defaults"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/ConfigurationDocument.php"; require "vend-proofing-core/php/classes/simpleadmin/Configuration.php"; $gallery=new ConfigurationDocument(file_get_contents(SA_DIR_DEFAULTS . "/uploadset.json")); $gallery->editNode("data.settings.password", base64_encode("gallery-pass")); if (!Configuration::save("uploadset", "875c", $gallery->toString())) exit(1);'\''
 gallery_token=$(curl -fsS -c /tmp/vend-gallery-cookies --data-urlencode "action=validate_login" --data-urlencode "suid=875c" --data-urlencode "password=gallery-pass" "$gateway")
 expected_gallery_token=$(php -r '\''define("SA_DIR_AUTH", "vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; echo hash_hmac("sha256", "875c", Database::installationSecret());'\'')

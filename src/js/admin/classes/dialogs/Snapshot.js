@@ -133,7 +133,7 @@ classes.dialogs.Snapshot = function () {
 	function render () {
 		/* create the realpath to the video/object
 			*/
-		_realpath = Auth.basepath() + NAMESPACE + "-data/storage/" + (_suid==""?_key:_suid) + "/" + _filename;
+		_realpath = Auth.basepath() + NAMESPACE + "-gateway.php?action=get_public_asset&folder=" + encodeURIComponent(_suid==""?_key:_suid) + "&filename=" + encodeURIComponent(_filename);
 		_extension = _filename.split(".").pop().toLowerCase();
 		/* draw up our stuff
 			*/
@@ -143,7 +143,7 @@ classes.dialogs.Snapshot = function () {
 		if ( _extension=="mp4" || _extension=="webm" || _extension=="ogg" ) {
 			xhtml += 	'<div class="Group Video">';
 			xhtml += 		'<video style="display:block" controls autoload muted preload="metadata">';
-			xhtml += 			'<source src="' + _realpath + '" type="video/mp4">';
+			xhtml += 			'<source src="' + _realpath + '" type="video/' + _extension + '">';
 			xhtml += 		'</video>';
 			xhtml += 	'</div>';
 			xhtml += 	'<div class="Submit">';

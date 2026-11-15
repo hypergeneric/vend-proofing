@@ -15,32 +15,39 @@ class PasswordRecovery {
 	}
 
 	/** The caller always displays the same response, including for throttled and failed delivery. */
-	public static function request (string $username, string $address, ?callable $deliver = null): void {
+	public static function request (string $email, string $address, ?callable $deliver = null): void {
 		if (!Database::installed()) return;
-		$username = trim($username);
-		if (!preg_match('/^[A-Za-z0-9._-]{3,80}$/', $username)) return;
-		$reset = Database::transaction(function (PDO $db) use ($username, $address): ?array {
+		$email = strtolower(trim($email));
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return;
+		$resets = Database::transaction(function (PDO $db) use ($email, $address): ?array {
 			$db->prepare('DELETE FROM administrator_recovery_limits WHERE expires_at <= ?')->execute([time()]);
 			$db->prepare('DELETE FROM administrator_password_resets WHERE expires_at <= ?')->execute([time()]);
 			if (!self::allowRequest($db, 'global', 60) || !self::allowRequest($db, 'ip:' . $address, 10)
-				|| !self::allowRequest($db, 'username:' . strtolower($username), 3)) return null;
-			$account = AdminAccount::find($username);
-			if (!$account) return null;
-			$token = bin2hex(random_bytes(32));
-			$hash = hash('sha256', $token);
-			$db->prepare('INSERT INTO administrator_password_resets (administrator_id, token_hash, account_version, created_at, expires_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(administrator_id) DO UPDATE SET token_hash = excluded.token_hash, account_version = excluded.account_version, created_at = excluded.created_at, expires_at = excluded.expires_at')
-				->execute([$account['id'], $hash, $account['account_version'], time(), time() + self::LIFETIME]);
-			return ['account' => $account, 'token' => $token, 'hash' => $hash];
+				|| !self::allowRequest($db, 'email:' . $email, 3)) return null;
+			$query = $db->prepare('SELECT * FROM administrators WHERE lower(email) = ?');
+			$query->execute([$email]);
+			$accounts = $query->fetchAll();
+			$resets = [];
+			foreach ($accounts as $account) {
+				$token = bin2hex(random_bytes(32));
+				$hash = hash('sha256', $token);
+				$db->prepare('INSERT INTO administrator_password_resets (administrator_id, token_hash, account_version, created_at, expires_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(administrator_id) DO UPDATE SET token_hash = excluded.token_hash, account_version = excluded.account_version, created_at = excluded.created_at, expires_at = excluded.expires_at')
+					->execute([$account['id'], $hash, $account['account_version'], time(), time() + self::LIFETIME]);
+				$resets[] = ['account' => $account, 'token' => $token, 'hash' => $hash];
+			}
+			return $resets;
 		});
-		if (!$reset) return;
-		try {
-			$sent = $deliver ? $deliver($reset['account'], $reset['token']) : self::deliver($reset['account'], $reset['token']);
-		} catch (Throwable $error) {
-			$sent = false;
-		}
-		if (!$sent) {
-			Database::connection()->prepare('DELETE FROM administrator_password_resets WHERE token_hash = ?')->execute([$reset['hash']]);
-			error_log('Vend administrator recovery delivery failed; check mail settings and SA_BASE_URL.');
+		if (!$resets) return;
+		foreach ($resets as $reset) {
+			try {
+				$sent = $deliver ? $deliver($reset['account'], $reset['token']) : self::deliver($reset['account'], $reset['token']);
+			} catch (Throwable $error) {
+				$sent = false;
+			}
+			if (!$sent) {
+				Database::connection()->prepare('DELETE FROM administrator_password_resets WHERE token_hash = ?')->execute([$reset['hash']]);
+				error_log('Vend administrator recovery delivery failed; check mail settings and SA_BASE_URL.');
+			}
 		}
 	}
 
