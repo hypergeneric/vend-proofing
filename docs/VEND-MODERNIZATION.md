@@ -1,5 +1,9 @@
 # Vend modernization log
 
+## Theme sprite URL resolution (2026-11-14)
+
+Made the four PHP theme sprite URLs use the shared `Func::getPublicBaseUrl(false)` helper and configured installation URL, with its existing root-relative fallback. Relative URLs inside CSS custom properties were resolving against the external stylesheet under `vend-proofing-core/css/`, producing incorrect Gateway requests. Added assertions for root and subdirectory installations across all 32 theme combinations. CSS checks pass; the local gallery emits corrected URLs and its icon endpoint returns 200 image/png. Removed the initial inline path calculation in favor of that shared helper. This template-only runtime fix needs no asset rebuild.
+
 ## Distribution htaccess cleanup (2026-11-14)
 
 Reduced `dist/.htaccess` to `Options -Indexes`. Removed IE/Chrome Frame headers, the old ModSecurity-disable directives, legacy MIME overrides, and the ITDR rewrite marker/disable directive. The private-data access rules remain in `vend-proofing-data/.htaccess`. Verified local Apache returns 200 for admin and 403 for both the database URL and a directory listing. No asset rebuild is needed.

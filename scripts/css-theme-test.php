@@ -1,6 +1,8 @@
 <?php
 
 // Synthetic theme settings only; no bootstrap, database, or integration services.
+require __DIR__ . "/../dist/vend-proofing-core/php/classes/simpleadmin/Func.php";
+if (isset($argv[1])) define("SA_BASE_URL", $argv[1]);
 class CssThemeFixture {
 	public function __construct(private array $settings) {}
 
@@ -53,7 +55,11 @@ foreach (['light', 'dark'] as $theme) {
 						'highlight_color' => ['css' => '#336699', 'value' => '336699'],
 						'orderview_print_images_bool' => $print,
 					]);
+					$_SERVER['SCRIPT_NAME'] = '/index.php';
 					$html = $fixture->render();
+					checkCss(substr_count($html, 'url("' . (defined('SA_BASE_URL') ? SA_BASE_URL : '') . '/vend-proofing-gateway.php?') === 4, 'Root-relative sprite URLs');
+					$_SERVER['SCRIPT_NAME'] = '/proofs/index.php';
+					checkCss(substr_count($fixture->render(), 'url("' . (defined('SA_BASE_URL') ? SA_BASE_URL : '/proofs') . '/vend-proofing-gateway.php?') === 4, 'Subdirectory sprite URLs');
 					foreach (array_unique($required) as $property) {
 						checkCss(str_contains($html, $property . ':'), 'Undefined property: ' . $property);
 					}

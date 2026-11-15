@@ -48,12 +48,15 @@
 	$invoice_logo_asset_height = (float) $invoice_logo_asset["height"];
 	$orderview_print_images_bool = $this->getTypedValue("setup", "settings", "orderview_print_images_bool");
 
+	// CSS variables are consumed by external stylesheets; URLs must not be stylesheet-relative.
+	$theme_gateway = Func::getPublicBaseUrl(false) . "/" . SA_NAMESPACE . "-gateway.php";
+
 	$theme_properties = [
 		'--vend-foreground-color' => ($foreground_color),
 		'--vend-application-background-color' => ($application_background_color),
 		'--vend-font-family' => ($font_family),
 		'--vend-background-color' => ($background_color),
-		'--vend-error-sprite' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-error-sprite.png&effect=overlay&color=444444", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-error-sprite' => 'url(' . json_encode($theme_gateway . "?action=image_colorize&image=vend-error-sprite.png&effect=overlay&color=444444", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
 		'--vend-font-size-14' => (14*$font_size_scale_num) . 'px',
 		'--vend-stroke-color' => ($stroke_color),
 		'--vend-font-size-18' => (18*$font_size_scale_num) . 'px',
@@ -64,9 +67,9 @@
 		'--vend-foreground-color-light' => ($foreground_color_light),
 		'--vend-font-size-30' => (30*$font_size_scale_num) . 'px',
 		'--vend-font-size-22' => (22*$font_size_scale_num) . 'px',
-		'--vend-icon-sprite' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
-		'--vend-navigation-arrow' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
-		'--vend-highlight-icon-sprite' => 'url(' . json_encode(SA_NAMESPACE . "-gateway.php?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-icon-sprite' => 'url(' . json_encode($theme_gateway . "?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . substr($foreground_color, 1), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-navigation-arrow' => 'url(' . json_encode($theme_gateway . "?action=image_colorize&image=vend-supernav-arrow-up.png&effect=overlay&color=" . substr($foreground_color, 1), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
+		'--vend-highlight-icon-sprite' => 'url(' . json_encode($theme_gateway . "?action=image_colorize&image=vend-icon-sprite.png&effect=overlay&color=" . $highlight_color["value"], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ')',
 		'--vend-nav-height' => ($nav_height) . 'px',
 		'--vend-nav-height-minus-14' => ($nav_height - 14) . 'px',
 		'--vend-tile-gutter' => ($tile_gutter_width_num) . 'px',
