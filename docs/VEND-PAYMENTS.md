@@ -4,7 +4,9 @@ Date: 2026-11-12. Phase 1 audit of the pre-change implementation. Implementation
 
 The intended scale is a photographer's independently hosted proofing store. Keep Vend's storefront, checkout, JavaScript application, pricing editors, invoices, and manual production workflow. Use each photographer's own Stripe and PayPal accounts. No platform accounts, Connect, commissions, frontend framework, or general commerce framework.
 
-The developer clarified that **server verification is sufficient**: retain browser price calculation for the existing interaction, independently verify it against trusted pricing rules at order submission, and freeze the verified result. Comparing submitted totals with prices previously submitted by the same browser is insufficient. Do not silently charge a corrected amount that the customer did not approve.
+At this audit stage, the developer clarified that **server verification is sufficient**: retain browser price calculation for the existing interaction, independently verify it against trusted pricing rules at order submission, and freeze the verified result. Comparing submitted totals with prices previously submitted by the same browser is insufficient. Do not silently charge a corrected amount that the customer did not approve.
+
+The subsequent accepted baseline and next simplification pass are recorded in the [modernization log](VEND-MODERNIZATION.md). The developer now wants one server-side pricing calculation, replacing the duplicated browser/server calculation described in this historical plan.
 
 ## Current flow and what to retain
 

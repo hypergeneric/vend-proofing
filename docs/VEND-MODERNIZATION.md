@@ -2,15 +2,29 @@
 
 
 
+## Payment baseline accepted; simplification deferred (2026-11-15)
+
+The developer tested the restored cart-first checkout and confirmed that everything works as expected. This is the accepted local functional baseline, committed as `6eaf097` (`complete payment integration`). Stop feature work here. The confirmation closes the outstanding user acceptance check for close → refresh → retry; it is not a claim that every wallet/device, production account or external delivery path has been qualified.
+
+The next bounded pass should reduce complexity while preserving Vend's original interactions:
+
+1. Consolidate pricing into one server-side calculation used by the storefront and checkout. JavaScript should request/display results rather than maintain a second pricing engine. Preserve print/dimension/quantity formulas, packages, downloads, discounts, shipping and tax, and keep the displayed total consistent with the amount authorized for payment.
+2. Simplify payment orchestration and remove duplication while retaining provider verification, retry/idempotency protection, and reliable order/receipt/fulfillment completion. Preserve cart → successful payment → order/invoice, with manual submission placing an order immediately.
+3. Reorganize the existing settings panels using the developer's implemented `XMLPane.filter()` logic. Revisit JSON-declared field actions, inline clear/test controls, generated values and noneditable status feedback. Those schema ideas are design direction, not completed implementation.
+
+No runtime cleanup is required before unrelated work. Do not mix the deferred vendor cleanup or an admin rewrite into this pass. Temporary Stripe CLI forwarding and any Cloudflare test tunnel are local testing tools, not deployment dependencies; restarting/replacing them may require updating the sandbox webhook configuration described in the manual.
+
 ## Restore cart-first ordering (2026-11-15)
 
 Restored the developer's original customer workflow: payment opens over an editable cart; closing, failure and refresh retain that cart. Removed the modal-era field locking and browser-only saved-order retry closure. Prequalification reuses the cart's persisted attempt identity for unchanged contents/details and allocates a new identity after edits. Unpaid checkout no longer appears in invoices, order search or statistics. Verified payment places the order, records its placement time, redeems its reserved discount and removes matching purchased cart selections in the same SQLite transaction. Manual submission still places the order immediately. Duplicate webhooks cannot clear later additions, and edited package groups remain together.
 
 To keep the change small, private `checkout` records reuse the existing orders/items/payment tables; there is no new checkout database or migration. Provider references, signed webhooks, frozen prices and fulfillment/receipt deduplication remain in place. Unsuccessful return URLs go back to the gallery checkout rather than an unpaid invoice. Existing limited-use discount reservation behavior remains unchanged. Old development orders whose carts were already cleared are not rewritten; test with a fresh cart.
 
-Validation: synthetic payment regressions include retained carts across retries, fresh prequalification after refresh, edited details, paid-only invoice/admin visibility, later additions/edited selections, duplicate completion and failed/cancelled/pending attempts. Existing provider, eight-worker concurrency, manual/free/digital fulfillment and receipt-failure cases remain covered. The disposable storefront/offline-order/invoice suite and JavaScript suite pass. No merchant payment or local database mutation was performed. User browser acceptance of the new close → refresh → retry flow remains open.
+Validation: synthetic payment regressions include retained carts across retries, fresh prequalification after refresh, edited details, paid-only invoice/admin visibility, later additions/edited selections, duplicate completion and failed/cancelled/pending attempts. Existing provider, eight-worker concurrency, manual/free/digital fulfillment and receipt-failure cases remain covered. The disposable storefront/offline-order/invoice suite and JavaScript suite pass. No merchant payment or local database mutation was performed. The developer subsequently confirmed this flow works as expected; see the accepted-baseline entry above.
 
 ## Compact Stripe payment modal (2026-11-15)
+
+Historical checkpoint: the field locking and saved-order storefront retry described below were superseded by the cart-first restoration above.
 
 Replaced the full embedded Checkout page with Payment Element plus Express Checkout Element in a shared native dialog. Both storefront payment and invoice retry use it. Close/Escape destroys the mounted Elements and returns to the current page; it does not cancel a payable provider Session. The storefront retains the saved order, locks its submitted fields and resumes through `payment_start`, avoiding another cart submission. Confirmation prevents duplicate clicks and dismissal while in flight, displays provider validation errors inside the dialog and retrieves independently verified Vend payment state before opening the invoice. Prices, provider ownership checks, webhooks and fulfillment remain server-owned. No persistence changes or new dependencies.
 
