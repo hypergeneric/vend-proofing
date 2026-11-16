@@ -70,7 +70,7 @@ Records::syncDropboxImages($digitalGallery, array(
 	array('id' => 'id:digital-a', 'name' => 'renamed.jpg', 'path_lower' => '/b1/renamed.jpg', 'path_display' => '/b1/renamed.jpg', 'rev' => 'abcdef456', 'size' => 2)
 ));
 rejectsPayment(fn () => Downloads::next($id), 'Lost copy response was ignored.');
-checkPayment(Downloads::status($id)['progress']===0, 'Lost response marked file complete.');
+checkPayment(Downloads::status($id)['progress']===0.0, 'Lost response marked file complete.');
 rejectsPayment(fn () => Downloads::next($id), 'Missing preview was skipped.');
 checkPayment(Downloads::status($id)['progress']===0.5 && count($remote)===1, 'Retry did not retain completed original.');
 rejectsPayment(fn () => Downloads::links($id), 'Partial package was shared.');

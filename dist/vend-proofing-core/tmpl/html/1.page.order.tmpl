@@ -99,11 +99,31 @@
 	$orderid = 			$this->info("id");
 	$view = 			$this->info("hash");
 	$fragments = 		$this->info("fragments");
-	$email_hash = 		array_shift($fragments);
+	$email_hash = $zip_part = array_shift($fragments);
 	$form_errors = 		array();
 	$sessionobj = 		array();
 	$orderobj = 		array();
 	
+	if ($view==="file") {
+		header("Cache-Control: private, no-store");
+		header("X-Content-Type-Options: nosniff");
+		try {
+			if (($_SERVER["REQUEST_METHOD"] ?? "")!=="GET" || !preg_match('/^[1-9][0-9]*$/D', (string) $zip_part)) throw new RuntimeException("Invalid download request.");
+			$download = Downloads::open($orderid, (int) $zip_part);
+		} catch (RuntimeException $error) {
+			http_response_code(403);
+			header("Content-Type: text/plain; charset=UTF-8");
+			exit($LANG->lookup($error->getMessage()));
+		}
+		if (session_status()===PHP_SESSION_ACTIVE) session_write_close();
+		header("Content-Type: application/zip");
+		header('Content-Disposition: attachment; filename="' . $download["name"] . '"');
+		header("Content-Length: " . $download["size"]);
+		fpassthru($download["file"]);
+		fclose($download["file"]);
+		exit;
+	}
+
 	/* Process invoice downloads before rendering the page. */
 	if ( $view=="process" ) {
 		$ownerReset = $email_hash==="reset" && hash_equals(hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret()), (string) ($fragments[0] ?? ""));

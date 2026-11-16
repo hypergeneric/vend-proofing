@@ -99,7 +99,9 @@ classes.elements.Controlbar = (function () {
 		function downloadAll (group, quality) {
 			var purchase_price_includes_tax_bool = Checkout.settings().tax.included;
 			var downloads_taxable_bool = Checkout.settings().downloads.tax;
-			var count = group=="cart" ? Overlay.getImageCount() : Session.getFavoritesLength();
+			var keys = Checkout.settings().downloads.keys;
+			var count = group=="cart" ? keys.length : Session.getFavorites().filter(function (item) { return keys.indexOf(item.cuid)!==-1; }).length;
+			if (!count) return;
 			var price = group=="cart" ? Checkout.settings().downloads.all[quality] : Checkout.settings().downloads[quality].price;
 				price = parseFloat(price);
 			if ( Checkout.settings().downloads.all.flat==false || group!="cart" ) {

@@ -422,11 +422,7 @@
 						}
 						Records::deleteSetRow($name, $suid ?? "", $puid);
 						if ($name==="page") {
-							$folder = SA_DIR_STORAGE . "/" . $suid;
-							if (is_dir($folder) && !is_link($folder)) {
-								Filesystem::purgeFolder($folder);
-								Filesystem::deleteFolder($folder);
-							}
+							MediaFiles::deleteGallery($suid);
 						}
 						$this->respond(array(
 							"success" => true,

@@ -43,7 +43,7 @@
 			$client->rpc("files/copy_reference/save", array("copy_reference" => $reference["copy_reference"], "path" => $destination));
 		}
 
-		public function link (string $folder): string {
+		public function link (string $folder, string $order, int $part): string {
 			$client = new DropboxClient();
 			$result = $client->rpc("sharing/list_shared_links", array("path" => $folder, "direct_only" => true));
 			$url = $result["links"][0]["url"] ?? "";

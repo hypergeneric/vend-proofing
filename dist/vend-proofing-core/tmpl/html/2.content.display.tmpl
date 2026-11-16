@@ -114,12 +114,9 @@
 	$packages = 							Records::getSetTable("package", $page_data->getNodeVal("data.settings.package_set"));
 	$products = 							Records::getSetTable("product", $page_data->getNodeVal("data.settings.product_set"));
 	
-	// download options -- dropbox only
-	if ($this->info("class")=="DropboxSet") {
-		$this->data_lookup["downloads"] = 	Configuration::getDocument("downloads", $page_data->getNodeVal("data.settings.download_set"));
-	} else {
-		$this->data_lookup["downloads"] = 	Configuration::getDocument("downloads");
-	}
+	// All gallery types use the assigned download profile and the same eligible image list.
+	$this->data_lookup["downloads"] = Configuration::getDocument("downloads", $page_data->getNodeVal("data.settings.download_set"));
+	$download_keys = array_keys(Downloads::images($this->info("id")));
 	$allow_single_downloads_bool = 			$this->getTypedValue("downloads", "settings", "allow_single_downloads_bool");
 	$allow_web_version_bool = 				$this->getTypedValue("downloads", "settings", "allow_web_version_bool");
 	$allow_download_all_bool = 				$this->getTypedValue("downloads", "settings", "allow_download_all_bool");
@@ -128,7 +125,12 @@
 	$single_download_all_price = 			$this->getTypedValue("downloads", "settings", "single_download_all_price");
 	$web_version_download_all_price = 		$this->getTypedValue("downloads", "settings", "web_version_download_all_price");
 	$download_all_flatfee_bool = 			$this->getTypedValue("downloads", "settings", "download_all_flatfee_bool");
-	$downloads_available = 					$allow_single_downloads_bool || $allow_web_version_bool || $allow_download_all_bool;
+	if (empty($download_keys)) {
+		$allow_single_downloads_bool = false;
+		$allow_web_version_bool = false;
+		$allow_download_all_bool = false;
+	}
+	$downloads_available = $allow_single_downloads_bool || $allow_web_version_bool || $allow_download_all_bool;
 
 	//clickwrap
 	$this->data_lookup["policies"] = 		Configuration::getDocument("policies", null, true);
@@ -350,7 +352,8 @@
 				offline: <?php echo $allow_offline_payment_bool ? "true" : "false"; ?>, 
 				paypal: <?php echo $allow_offsite_paypal_payments_bool ? "true" : "false"; ?>, 
 				merchant: <?php echo $enable_paypal_merchant_account_bool ? "true" : "false"; ?>, 
-				downloads: { 
+				downloads: {
+					keys: <?php echo json_encode($download_keys, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>,
 					use: <?php echo $downloads_available ? "true" : "false"; ?>, 
 					tax: <?php echo $downloads_taxable_bool ? "true" : "false"; ?>, 
 					high: {

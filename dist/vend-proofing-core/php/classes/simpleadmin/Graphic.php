@@ -1,6 +1,7 @@
 <?php
 
 	class Graphic {
+		protected int $max_image_dimension;
 		
 		protected $flag_basename = 			"";
 		protected $flag_filename = 			"";
@@ -38,6 +39,8 @@
 		protected $use_caption = 			false;
 		
 		public function __construct($obj=array()) {
+			$setup = Configuration::getDocument("setup");
+			$this->max_image_dimension = max(1, (int) ($setup->getNodeVal("data.settings.max_image_dimension_num") ?: 2048));
 			
 			for ($i=0; $i<8; ++$i) if (isset($obj[$i])==false) $obj[$i] = "";
 			if ($obj[2]=="") $obj[2] = "0x0";
@@ -188,6 +191,7 @@
 			$this->image_original_uri = SA_DIR_STORAGE . "/" . $this->flag_basename . "/" . $this->flag_filename;
 			$this->watermark_uri = SA_DIR_STORAGE . "/asset/" . $this->flag_watermark_asset;
 			$this->image_unique_hash = md5(
+				"max-dimension-" . $this->max_image_dimension . "-" .
 				(@filemtime($this->image_original_uri) ?: 0) . "-" .
 				$this->flag_basename . "-" . 
 				$this->flag_filename . "-" . 
@@ -472,6 +476,17 @@
 						$resample = false;
 					}
 				}
+			}
+			if (!$resample) {
+				$final_width = $original_width;
+				$final_height = $original_height;
+			}
+			// Apply the site's output limit after fitting/cropping and retina scaling.
+			$scale = min(1, $this->max_image_dimension / max(1, $final_width), $this->max_image_dimension / max(1, $final_height));
+			if ($scale<1) {
+				$final_width = max(1, (int) round($final_width * $scale));
+				$final_height = max(1, (int) round($final_height * $scale));
+				$resample = true;
 			}
 			return array($final_width, $final_height, $original_width, $original_height, $resample);
 		}

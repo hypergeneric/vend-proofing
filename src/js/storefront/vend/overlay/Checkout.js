@@ -27,7 +27,8 @@ classes.overlay.Checkout = (function () {
 			offline: 			false,
 			paypal: 			false,
 			merchant: 			false,
-			downloads: { 
+			downloads: {
+				keys: [],
 				use: false, 
 				tax: false, 
 				high: {

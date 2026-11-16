@@ -12,6 +12,7 @@
 			"invoice_footer": {"_attributes": {"markdown": "true", "toolbar": "true", "lines": "3"}},
 			"google_analytics_user_agent": {"_attributes": {"lines": "5"}},
 			"facebook_pixel_id": {},
+			"max_image_dimension_num": {"_value": "2048", "_attributes": {"min": "1", "max": "32768"}},
 			"resampling_quality_num": {"_value": "90", "_attributes": {"min": "60", "max": "95"}},
 			"resample_use_imagick_bool": {"_value": "false"},
 			"resample_sharpen_bool": {"_value": "true"},

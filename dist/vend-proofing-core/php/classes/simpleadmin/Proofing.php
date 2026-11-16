@@ -271,7 +271,7 @@
 			}
 			$images = array();
 			if ($group==="cart") {
-				$images = array_values(Records::getFileTable("image", $gallery));
+				$images = array_values(Downloads::images($gallery));
 			} else {
 				foreach (self::rows($gallery, $session) as $row) {
 					if (str_ends_with($row[0], "-f")) {
@@ -279,6 +279,8 @@
 					}
 				}
 			}
+			$eligible = Downloads::images($gallery);
+			$images = array_values(array_filter($images, fn ($row) => isset($eligible[$row[0]])));
 			if (!$images) return self::responseRows($gallery, $session, "download");
 			$each = $flat ? floor($price / count($images) * 100) / 100 : $price;
 			$remainder = $flat ? $price - $each * count($images) : 0;
@@ -303,7 +305,7 @@
 				$insert = $db->prepare($sql);
 				foreach ($images as $index => $image) {
 					$amount = $each + ($index===count($images) - 1 ? $remainder : 0);
-					$key = md5($gallery . $image[1] . $quality) . "-d";
+					$key = md5($gallery . $image[0] . $quality) . "-d";
 					$row = array($key, $gallery, $image[0], $image[1], $image[2], $quality,
 						(string) $amount, "1");
 					$values = self::values("download", $row);

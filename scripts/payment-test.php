@@ -507,3 +507,5 @@ checkPayment(!PaymentSettings::configured('stripe'), 'Embedded Stripe enabled wi
 setting('stripe_test_publishable_key', 'pk_test_synthetic', 'payment_gateway');
 checkPayment(PaymentSettings::configured('stripe'), 'Configured Elements Stripe unavailable.');
 echo "PASS funding boundaries and Elements publishable-key configuration\n";
+
+(static function () { require __DIR__ . '/local-download-test.php'; })();

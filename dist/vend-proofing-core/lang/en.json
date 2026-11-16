@@ -1,6 +1,7 @@
 {
-	"download_request_failed": "Download preparation stopped. Click the button to retry; contact the photographer if it continues.",
 	"data": {
+		"download_request_failed": {"_attributes": {"name": "Download preparation stopped. Click the button to retry; contact the photographer if it continues."}},
+		"image_upload_hosting_note": {"_attributes": {"name": "Original files are kept unchanged. Your hosting controls upload limits; large images may upload successfully but exceed its memory or processing time when creating previews or web-size downloads."}},
 		"base_url": {"_attributes": {"name": "Base URL"}},
 		"recovery_unavailable": {"_attributes": {"name": "Unable to load password recovery. Please try again."}},
 		"setup_progress": {"_attributes": {"name": "Step {STEP} of {TOTAL}"}},
@@ -381,8 +382,8 @@
 		"cron_enabled_bool": {"_attributes": {"name": "Automation Enabled"}},
 		"expiring_notify_bool": {"_attributes": {"name": "Auto-notify Users Of Expiring Sets"}},
 		"expiring_days_before_num": {"_attributes": {"name": "Number of Days Before Expiration Notification Is Sent"}},
-		"dropbox_purge_old_bool": {"_attributes": {"name": "Auto-delete Dropbox Order Files"}},
-		"dropbox_days_after_num": {"_attributes": {"name": "Delete Dropbox Order Files Older Than X Number of Days"}},
+		"dropbox_purge_old_bool": {"_attributes": {"name": "Auto-delete Prepared Downloads"}},
+		"dropbox_days_after_num": {"_attributes": {"name": "Delete Prepared Downloads Older Than X Number of Days"}},
 		"musicpanel": {"_attributes": {"name": "Music"}},
 		"enabled_bool": {"_attributes": {"name": "Enabled"}},
 		"valume_num": {"_attributes": {"name": "Volume"}},

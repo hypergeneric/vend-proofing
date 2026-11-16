@@ -40,8 +40,7 @@
 				-200 => "Cannot Copy Local File",
 				-300 => "URL Does Not Exist",
 				-400 => "Sideloader Class Unavailable",
-				-500 => "Invalid File Type",
-				-600 => "Image Too Large"
+				-500 => "Invalid File Type"
 			);
 			return $errors[$code] ?? "Cannot Import File";
 		}
@@ -61,9 +60,50 @@
 			foreach ($keys as $key) {
 				if (!self::safeKey((string) $key)) continue;
 				$path = SA_DIR_STORAGE . "/" . $folder . "/" . $key;
+				if (self::purchased($folder . "/" . $key)) continue;
 				@unlink($path);
 				@unlink($path . ".snapshot.jpg");
 			}
+		}
+
+		/** A removed gallery's originals can be released once the last referencing order is deleted. */
+		public static function releasePurchased (array $assetIds): void {
+			foreach ($assetIds as $id) {
+				$relative = Database::transaction(function (PDO $db) use ($id): ?string {
+					$query = $db->prepare("SELECT relative_path FROM media_assets WHERE id = ?
+						AND id NOT IN (SELECT asset_id FROM gallery_images)
+						AND id NOT IN (SELECT asset_id FROM media_entries)
+						AND id NOT IN (SELECT image_asset_id FROM order_items WHERE image_asset_id IS NOT NULL)");
+					$query->execute(array($id));
+					$path = $query->fetchColumn();
+					if ($path===false) return null;
+					$db->prepare("DELETE FROM media_assets WHERE id = ?")->execute(array($id));
+					return $path;
+				});
+				if ($relative===null) continue;
+				self::delete(dirname($relative), array(basename($relative)));
+				@rmdir(SA_DIR_STORAGE . "/" . dirname($relative));
+			}
+		}
+
+		private static function purchased (string $relative): bool {
+			$query = Database::connection()->prepare("SELECT 1 FROM media_assets AS assets JOIN order_items AS items
+				ON items.image_asset_id = assets.id WHERE assets.relative_path = ? LIMIT 1");
+			$query->execute(array($relative));
+			return (bool) $query->fetchColumn();
+		}
+
+		public static function deleteGallery (string $suid): void {
+			$directory = SA_DIR_STORAGE . "/" . $suid;
+			if (!is_dir($directory) || is_link($directory)) return;
+			$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+			foreach ($files as $file) {
+				$path = $file->getPathname();
+				if ($file->isDir() && !$file->isLink()) { @rmdir($path); continue; }
+				$relative = $suid . "/" . substr($path, strlen($directory) + 1);
+				if (!self::purchased($relative)) @unlink($path);
+			}
+			@rmdir($directory);
 		}
 
 		private static function isAllowedFile ($filename) {

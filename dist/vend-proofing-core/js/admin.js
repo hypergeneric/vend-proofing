@@ -7442,6 +7442,9 @@ classes.dialogs.Upload = function () {
 		
 		var xhtml = '';
 			xhtml += '<div id="' + _uniquid + '" class="UploadDialog DialogForm">';
+		if (_key==="image" || _key==="gallery") {
+			xhtml += '<p>' + $("<span>").text(Lang.lookup("image_upload_hosting_note")).html() + '</p>';
+		}
 		if (!_dironly) {
 			xhtml += 	'<div class="Submit">';
 			xhtml += 		'<input type="submit" class="Upload" value="' + Lang.lookup("Add Files From Your Computer") + '" />';

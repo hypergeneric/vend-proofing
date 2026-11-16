@@ -275,7 +275,10 @@ classes.overlay.Sidebar = (function () {
 		}
 		function updateDownloadOptions () {
 			var info = Overlay.getCurrentImage();
-			var hash = md5( Overlay.pageid() + info.filename + "high" );
+			var eligible = info && Checkout.settings().downloads.keys.indexOf(info.child)!==-1;
+			sidebar_download.toggle(downloads_available && !!eligible);
+			if (!eligible) return;
+			var hash = md5( Overlay.pageid() + info.child + "high" );
 			var obj = Session.getDownloadObject(hash+"-d");
 			if (obj==undefined) {
 				$("#sidebar-download-high")
@@ -288,7 +291,7 @@ classes.overlay.Sidebar = (function () {
 					.next()
 						.addClass("Disabled");
 			}
-			var hash = md5( Overlay.pageid() + info.filename + "low" );
+			var hash = md5( Overlay.pageid() + info.child + "low" );
 			var obj = Session.getDownloadObject(hash+"-d");
 			if (obj==undefined) {
 				$("#sidebar-download-low")
@@ -657,7 +660,7 @@ classes.overlay.Sidebar = (function () {
 			} else if (selection.type=="download") {
 				// create a unique hash for the cart object
 				var info = Overlay.getCurrentImage();
-				var hash = md5( Overlay.pageid() + info.filename + selection.quality );
+				var hash = md5( Overlay.pageid() + info.child + selection.quality );
 				var price = Checkout.settings().downloads[selection.quality].price;
 					price = evaluate(price, null, null, null);
 				/* add any and all pertinent info to the cart object

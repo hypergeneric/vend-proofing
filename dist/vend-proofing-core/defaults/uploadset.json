@@ -9,6 +9,7 @@
 			"modifier_set": {"_attributes": {"action": "set_list", "name": "modifierset", "suid": ""}},
 			"package_set": {"_attributes": {"action": "set_list", "name": "packageset", "suid": ""}},
 			"product_set": {"_attributes": {"action": "set_list", "name": "productset", "suid": ""}},
+			"download_set": {"_attributes": {"action": "set_list", "name": "downloadset", "suid": ""}},
 			"enable_quantity_ui_bool": {"_value": "true"},
 			"enable_color_options_bool": {"_value": "true"},
 			"enable_cropping_tool_bool": {"_value": "true"},

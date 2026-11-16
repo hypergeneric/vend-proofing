@@ -2624,7 +2624,9 @@ classes.elements.Controlbar = (function () {
 		function downloadAll (group, quality) {
 			var purchase_price_includes_tax_bool = Checkout.settings().tax.included;
 			var downloads_taxable_bool = Checkout.settings().downloads.tax;
-			var count = group=="cart" ? Overlay.getImageCount() : Session.getFavoritesLength();
+			var keys = Checkout.settings().downloads.keys;
+			var count = group=="cart" ? keys.length : Session.getFavorites().filter(function (item) { return keys.indexOf(item.cuid)!==-1; }).length;
+			if (!count) return;
 			var price = group=="cart" ? Checkout.settings().downloads.all[quality] : Checkout.settings().downloads[quality].price;
 				price = parseFloat(price);
 			if ( Checkout.settings().downloads.all.flat==false || group!="cart" ) {
@@ -4539,8 +4541,8 @@ classes.overlay.Browser = (function () {
 		var appy = 			0;
 		var appwidth = 		0;
 		var appheight = 	0;
-		var maxwidth = 		2000;
-		var maxheight = 	2000;
+		var maxwidth = 		VEND_CONFIG.graphics.maxDimension;
+		var maxheight = 	VEND_CONFIG.graphics.maxDimension;
 		var index = 		-1;
 		var inited = 		false;
 		var keylisten = 	true;
@@ -5106,15 +5108,6 @@ classes.overlay.Browser = (function () {
 				container.mousewheel(Func.stop);
 		}
 		function draw () {
-			//maxwidth = 1000;
-			//maxheight = 1000;
-			var classid = $("#container").attr("class");
-			if (classid=="DropboxSet") {
-				//maxwidth = 1024;
-				//maxheight = 768;
-			}
-			//maxwidth = 500;
-			//maxheight = 500;
 			// cache some jquery lookups
 			container = $("#overlay-browser");
 			inner = $("#overlay-browser .Inner");
@@ -5765,7 +5758,8 @@ classes.overlay.Checkout = (function () {
 			offline: 			false,
 			paypal: 			false,
 			merchant: 			false,
-			downloads: { 
+			downloads: {
+				keys: [],
 				use: false, 
 				tax: false, 
 				high: {
@@ -7793,7 +7787,10 @@ classes.overlay.Sidebar = (function () {
 		}
 		function updateDownloadOptions () {
 			var info = Overlay.getCurrentImage();
-			var hash = md5( Overlay.pageid() + info.filename + "high" );
+			var eligible = info && Checkout.settings().downloads.keys.indexOf(info.child)!==-1;
+			sidebar_download.toggle(downloads_available && !!eligible);
+			if (!eligible) return;
+			var hash = md5( Overlay.pageid() + info.child + "high" );
 			var obj = Session.getDownloadObject(hash+"-d");
 			if (obj==undefined) {
 				$("#sidebar-download-high")
@@ -7806,7 +7803,7 @@ classes.overlay.Sidebar = (function () {
 					.next()
 						.addClass("Disabled");
 			}
-			var hash = md5( Overlay.pageid() + info.filename + "low" );
+			var hash = md5( Overlay.pageid() + info.child + "low" );
 			var obj = Session.getDownloadObject(hash+"-d");
 			if (obj==undefined) {
 				$("#sidebar-download-low")
@@ -8175,7 +8172,7 @@ classes.overlay.Sidebar = (function () {
 			} else if (selection.type=="download") {
 				// create a unique hash for the cart object
 				var info = Overlay.getCurrentImage();
-				var hash = md5( Overlay.pageid() + info.filename + selection.quality );
+				var hash = md5( Overlay.pageid() + info.child + selection.quality );
 				var price = Checkout.settings().downloads[selection.quality].price;
 					price = evaluate(price, null, null, null);
 				/* add any and all pertinent info to the cart object

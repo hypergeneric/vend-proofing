@@ -30,6 +30,7 @@
 			'contact' => $LANG->lookup('uri_contact_identifier'),
 		],
 		'graphics' => [
+			'maxDimension' => max(1, (int) ($data_setup->getNodeVal('data.settings.max_image_dimension_num') ?: 2048)),
 			'quality' => (float) $data_setup->getNodeVal('data.settings.resampling_quality_num'),
 			'sharpen' => $data_setup->getNodeVal('data.settings.resample_sharpen_bool') === 'true',
 			'imagick' => $data_setup->getNodeVal('data.settings.resample_use_imagick_bool') === 'true',

@@ -161,7 +161,7 @@
 						CheckoutQuote::cents($quote["amounts"][$item["id"]][1]), $item["selection_json"], $position, $item["public_key"]));
 					$orderItemIds[$item["id"]] = (int) $db->lastInsertId();
 					$rules = $quote["rules"][$item["public_key"]];
-					if ($item["item_type"]==="download") $rules["download_source"] = DropboxDelivery::snapshot((int) $assetId, $values["quality"]);
+					if ($item["item_type"]==="download") $rules["download_source"] = Downloads::snapshot($gallery, (int) $assetId, $values["quality"]);
 					$db->prepare("UPDATE order_items SET formula_snapshot_json = ? WHERE id = ?")
 						->execute(array(json_encode($rules, JSON_THROW_ON_ERROR), $orderItemIds[$item["id"]]));
 				}
@@ -376,6 +376,9 @@
 
 		public static function delete (string $suid): void {
 			Downloads::delete($suid);
+			$query = Database::connection()->prepare("SELECT DISTINCT image_asset_id FROM order_items JOIN orders ON orders.id = order_items.order_id WHERE orders.suid = ? AND image_asset_id IS NOT NULL");
+			$query->execute(array($suid));
+			$assets = $query->fetchAll(PDO::FETCH_COLUMN);
 			Database::transaction(function (PDO $db) use ($suid): void {
 				$query = $db->prepare("SELECT id FROM orders WHERE suid = ?");
 				$query->execute(array($suid));
@@ -401,6 +404,7 @@
 				$db->prepare("DELETE FROM orders WHERE id = ?")->execute(array($id));
 				$db->prepare("DELETE FROM payment_logs WHERE order_suid = ?")->execute(array($suid));
 			});
+			MediaFiles::releasePurchased($assets);
 		}
 
 		public static function search (string $start, string $end, array $params): string {

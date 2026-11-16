@@ -40,8 +40,15 @@ checkOrder(str_contains(OrderRecords::search(date('Y/n/j'), date('Y/n/j'), array
 checkOrder(str_contains(OrderRecords::stats(date('Y/n/j'), date('Y/n/j')), '27.00'), 'Order statistics failed.');
 OrderRecords::log($id, "Synthetic result\n");
 checkOrder(OrderRecords::getLog($id)==="Synthetic result\n", 'Log changed.');
-try { Records::deletePage($gallery); throw new RuntimeException('Purchased gallery deleted.'); }
-catch (PDOException $error) { checkOrder(OrderRecords::get($id)!==null, 'Failed deletion damaged order.'); }
+try {
+	Database::transaction(function () use ($gallery, $id): void {
+		Records::deletePage($gallery);
+		checkOrder(OrderRecords::get($id)!==null && OrderRecords::get($id)[1]==='', 'Gallery removal damaged its order.');
+		throw new LogicException('Restore gallery fixture');
+	});
+} catch (LogicException $error) {
+	if ($error->getMessage()!=='Restore gallery fixture') throw $error;
+}
 OrderRecords::delete($id);
 checkOrder(OrderRecords::get($id)===null && OrderRecords::items($id)===array() && OrderRecords::getLog($id)===null, 'Order cleanup failed.');
 Proofing::deleteSession($gallery, $session);

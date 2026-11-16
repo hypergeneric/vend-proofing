@@ -41,7 +41,7 @@
 
 		public static function downloads (string $gallery): ConfigurationDocument {
 			$settings = self::gallerySettings($gallery);
-			$profile = Records::pageType($gallery)==="DropboxSet" ? $settings->getNodeVal("data.settings.download_set") : null;
+			$profile = $settings->getNodeVal("data.settings.download_set");
 			return Configuration::getDocument("downloads", $profile);
 		}
 
@@ -110,6 +110,7 @@
 				if (!$components) $count++;
 			}
 			$downloadConfig = self::downloads($gallery);
+			$downloadImages = Downloads::images($gallery);
 			$bulk = array();
 			foreach ($items as $item) {
 				$type = $item["item_type"];
@@ -123,7 +124,7 @@
 				}
 				if ($item["image_id"]===null) throw new InvalidArgumentException("invalid_order");
 				if ($type==="download") {
-					if (Records::pageType($gallery)!=="DropboxSet") throw new InvalidArgumentException("invalid_order");
+					if (!isset($downloadImages[$row[2]])) throw new InvalidArgumentException("invalid_order");
 					$values = json_decode($item["selection_json"], true, 512, JSON_THROW_ON_ERROR);
 					$quality = $row[5];
 					if (!in_array($quality, array("high", "low"), true)) throw new InvalidArgumentException("invalid_order");
@@ -184,7 +185,7 @@
 				$shipping += $freight * $quantity;
 			}
 			foreach ($bulk as $quality => $batch) {
-				$images = Records::getFileTable("image", $gallery);
+				$images = $downloadImages;
 				$ids = array_map(fn ($item) => (string) json_decode($item["selection_json"], true)["cuid"], $batch);
 				if (count($ids)!==count($images) || count(array_unique($ids))!==count($images)
 					|| array_diff($ids, array_keys($images))) throw new InvalidArgumentException("invalid_order");

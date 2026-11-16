@@ -1154,7 +1154,8 @@
 				$sql = "DELETE FROM media_assets
 					WHERE id = ?
 				AND id NOT IN (SELECT asset_id FROM gallery_images)
-				AND id NOT IN (SELECT asset_id FROM media_entries)";
+				AND id NOT IN (SELECT asset_id FROM media_entries)
+				AND id NOT IN (SELECT image_asset_id FROM order_items WHERE image_asset_id IS NOT NULL)";
 				$delete = $db->prepare($sql);
 				foreach ($assetIds as $assetId) {
 					$delete->execute(array($assetId));
@@ -1458,7 +1459,8 @@
 				$deleteImage = $db->prepare("DELETE FROM gallery_images WHERE id = ?");
 				$sql = "DELETE FROM media_assets
 					WHERE id = ?
-					AND id NOT IN (SELECT asset_id FROM gallery_images)";
+					AND id NOT IN (SELECT asset_id FROM gallery_images)
+					AND id NOT IN (SELECT image_asset_id FROM order_items WHERE image_asset_id IS NOT NULL)";
 				$deleteAsset = $db->prepare($sql);
 
 				foreach ($keys as $key) {

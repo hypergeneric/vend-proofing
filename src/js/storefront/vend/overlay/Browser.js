@@ -23,8 +23,8 @@ classes.overlay.Browser = (function () {
 		var appy = 			0;
 		var appwidth = 		0;
 		var appheight = 	0;
-		var maxwidth = 		2000;
-		var maxheight = 	2000;
+		var maxwidth = 		VEND_CONFIG.graphics.maxDimension;
+		var maxheight = 	VEND_CONFIG.graphics.maxDimension;
 		var index = 		-1;
 		var inited = 		false;
 		var keylisten = 	true;
@@ -590,15 +590,6 @@ classes.overlay.Browser = (function () {
 				container.mousewheel(Func.stop);
 		}
 		function draw () {
-			//maxwidth = 1000;
-			//maxheight = 1000;
-			var classid = $("#container").attr("class");
-			if (classid=="DropboxSet") {
-				//maxwidth = 1024;
-				//maxheight = 768;
-			}
-			//maxwidth = 500;
-			//maxheight = 500;
 			// cache some jquery lookups
 			container = $("#overlay-browser");
 			inner = $("#overlay-browser .Inner");

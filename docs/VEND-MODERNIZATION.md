@@ -1,5 +1,33 @@
 # Vend modernization log
 
+## Configurable image output ceiling (2026-11-16)
+
+Added Setup `max_image_dimension_num`, default 2048 pixels. Graphic applies the single dimension ceiling proportionally after fitting/cropping and multiplier calculations, including omitted-size requests. Removed the special uploaded-gallery flag and download-eligibility lookup. The ceiling is part of server cache identity and storefront configuration; browser zoom uses it instead of the fixed 2000-pixel maximum. Smaller images can use the existing original-file shortcut. This supersedes the earlier mandatory re-encoding and uploaded-gallery-only preview policy. Uploads, purchased originals and LocalDelivery web-size renditions remain separate.
+
+Passed payment/download HTTP tests with 2048, 960 and 1200 ceilings, repeated URLs across setting changes, omitted dimensions, oversized retina/crop requests and smaller proportional requests. JavaScript/runtime configuration tests, asset build and diff check passed. Refreshed saved settings after a dry run (setup and the saved upload set aligned; seven documents unchanged). Host capacity and real-gallery acceptance remain open as recorded below.
+
+## Download template simplification (2026-11-16)
+
+The gallery template now loads its assigned download configuration directly from the existing page settings, without routing through CheckoutQuote. Expanded the empty-gallery flag assignments into an explicit block and removed the duplicate eligibility-count check from overall availability. Behavior is unchanged. Isolated payment/local/Dropbox and gallery/invoice HTTP checks, plus the diff check, passed.
+
+The order template also assigns the shared URL fragment to `$email_hash` and `$zip_part`, using `$zip_part` in the file-download branch. This naming-only change passed template PHP lint and the diff check.
+
+## Local ZIP fallback (2026-11-16)
+
+LocalDelivery now uses the bundled PclZip when ZipArchive is unavailable. Native ZIP remains preferred. Both paths store prepared files without compression, retain relative names and publish only after successful finalization. The fallback checks returned entry statuses and classic ZIP size/count limits; it requires zlib and holds one complete source file in memory. No bundled vendor code was changed. These packaging limits do not restrict uploads.
+
+Validation passed on PHP 8.4: the isolated payment smoke runs fallback creation with `php -n` (ZipArchive absent), full error reporting and 128 MB memory; verifies retry after a partial temporary archive and rejection of a sparse ZIP64-sized source; then compares native/fallback entry paths, storage method and SHA-256 bytes. Existing payment, Dropbox, local preparation and authenticated HTTP download tests also passed. Documentation records fallback hosting limits.
+
+## Uploaded gallery digital downloads (2026-11-16)
+
+Implemented local JPEG/PNG original and web-size delivery for UploadSet/basic and CategorySet. Shared download profiles, storefront controls, bulk/favorite counts and trusted quotes now use eligible photo records. Download selection identity uses each unique asset key so repeated display filenames do not collide. `Downloads` dispatches source snapshots and package work to Dropbox or LocalDelivery; current Dropbox behavior stays covered. No new SQL schema, migration/import logic, service dependency or worker. The developer clarified that their 128 GB workstation is not representative of hosting; no arbitrary upload-size/dimension cap was introduced, and the unreachable Image Too Large error mapping was removed. The upload dialog and manual explain host-dependent resizing limits. S3 storage remains deferred.
+
+Local purchase snapshots record source path/hash. Preparation copies originals unchanged or generates clean, oriented JPEGs bounded by 1024×768 with Imagick/GD. ZIP finalization is a separate tracked step; local requests do one image or one part, with approximately 250 MB/1,000-file part targets and an individual larger source in its own part. Private ZIPs stream through an invoice-session/entitlement-checked GET route, with no arbitrary client path. Link issuance, resets, retries and tracked cleanup reuse the service. Issued local links are denied after entitlement is revoked. Original source retention is independent of disposable ZIPs: removing galleries/images retains media referenced by orders; permanent final-order deletion releases unreferenced source files, while archived orders keep references.
+
+Closed the existing public resampler original-byte shortcut for uploaded gallery JPEG/PNG sources. Public requests are re-encoded previews capped at 2048 pixels per side, including omitted/oversized dimensions; cached responses use a distinct key. This does not cap uploads or prevent customers from saving visible previews. Local raw storage and retained files stay outside public source lookup.
+
+Validation passed: isolated payment/Dropbox/local preparation, original byte hashes, changed sources, duplicate labels, unsupported media, gallery removal, resumed work, final ZIP contents, EXIF orientation, GD fallback, PNG alpha/no-upscale behavior, authorized HTTP streaming/headers, invalid parts, raw-storage denial, revoked access, source cleanup and ZIP expiry. Basic and category gallery suites, foundation/settings, JavaScript tests, generated asset build and diff checks also passed. The HTTP fixture supplies a synthetic contact email and disables DNS checks in its network-disabled server. Refreshed local saved settings through the CLI after a dry run: ordering and the existing upload set updated; seven other documents unchanged. No live payment, mail, Dropbox or customer-file deletion was used. Real local-gallery acceptance and representative hosting limits remain to be qualified.
+
 ## Uploaded-set digital delivery feasibility (2026-11-16)
 
 Read-only source/runtime investigation; no application implementation or customer-data changes. `UploadSet` (basic uploads) and `CategorySet` share `MediaFiles::uploadFile()` and `Records::addImage()`. Browser uploads pass the File directly through FormData; PHP moves the uploaded bytes into storage and records original name, unique relative path, size and dimensions. No original recompression was found. Categories change gallery grouping, not the underlying file storage. The upload UI also accepts non-photo media, so local download eligibility and bulk completeness must explicitly filter supported photo types.
