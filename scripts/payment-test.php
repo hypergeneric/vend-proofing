@@ -122,31 +122,87 @@ echo "PASS package allocations, surcharges and rejection of invented products\n"
 
 // Provider test configuration is synthetic and never used on a network.
 foreach (array('stripe_enabled_bool' => 'true', 'stripe_mode' => 'test',
-	'stripe_test_secret' => 'sk_test_synthetic', 'stripe_test_webhook' => 'whsec_synthetic', 'paypal_enabled_bool' => 'true', 'paypal_mode' => 'test',
+	'stripe_test_publishable_key' => 'pk_test_synthetic', 'stripe_test_secret' => 'sk_test_synthetic', 'stripe_test_webhook' => 'whsec_synthetic', 'paypal_enabled_bool' => 'true', 'paypal_mode' => 'test',
 	'paypal_test_client_id' => 'synthetic-client', 'paypal_test_secret' => 'synthetic-secret', 'paypal_test_webhook_id' => 'synthetic-hook') as $key => $value) setting($key, $value, 'payment_gateway');
 $admin = PaymentSettings::forAdmin(Configuration::getJson('ordering'));
 checkPayment(!str_contains($admin, 'sk_test_synthetic') && !str_contains($admin, 'synthetic-secret') && !str_contains($admin, 'whsec_synthetic'), 'Admin read disclosed secrets.');
 Configuration::save('ordering', null, PaymentSettings::merge($admin));
 checkPayment(PaymentSettings::get('stripe_test_secret')==='sk_test_synthetic', 'Unrelated save erased secret.');
 
-function newOnlineOrder (string $provider): array {
+function newOnlineOrder (string $provider, string $funding='paypal'): array {
 	global $gallery, $session, $print;
+	$session = Proofing::open($gallery, 'buyer-' . bin2hex(random_bytes(5)) . '@example.invalid');
 	Proofing::save($gallery, $session, 'cart', $print);
 	$id = OrderRecords::prequalify($gallery, $session, '', '', '26');
 	$row = array($id, $gallery, '0', $provider, 'forged-reference', 'local', '', 'Buyer', 'buyer@example.invalid', '', '', 'US', '', 'CA', '26', '26', '0', '0', '0', '0', '0', 'false', 'true', 'true', '');
-	OrderRecords::create($gallery, $session, $row, 'USD');
+	OrderRecords::create($gallery, $session, $row, 'USD', $funding);
 	return Payments::get($id);
 }
+// Checkout remains editable and reloadable until payment is independently confirmed.
+$draft = newOnlineOrder('stripe');
+$draftSession = $session;
+checkPayment(OrderRecords::get($draft['suid'])===null, 'Unpaid checkout exposed an invoice.');
+checkPayment(!str_contains(OrderRecords::search(date('Y/n/j'), date('Y/n/j'), array()), $draft['suid'] . "\t"), 'Unpaid checkout exposed an admin order.');
+checkPayment(CheckoutQuote::cart($gallery, $session)['subtotal']===26.0, 'Opening payment emptied the cart.');
+checkPayment(OrderRecords::prequalify($gallery, $session, '', '', '26')===$draft['suid'], 'Refresh lost the payment attempt.');
+$draftRow = array($draft['suid'], $gallery, '0', 'stripe', '', 'local', '', 'Buyer', 'buyer@example.invalid', '', '', 'US', '', 'CA', '26', '26', '0', '0', '0', '0', '0', 'false', 'true', 'true', '');
+checkPayment(!OrderRecords::create($gallery, $session, $draftRow, 'USD'), 'Repeat submission created another attempt.');
+$draftRow[9] = 'new phone';
+$draftRow[0] = OrderRecords::prequalify($gallery, $session, $draft['suid'], '', '26', 'new phone');
+$editedId = $draftRow[0];
+OrderRecords::create($gallery, $session, $draftRow, 'USD');
+checkPayment($editedId!==$draft['suid'] && CheckoutQuote::cart($gallery, $session)['subtotal']===26.0, 'Editing checkout locked or emptied cart.');
+$added = $print; $added[0] = 'extra';
+Proofing::save($gallery, $session, 'cart', $added);
+Payments::attach($draft['suid'], 'cs_cart_first');
+Payments::reconcile($draft['suid'], 'stripe', 'cs_cart_first', 'pi_cart_first', 2600, 'USD', 'paid', 'cart-paid', 'verified_test');
+checkPayment(OrderRecords::get($draft['suid'])[14]==='26.00', 'Payment did not place the order.');
+checkPayment(count(CheckoutQuote::cart($gallery, $session)['items'])===1, 'Payment removed later cart additions.');
+Payments::reconcile($draft['suid'], 'stripe', 'cs_cart_first', 'pi_cart_first', 2600, 'USD', 'paid', 'cart-paid-again', 'verified_test');
+checkPayment(count(CheckoutQuote::cart($gallery, $session)['items'])===1, 'Duplicate confirmation cleared cart again.');
+checkPayment(countPayment('messages', 'order_id = ' . $draft['order_id'])===2, 'Completion did not queue receipts once.');
+$modified = newOnlineOrder('stripe');
+$changed = $print; $changed[4] = '1'; $changed[17] = '.5'; $changed[19] = '12.5';
+Proofing::save($gallery, $session, 'cart', $changed);
+Payments::attach($modified['suid'], 'cs_modified');
+Payments::reconcile($modified['suid'], 'stripe', 'cs_modified', 'pi_modified', 2600, 'USD', 'paid', 'modified-paid', 'verified_test');
+checkPayment(count(CheckoutQuote::cart($gallery, $session)['items'])===1, 'Payment removed an edited cart selection.');
+echo "PASS cart survives close/refresh, edits remain possible, order appears only after payment, selective cart clearing and replay\n";
+
+foreach (array(false, true) as $editPackage) {
+	$session = Proofing::open($gallery, 'package-' . (int) $editPackage . '@example.invalid');
+	Proofing::save($gallery, $session, 'package', $package);
+	Proofing::save($gallery, $session, 'cart', $allocation);
+	$packageRow = $draftRow;
+	$packageRow[0] = OrderRecords::prequalify($gallery, $session, '', '', '52');
+	$packageRow[14] = $packageRow[15] = '52';
+	OrderRecords::create($gallery, $session, $packageRow, 'USD');
+	$attempt = Payments::get($packageRow[0]);
+	if ($editPackage) {
+		$editedAllocation = $allocation; $editedAllocation[5] = 'sepia';
+		Proofing::save($gallery, $session, 'cart', $editedAllocation);
+	}
+	Payments::attach($attempt['suid'], 'cs_package_' . (int) $editPackage);
+	Payments::reconcile($attempt['suid'], 'stripe', 'cs_package_' . (int) $editPackage, 'pi_package_' . (int) $editPackage,
+		5200, 'USD', 'paid', 'package-paid-' . (int) $editPackage, 'verified_test');
+	$remaining = Database::connection()->prepare('SELECT COUNT(*) FROM cart_items JOIN carts ON carts.id = cart_items.cart_id WHERE carts.session_id = ?');
+	$remaining->execute(array($attempt['proofing_session_id']));
+	checkPayment((int) $remaining->fetchColumn()===($editPackage ? 2 : 0), 'Package and allocation were separated or not removed after payment.');
+	$remaining->closeCursor();
+}
+echo "PASS paid packages clear together; edited packages remain intact\n";
+
 $stripeData = array(); $stripeCreates = 0; $stripeKeys = array();
 $sessions = new class {
 	public function create ($params, $options) {
 		global $stripeData, $stripeCreates, $stripeKeys;
+		checkPayment($params['ui_mode']==='custom' && !isset($params['redirect_on_completion']) && isset($params['return_url']) && !isset($params['success_url'], $params['cancel_url']), 'Stripe must create Elements Checkout.');
 		$key = $options['idempotency_key'];
 		if (!isset($stripeKeys[$key])) {
 			$id = 'cs_mock_' . ++$stripeCreates; $stripeKeys[$key] = $id;
 			$stripeData[$id] = array('id' => $id, 'client_reference_id' => $params['client_reference_id'], 'metadata' => $params['metadata'], 'mode' => 'payment',
 				'livemode' => false, 'amount_total' => $params['line_items'][0]['price_data']['unit_amount'], 'currency' => $params['line_items'][0]['price_data']['currency'],
-				'payment_intent' => null, 'payment_status' => 'unpaid', 'status' => 'open', 'url' => 'https://checkout.stripe.com/mock/' . $id);
+				'payment_intent' => null, 'payment_status' => 'unpaid', 'status' => 'open', 'client_secret' => 'cs_secret_' . $id, 'url' => 'https://checkout.stripe.com/mock/' . $id);
 		}
 		return \Stripe\StripeObject::constructFrom($stripeData[$stripeKeys[$key]]);
 	}
@@ -203,7 +259,7 @@ PayPalPayment::$transport = function ($url, $method, $body, $headers, $basic) us
 	if (str_ends_with($url, '/verify-webhook-signature')) return array('verification_status' => $paypalValid ? 'SUCCESS' : 'FAILURE');
 	if (str_ends_with($url, '/v2/checkout/orders') && $method==='POST') {
 		$params = json_decode($body, true); $id = 'PP_MOCK_' . ++$paypalCreates;
-		$paypalData[$id] = array('id' => $id, 'intent' => 'CAPTURE', 'status' => 'CREATED', 'purchase_units' => $params['purchase_units']);
+		$paypalData[$id] = array('id' => $id, 'intent' => 'CAPTURE', 'status' => 'CREATED', 'purchase_units' => $params['purchase_units'], 'payment_source' => $params['payment_source']);
 		return $paypalData[$id];
 	}
 	if (preg_match('~/v2/payments/refunds/([A-Za-z0-9_-]+)$~', $url, $matches)) return $paypalRefunds[$matches[1]];
@@ -255,6 +311,7 @@ echo "PASS receipt failures preserve payment; explicit recovery and ordinary ret
 foreach (array('failed', 'cancelled', 'pending') as $state) {
 	$trial = newOnlineOrder('stripe'); Payments::attach($trial['suid'], 'cs_' . $trial['suid']);
 	Payments::reconcile($trial['suid'], 'stripe', 'cs_' . $trial['suid'], '', 2600, 'USD', $state, 'state:' . $trial['suid'], $state);
+	checkPayment(OrderRecords::get($trial['suid'])===null && CheckoutQuote::cart($gallery, $session)['subtotal']===26.0, 'Unpaid attempt consumed the cart or placed an order.');
 	checkPayment(Payments::get($trial['suid'])['status']===$state && countPayment('messages', 'order_id = ' . $trial['order_id'] . ' AND purpose IS NOT NULL')===0, 'Unpaid attempt caused downstream effects.');
 }
 $trial = newOnlineOrder('stripe'); StripePayment::start($trial); $trial = Payments::get($trial['suid']);
@@ -339,7 +396,7 @@ $stripeData[$trial['provider_reference']]['status'] = 'expired';
 $url = StripePayment::start($trial);
 $retry = Payments::get($trial['suid']);
 checkPayment($retry['id']!==$trial['id'] && $retry['provider_reference']!==$trial['provider_reference']
-	&& countPayment('payments', 'order_id = ' . $trial['order_id'])===2 && str_starts_with($url, 'https://checkout.stripe.com/'), 'Expired checkout not recoverable on original order.');
+	&& countPayment('payments', 'order_id = ' . $trial['order_id'])===2 && str_starts_with($url['clientSecret'], 'cs_secret_'), 'Expired checkout not recoverable on original order.');
 
 function paymentWorkers (string $mode): void {
 	$workers = array();
@@ -349,9 +406,10 @@ function paymentWorkers (string $mode): void {
 	}
 	foreach ($workers as [$process, $pipes]) {
 		$out = stream_get_contents($pipes[1]); $error = stream_get_contents($pipes[2]); fclose($pipes[1]); fclose($pipes[2]);
-		checkPayment(proc_close($process)===0 && trim($out)==='ok', 'Concurrent payment worker failed: ' . $error);
+		checkPayment(proc_close($process)===0 && trim($out)==='ok', 'Concurrent payment worker failed: ' . $error . $out);
 	}
 }
+$session = Proofing::open($gallery, 'concurrent@example.invalid');
 Proofing::save($gallery, $session, 'cart', $print);
 $id = OrderRecords::prequalify($gallery, $session, '', '', '26');
 $row = array($id, $gallery, '0', 'stripe', '', 'local', '', 'Concurrent Buyer', 'buyer@example.invalid', '', '', 'US', '', 'CA', '26', '26', '0', '0', '0', '0', '0', 'false', 'true', 'true', '');
@@ -412,3 +470,26 @@ setting('stripe_enabled_bool', 'false', 'payment_gateway');
 rejectsPayment(fn () => newOnlineOrder('stripe'), 'Disabled provider accepted a new checkout.');
 setting('stripe_enabled_bool', 'true', 'payment_gateway');
 echo "PASS PayPal pending/declined capture recovery, safe stale-attempt handling and disabled-method enforcement\n";
+
+// Venmo uses the same order snapshot, PayPal account and reconciliation path.
+$venmo = newOnlineOrder('paypal', 'venmo');
+$venmoId = PayPalPayment::start($venmo);
+checkPayment(isset($paypalData[$venmoId]['payment_source']['venmo']), 'Venmo funding source not passed to PayPal.');
+checkPayment(Payments::get($venmo['suid'])['funding']==='venmo', 'Venmo choice not retained for retries.');
+$paypalData[$venmoId]['status'] = 'APPROVED';
+PayPalPayment::refresh(Payments::get($venmo['suid']), true, 'venmo-approved', 'approved');
+PayPalPayment::refresh(Payments::get($venmo['suid']), true, 'venmo-repeat', 'approved');
+checkPayment(Payments::get($venmo['suid'])['status']==='paid', 'Venmo capture did not reconcile.');
+echo "PASS Elements Stripe sessions and Venmo shared capture/reconciliation\n";
+
+// Funding is fixed with the snapshot and cannot be switched on replay.
+rejectsPayment(fn () => newOnlineOrder('stripe', 'venmo'), 'Venmo accepted under Stripe.');
+rejectsPayment(fn () => newOnlineOrder('paypal', 'invented'), 'Unknown funding accepted.');
+setting('default_currency', 'EUR');
+rejectsPayment(fn () => newOnlineOrder('paypal', 'venmo'), 'Venmo accepted outside USD.');
+setting('default_currency', 'USD');
+setting('stripe_test_publishable_key', '', 'payment_gateway');
+checkPayment(!PaymentSettings::configured('stripe'), 'Embedded Stripe enabled without publishable key.');
+setting('stripe_test_publishable_key', 'pk_test_synthetic', 'payment_gateway');
+checkPayment(PaymentSettings::configured('stripe'), 'Configured Elements Stripe unavailable.');
+echo "PASS funding boundaries and Elements publishable-key configuration\n";

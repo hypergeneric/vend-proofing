@@ -37,7 +37,7 @@
 		}
 
 		public static function get (string $suid): ?array {
-			$query = Database::connection()->prepare(self::orderQuery() . " WHERE orders.suid = ?");
+			$query = Database::connection()->prepare(self::orderQuery() . " WHERE orders.suid = ? AND orders.status <> 'checkout'");
 			$query->execute(array($suid));
 			$order = $query->fetch();
 			return $order ? self::project($order) : null;
@@ -79,15 +79,16 @@
 			CheckoutQuote::verify($gallery, $session, $row);
 		}
 
-		public static function create (string $gallery, string $session, array $row, string $currency): bool {
-			return Database::transaction(function (PDO $db) use ($gallery, $session, $row, $currency): bool {
+		public static function create (string $gallery, string $session, array $row, string $currency, string $funding="paypal"): bool {
+			return Database::transaction(function (PDO $db) use ($gallery, $session, $row, $currency, $funding): bool {
 				$suid = (string) ($row[0] ?? "");
 				if (!preg_match('/^[a-f0-9]{1,16}$/i', $suid)) throw new InvalidArgumentException("Invalid order identifier.");
 				$provider = (string) ($row[3] ?? "offline");
 				if (!in_array($provider, array("offline", "stripe", "paypal"), true)) throw new InvalidArgumentException("invalid_order");
+				if (!in_array($funding, array("paypal", "venmo"), true) || ($funding==="venmo" && $provider!=="paypal")) throw new InvalidArgumentException("invalid_order");
 				$row[4] = "";
 				$row[2] = "0";
-				$submissionHash = hash("sha256", json_encode(array($gallery, $session, $row), JSON_THROW_ON_ERROR));
+				$submissionHash = hash("sha256", json_encode(array($gallery, $session, $row, $funding), JSON_THROW_ON_ERROR));
 				$exists = $db->prepare("SELECT orders.id, orders.submission_hash, sessions.email_key FROM orders
 					JOIN proofing_sessions AS sessions ON sessions.id = orders.proofing_session_id WHERE orders.suid = ?");
 				$exists->execute(array($suid));
@@ -107,6 +108,7 @@
 				$quote = CheckoutQuote::verify($gallery, $session, $row);
 				$row = $quote["row"];
 				$currency = $quote["currency"];
+				if ($funding==="venmo" && ($currency!=="USD" || $row[11]!=="US")) throw new InvalidArgumentException("payment_unavailable");
 				$items = $quote["items"];
 				if ($provider!=="offline" && self::minor($row[14])===0) throw new InvalidArgumentException("invalid_order");
 				$subtotal = self::minor($row[15]);
@@ -129,11 +131,11 @@
 					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				$db->prepare($sql)->execute(array(
 					$suid, $galleryId, $proofing["id"], $now, $placedAtMs,
-					"placed", $currency, (string) ($row[7] ?? ""), (string) $row[8], (string) ($row[9] ?? ""),
+					"checkout", $currency, (string) ($row[7] ?? ""), (string) $row[8], (string) ($row[9] ?? ""),
 					json_encode(array("text" => (string) ($row[10] ?? "")), JSON_THROW_ON_ERROR),
 					(string) ($row[5] ?? ""), (string) ($row[24] ?? ""), $subtotal, $discount,
 					$shipping, $handling, $tax, $total,
-					json_encode(array("amount_text" => $amountText, "rules" => $quote["rules"], "checkout_rules" => $quote["checkout_rules"], "currency" => $currency), JSON_THROW_ON_ERROR),
+					json_encode(array("funding" => $funding, "amount_text" => $amountText, "rules" => $quote["rules"], "checkout_rules" => $quote["checkout_rules"], "currency" => $currency), JSON_THROW_ON_ERROR),
 					(string) ($row[3] ?? ""), (string) ($row[4] ?? ""), (string) ($row[6] ?? ""),
 					(string) ($row[11] ?? ""), (string) ($row[12] ?? ""), (string) ($row[13] ?? ""),
 					(string) ($row[20] ?? ""), (string) ($row[21] ?? ""), (string) ($row[22] ?? ""),
@@ -179,8 +181,7 @@
 						$favorite["selection_json"], $position++, $favorite["public_key"]));
 				}
 				$code = (string) ($row[6] ?? "");
-				self::redeemDiscount($db, $suid, (int) $galleryId, $session,
-					$code, $orderId, $discount, $subtotal);
+				self::reservedDiscount($db, $suid, (int) $galleryId, $session, $code, $discount, $subtotal);
 				$db->prepare("UPDATE orders SET submission_hash = ?, access_token = ? WHERE id = ?")
 					->execute(array($submissionHash, bin2hex(random_bytes(32)), $orderId));
 				$db->prepare("INSERT INTO payments (order_id, provider, idempotency_key, amount_minor,
@@ -189,21 +190,55 @@
 				$db->prepare("UPDATE payments SET provider_mode = ? WHERE order_id = ?")
 					->execute(array($provider==="offline" ? "test" : PaymentSettings::mode($provider), $orderId));
 				if ($provider==="offline") {
+					self::place($db, $orderId);
 					$payment = Payments::get($suid);
 					if ($total===0) Payments::reconcile($suid, "offline", "", "", 0, $currency, "paid", "free:" . $suid, "free_order");
 					else Payments::ready($db, $payment);
 				}
-				$db->prepare("DELETE FROM cart_items WHERE cart_id IN (SELECT id FROM carts WHERE session_id = ?)")
-					->execute(array($proofing["id"]));
-				$db->prepare("UPDATE carts SET checkout_hash = NULL, checkout_suid = NULL WHERE session_id = ?")->execute(array($proofing["id"]));
 				return true;
 			});
 		}
 
+		/** Convert private checkout details into an order, once, after verified payment or manual submission. */
+		public static function place (PDO $db, int $orderId): void {
+			$query = $db->prepare("SELECT orders.*, sessions.email_key FROM orders
+				LEFT JOIN proofing_sessions AS sessions ON sessions.id = orders.proofing_session_id WHERE orders.id = ?");
+			$query->execute(array($orderId));
+			$order = $query->fetch();
+			if (!$order || $order["status"]!=="checkout") return;
+			$db->prepare("UPDATE orders SET status = 'placed', placed_at = ?, placed_at_ms = ? WHERE id = ?")
+				->execute(array(time(), time() * 1000, $orderId));
+			self::redeemDiscount($db, $order["suid"], (int) $order["gallery_id"], (string) $order["email_key"],
+				$order["discount_code"], $orderId, (int) $order["discount_minor"], (int) $order["subtotal_minor"]);
+
+			// Remove purchased selections only. Keep additions and edits made in another tab.
+			$query = $db->prepare("SELECT cart_items.* FROM cart_items JOIN carts ON carts.id = cart_items.cart_id WHERE carts.session_id = ?");
+			$query->execute(array($order["proofing_session_id"]));
+			$cart = $query->fetchAll();
+			$query = $db->prepare("SELECT source_cart_item_id, selection_snapshot_json FROM order_items WHERE order_id = ?");
+			$query->execute(array($orderId));
+			$purchased = $query->fetchAll(PDO::FETCH_KEY_PAIR);
+			$remove = array();
+			foreach ($cart as $item) {
+				if (($purchased[$item["id"]] ?? null)===$item["selection_json"]) $remove[$item["id"]] = true;
+			}
+			// Packages and their allocations must stay together if any part was edited.
+			foreach ($cart as $item) {
+				if ($item["parent_item_id"]!==null && !isset($remove[$item["id"]])) unset($remove[$item["parent_item_id"]]);
+			}
+			foreach ($cart as $item) {
+				if ($item["parent_item_id"]!==null && !isset($remove[$item["parent_item_id"]])) unset($remove[$item["id"]]);
+			}
+			$delete = $db->prepare("DELETE FROM cart_items WHERE id = ?");
+			foreach (array_keys($remove) as $id) $delete->execute(array($id));
+			$db->prepare("UPDATE carts SET checkout_hash = NULL, checkout_suid = NULL WHERE checkout_suid = ?")
+				->execute(array($order["suid"]));
+		}
+
 		/** Claim a discount before payment. A changed quote gets a new order ID and leaves the old claim counted. */
 		public static function prequalify (string $gallery, string $session, string $requestedId,
-			string $code, string $subtotalText): string {
-			return Database::transaction(function (PDO $db) use ($gallery, $session, $requestedId, $code, $subtotalText): string {
+			string $code, string $subtotalText, string $details=""): string {
+			return Database::transaction(function (PDO $db) use ($gallery, $session, $requestedId, $code, $subtotalText, $details): string {
 				$subtotal = self::minor($subtotalText);
 				if ($subtotal<0) throw new InvalidArgumentException("Invalid order subtotal.");
 				$galleryQuery = $db->prepare("SELECT galleries.page_id FROM galleries
@@ -218,16 +253,12 @@
 				$cart = $db->prepare("SELECT * FROM carts WHERE session_id = ?");
 				$cart->execute(array($sessionId));
 				$cartRecord = $cart->fetch();
-				if ($requestedId!=="") {
-					$existingOrder = $db->prepare("SELECT orders.suid FROM orders WHERE suid = ? AND proofing_session_id = ?");
-					$existingOrder->execute(array($requestedId, $sessionId));
-					if ($existingOrder->fetchColumn()!==false) return $requestedId;
-				}
+
 				$quote = CheckoutQuote::cart($gallery, $session);
 				if (CheckoutQuote::cents($quote["subtotal"])!==$subtotal) throw new InvalidArgumentException("Order subtotal differs from cart.");
 				$code = strtoupper(trim($code));
 				if ($code!=="" && !CheckoutQuote::enabled("allow_discount_codes_bool")) throw new InvalidArgumentException("invalid_order");
-				$fingerprint = hash("sha256", json_encode(array($quote["items"], $quote["rules"], $code), JSON_THROW_ON_ERROR));
+				$fingerprint = hash("sha256", json_encode(array($quote["items"], $quote["rules"], $code, $details), JSON_THROW_ON_ERROR));
 				$orderId = $cartRecord && $cartRecord["checkout_hash"]===$fingerprint
 					? $cartRecord["checkout_suid"] : Database::allocateSuid();
 				$db->prepare("UPDATE carts SET checkout_hash = ?, checkout_suid = ? WHERE session_id = ?")
@@ -373,7 +404,7 @@
 			$from = strtotime(str_replace("/", "-", $start) . " 00:00:00");
 			$to = strtotime(str_replace("/", "-", $end) . " 23:59:59");
 			if ($from===false || $to===false) return "";
-			$query = Database::connection()->prepare(self::orderQuery() . " WHERE orders.status <> 'archived' AND placed_at BETWEEN ? AND ? ORDER BY placed_at, orders.id");
+			$query = Database::connection()->prepare(self::orderQuery() . " WHERE orders.status NOT IN ('archived', 'checkout') AND placed_at BETWEEN ? AND ? ORDER BY placed_at, orders.id");
 			$query->execute(array($from, $to));
 			$lines = array();
 			foreach ($query as $record) {

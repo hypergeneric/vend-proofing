@@ -1,3 +1,4 @@
+@use "shared/payment-dialog";
 // Component order preserves the existing cascade.
 @use "shared/reset";
 @use "storefront/01-global-stuff" as component1;

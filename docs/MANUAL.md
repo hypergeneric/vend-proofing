@@ -26,7 +26,7 @@ This is a brief orientation. Installation, payment setup, backups, and detailed 
 
 ## Payment setup
 
-Vend supports Stripe Checkout, PayPal and manual/offline orders. Each photographer supplies credentials for their own provider accounts. Vend does not collect card numbers, operate a payment account, or take a commission.
+Vend supports Stripe payments in a modal, PayPal with eligible Venmo, and manual/offline orders. Each photographer supplies credentials for their own provider accounts. Vend does not collect card numbers, operate a payment account, or take a commission.
 
 Apply database updates with `lando php scripts/migrate.php` (or `php scripts/migrate.php` without Lando). Payment migration 013 adds checkout/retry identities, provider references, payment/receipt tracking and discount-code uniqueness without case sensitivity. It does not import historical payment configurations. Back up the private SQLite database before deployment.
 
@@ -38,12 +38,14 @@ Secrets are write-only: a saved field displays a configured placeholder rather t
 
 ### Stripe test and live configuration
 
-1. In your Stripe account's test environment, obtain a test **secret API key**. Enter it as the Stripe test API secret. Hosted Checkout needs no publishable key in Vend.
+1. In your Stripe account's test environment, obtain a test **secret API key**. Enter it as the Stripe test API secret. Also enter the matching **publishable key** (`pk_test_…`) in Stripe test publishable key. Both must belong to the same test account/environment.
 2. Register the displayed Stripe test webhook URL in Stripe Workbench. Subscribe to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, and `charge.refunded`.
 3. Copy that endpoint's signing secret (`whsec_...`) into the Stripe test webhook signing secret field. Save and test the credentials.
-4. Place a test order from a gallery. Stripe hosts the payment page and offers cards, eligible Apple Pay/Google Pay and Link. Availability depends on the merchant account, customer and browser. Use Stripe's [test payment methods](https://docs.stripe.com/testing); no live card is needed.
+4. Place a test order from a gallery. Vend opens a compact payment dialog with cards and eligible Apple Pay/Google Pay and Link wallet buttons. Close or Escape returns to the editable cart. You can refresh, come back later, or try payment again. Successful payment creates the order and continues to its invoice. Availability depends on the merchant account, customer and browser. Use Stripe's [test payment methods](https://docs.stripe.com/testing); no live card is needed.
 5. Confirm the invoice says paid and the administrative order/payment details contain the Stripe Session and PaymentIntent references. Close the browser after payment in a second test and verify that the webhook still records payment.
-6. To go live after sandbox qualification, enter the separate live secret key, register the live-mode webhook URL, enter its signing secret, and select live mode. Keep the test credentials for reconciliation and future tests.
+6. To go live after sandbox qualification, enter the separate live secret and publishable keys, register the live-mode webhook URL, enter its signing secret, and select live mode. Keep the test credentials for reconciliation and future tests.
+
+Stripe wallet buttons require registering the actual checkout hostname in Stripe Dashboard → Settings → Payment methods → Domains for wallets and Link, in the matching test/live environment. Register `vend-proofing.lndo.site` for local testing; register the public production hostname before release. Wallet display still depends on account, browser and device eligibility. See [payment-method domain registration](https://docs.stripe.com/payments/payment-methods/pmd-registration). The Stripe frame handles card details; Vend never reads them.
 
 Endpoints have this form, with the installation's actual base URL:
 
@@ -60,7 +62,7 @@ A local `.lndo.site` URL is not reachable by Stripe's servers. Use the [Stripe C
 2. Enter the app's sandbox **client ID** and **secret** into Vend's PayPal test fields.
 3. Register the displayed PayPal test webhook URL on that same sandbox app. Subscribe to `CHECKOUT.ORDER.APPROVED`, `CHECKOUT.ORDER.COMPLETED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.PENDING`, `PAYMENT.CAPTURE.DENIED`, `PAYMENT.CAPTURE.REFUNDED`, and `PAYMENT.CAPTURE.REVERSED`.
 4. Enter the webhook's **ID** into Vend's PayPal test webhook ID field. This is the subscription ID from PayPal, not the client ID or a Stripe-style signing secret. Save, enable test mode and test the credentials.
-5. Place a sandbox order through the existing checkout. Vend uses PayPal JavaScript SDK v6 for approval and captures on the server immediately. PayPal controls the eligible funding choices inside its checkout. Approval alone does not mark an order paid.
+5. Place a sandbox order through the existing checkout. Vend uses PayPal JavaScript SDK v6 for approval and captures on the server immediately. PayPal controls the eligible funding choices inside its checkout. Venmo appears as a separate choice when the SDK reports it eligible, for US buyers paying in USD; it uses the same PayPal account, capture verification and webhooks. The selected funding source stays with the saved order for retries. Enable Venmo for the merchant app/account where PayPal requires it. Test the Venmo app/QR handoff separately; a passing PayPal account payment does not qualify Venmo. Approval alone does not mark an order paid.
 6. Verify the Vend order is paid, with the PayPal order and capture IDs in admin. Test cancellation, a pending/declined capture, browser abandonment and webhook retries before switching to live.
 7. For live operation, select/create the live REST app for the photographer's merchant account, enter its live credentials, register the live webhook URL on that app, enter its webhook ID and select live mode. Sandbox and live settings are independent.
 
@@ -73,13 +75,13 @@ PayPal webhooks need a publicly reachable HTTPS URL; use a sandbox tunnel or a t
 
 ### Orders, recovery and manual payments
 
-The browser continues to display Vend's prices. Submission independently verifies the configured selections, quantities, packages, discounts, shipping and tax. A changed or unverifiable price is rejected before payment. Accepted selections and prices are frozen with the order; catalog edits do not change that invoice or an already-submitted payment attempt.
+The browser continues to display Vend's prices. Submission independently verifies the configured selections, quantities, packages, discounts, shipping and tax. A changed or unverifiable price is rejected before payment. Accepted selections and prices are saved privately for that payment; catalog edits do not change that invoice or an already-submitted payment attempt.
 
 Discount codes ignore A–Z letter case: `SAVE10`, `save10` and `Save10` select the same code. Codes cannot differ only by case within one gallery/global scope. Existing local/global precedence, expiration, usage limits and discount claims are retained. An abandoned checkout continues to consume its reserved use; retrying the same cart does not consume another use.
 
-Payment state is **pending**, **paid**, **failed**, **cancelled** or **refunded**; it is separate from production/fulfillment. The storefront's invoice shows payment state and offers a retry for unpaid online orders. Retry the saved order instead of creating another order. An independently confirmed expired Stripe session or terminal failed PayPal attempt can be replaced while retaining the original Vend order and quote. A browser cancellation is advisory until provider reconciliation; it cannot reverse a successful payment.
+The cart stays available until payment succeeds. Closing the payment window, a decline or a refresh does not place an order or empty the cart. Retrying unchanged checkout details reuses the payment attempt. After verified payment, Vend places the order, sends the receipts and removes the purchased selections from the cart. Additions or edits made while payment was open remain in the cart. Manual submission places the order immediately.
 
-Payment attempts stay with their original provider and environment. Vend does not switch an outstanding order between Stripe and PayPal, which could leave two payable attempts. An ambiguous provider timeout is retried with its existing idempotency key. If an unconfirmed creation exceeds the safe retry window, Vend requests photographer review instead of risking a second charge; check the provider dashboard before taking further payment.
+Payment state is **pending**, **paid**, **failed**, **cancelled** or **refunded**, separate from fulfillment. Unpaid online checkout details are internal bookkeeping, absent from the order list and invoices. Provider callbacks can finish a successful order even when the customer has closed the browser. Each attempt keeps its original prices, provider and environment; editing checkout details starts a separate attempt. Failed/expired attempts can be replaced after provider verification. An ambiguous older provider timeout requires photographer review rather than risking a duplicate charge.
 
 For offline orders, the photographer can use **Record manual payment** in the existing order list after receiving payment. Unpaid manual orders do not release digital files. Verified free digital orders receive entitlement immediately. Paid digital access is checked in SQLite on every Vend processing/download request; refund reconciliation revokes future Vend access on a full refund. Existing external Dropbox shared links/files already delivered are not recalled by a payment-state change.
 

@@ -1,6 +1,6 @@
 <?php
 
-	/** Stripe-hosted Checkout; Vend never receives card data. */
+	/** Stripe Checkout Sessions with Elements; Vend never receives card data. */
 	class StripePayment {
 		public static $clientFactory = null;
 
@@ -20,21 +20,21 @@
 			return $cents;
 		}
 
-		public static function start (array $payment): string {
+		public static function start (array $payment): array {
 			$client = self::client($payment["provider_mode"]);
 			if (!$payment["provider_reference"]) {
 				// Stripe retains idempotency keys for at least 24h. Never recreate an ambiguous older charge.
 				if (time() - $payment["created_at"]>23 * 3600) throw new RuntimeException("payment_requires_review");
 				$url = Func::getPublicBaseUrl() . "/vend-proofing-gateway.php?action=payment_return&order=" . $payment["suid"] . "&access=" . $payment["access_token"];
 				$session = $client->checkout->sessions->create(array(
-					"mode" => "payment", "payment_method_types" => array("card", "link"),
+					"mode" => "payment", "ui_mode" => "custom", "payment_method_types" => array("card", "link"),
 					"client_reference_id" => $payment["suid"], "metadata" => array("vend_order" => $payment["suid"]),
 					"payment_intent_data" => array("metadata" => array("vend_order" => $payment["suid"])),
 					"customer_email" => $payment["email"],
 					"line_items" => array(array("quantity" => 1, "price_data" => array("currency" => strtolower($payment["currency"]),
 						"unit_amount" => self::providerAmount((int) $payment["amount_minor"], $payment["currency"]),
 						"product_data" => array("name" => "Order " . $payment["suid"])))),
-					"success_url" => $url, "cancel_url" => $url . "&cancel=1"
+					"return_url" => $url
 				), array("idempotency_key" => $payment["idempotency_key"]));
 				Payments::attach($payment["suid"], $session->id);
 				$payment = Payments::get($payment["suid"]);
@@ -50,9 +50,10 @@
 				return self::start(Payments::retry(Payments::get($payment["suid"])));
 			}
 			if ($session->status==="expired") return self::start(Payments::retry(Payments::get($payment["suid"])));
-			if ($session->status!=="open") return Payments::invoiceUrl($payment);
-			if (!is_string($session->url) || !str_starts_with($session->url, "https://checkout.stripe.com/")) throw new RuntimeException("invalid_payment");
-			return $session->url;
+			if ($session->status!=="open") return array("url" => Payments::invoiceUrl($payment));
+			if (!is_string($session->client_secret) || $session->client_secret==="") throw new RuntimeException("invalid_payment");
+			return array("clientSecret" => $session->client_secret,
+				"publishableKey" => PaymentSettings::get("stripe_" . $payment["provider_mode"] . "_publishable_key"));
 		}
 
 		public static function refresh (array $payment, string $eventId, string $eventType): object {

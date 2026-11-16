@@ -47,7 +47,7 @@
 				"amount" => array("currency_code" => $payment["currency"], "value" => self::amount((int) $payment["amount_minor"], $payment["currency"])));
 			$return = Func::getPublicBaseUrl() . "/vend-proofing-gateway.php?action=payment_return&order=" . $payment["suid"] . "&access=" . $payment["access_token"];
 			$order = self::request($payment["provider_mode"], "POST", "/v2/checkout/orders", array("intent" => "CAPTURE", "purchase_units" => array($unit),
-				"payment_source" => array("paypal" => array("experience_context" => array("shipping_preference" => "NO_SHIPPING", "user_action" => "PAY_NOW", "return_url" => $return, "cancel_url" => $return . "&cancel=1")))),
+				"payment_source" => array($payment["funding"] => array("experience_context" => array("shipping_preference" => "NO_SHIPPING", "user_action" => "PAY_NOW", "return_url" => $return, "cancel_url" => $return . "&cancel=1")))),
 				substr($payment["idempotency_key"], 0, 32) . "-new");
 			Payments::attach($payment["suid"], (string) ($order["id"] ?? ""));
 			self::refresh(Payments::get($payment["suid"]), false, "create:" . $order["id"], "created");
@@ -142,18 +142,6 @@
 			$suid = $query->fetchColumn();
 			if ($suid===false) return;
 			self::refresh(Payments::get($suid), $type==="CHECKOUT.ORDER.APPROVED", $event["id"], $type);
-		}
-
-		public static function approvalUrl (array $payment): string {
-			$id = self::start($payment);
-			$order = self::request($payment["provider_mode"], "GET", "/v2/checkout/orders/" . rawurlencode($id));
-			self::verifyOrder(Payments::get($payment["suid"]), $order);
-			foreach ($order["links"] ?? array() as $link) {
-				if (in_array($link["rel"], array("approve", "payer-action"), true)
-					&& parse_url($link["href"], PHP_URL_SCHEME)==="https"
-					&& parse_url($link["href"], PHP_URL_HOST)===($payment["provider_mode"]==="live" ? "www.paypal.com" : "www.sandbox.paypal.com")) return $link["href"];
-			}
-			return Payments::invoiceUrl($payment);
 		}
 
 		public static function test (): void {

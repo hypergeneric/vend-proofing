@@ -11,12 +11,12 @@
 		public static function dispatch (): void {
 			$action = $_POST["action"] ?? $_GET["action"] ?? "";
 			if (!is_string($action)) { http_response_code(400); self::respond(array("success" => false, "error" => "invalid_order")); }
-			$actions = array("payment_approve", "checkout_submit", "payment_start", "payment_capture", "payment_status", "payment_cancel", "payment_return", "payment_webhook", "payment_test", "payment_mark_paid", "payment_receipts", "finalize_order", "process_credit_card", "validate_paypal_ipn");
+			$actions = array("checkout_submit", "payment_start", "payment_capture", "payment_status", "payment_cancel", "payment_return", "payment_webhook", "payment_test", "payment_mark_paid", "payment_receipts", "finalize_order", "process_credit_card", "validate_paypal_ipn");
 			if (!in_array($action, $actions, true)) return;
 			header("Cache-Control: no-store");
 			header("Referrer-Policy: no-referrer");
 			try {
-				if (!in_array($action, array("payment_return", "payment_approve"), true) && ($_SERVER["REQUEST_METHOD"] ?? "")!=="POST") throw new InvalidArgumentException("invalid_order");
+				if (!in_array($action, array("payment_return"), true) && ($_SERVER["REQUEST_METHOD"] ?? "")!=="POST") throw new InvalidArgumentException("invalid_order");
 				if (in_array($action, array("process_credit_card", "validate_paypal_ipn"), true)) throw new InvalidArgumentException("payment_unavailable");
 				if ($action==="payment_webhook") {
 					$provider = self::field("provider");
@@ -55,17 +55,13 @@
 					if (self::field("puid")!==$row[1]) throw new InvalidArgumentException("invalid_order");
 					$row[3] = $provider;
 					$row[4] = "";
-					OrderRecords::create(self::field("puid"), self::field("name"), $row, "");
+					OrderRecords::create(self::field("puid"), self::field("name"), $row, "", $provider==="paypal" ? (self::field("funding") ?: "paypal") : "paypal");
 					$payment = Payments::get($row[0]);
 					self::sendReceipts($row[0]);
 					if ($action==="finalize_order") { header("Content-Type: text/plain; charset=utf-8"); exit("true\t"); }
 					self::respond(self::start($payment));
 				}
 				$payment = Payments::authorize(self::field("order"), self::field("access"));
-				if ($action==="payment_approve") {
-					if ($payment["provider"]!=="paypal") throw new InvalidArgumentException("invalid_order");
-					header("Location: " . PayPalPayment::approvalUrl($payment), true, 303); exit;
-				}
 				if ($action==="payment_start") self::respond(self::start($payment));
 				if ($action==="payment_capture" || $action==="payment_return" || $action==="payment_status") {
 					if ($payment["provider_reference"]) {
@@ -93,17 +89,23 @@
 				if ($action==="finalize_order") { header("Content-Type: text/plain; charset=utf-8"); exit("false\t" . $key); }
 				if ($action==="payment_webhook") http_response_code($error instanceof RuntimeException && !$error instanceof InvalidArgumentException ? 503 : 400);
 				$response = array("success" => false, "error" => $key);
-				if (isset($payment) && is_array($payment) && isset($payment["suid"])) $response["invoice"] = Payments::invoiceUrl($payment);
+				if (isset($payment) && is_array($payment) && isset($payment["suid"]) && $payment["order_status"]!=="checkout") $response["invoice"] = Payments::invoiceUrl($payment);
 				self::respond($response);
 			}
 		}
 
 		private static function start (array $payment): array {
-			$response = array("success" => true, "order" => $payment["suid"], "access" => $payment["access_token"], "status" => $payment["status"]);
+			$response = array("success" => true, "order" => $payment["suid"], "access" => $payment["access_token"], "invoice" => Payments::invoiceUrl($payment), "status" => $payment["status"]);
 			if ($payment["provider"]==="offline" || in_array($payment["status"], array("paid", "refunded"), true)) {
 				$response["url"] = Payments::invoiceUrl($payment);
-			} elseif ($payment["provider"]==="stripe") $response["url"] = StripePayment::start($payment);
-			elseif ($payment["provider"]==="paypal") $response["providerOrder"] = PayPalPayment::start($payment);
+			} elseif ($payment["provider"]==="stripe") $response = array_merge($response, StripePayment::start($payment));
+			elseif ($payment["provider"]==="paypal") {
+				$response["providerOrder"] = PayPalPayment::start($payment);
+				$response["funding"] = $payment["funding"];
+				$response["paypalClientId"] = PaymentSettings::get("paypal_" . $payment["provider_mode"] . "_client_id");
+				$response["paypalMode"] = $payment["provider_mode"];
+				$response["currency"] = $payment["currency"];
+			}
 			$current = Payments::get($payment["suid"]);
 			$response["status"] = $current["status"];
 			if (in_array($current["status"], array("paid", "refunded"), true)) {

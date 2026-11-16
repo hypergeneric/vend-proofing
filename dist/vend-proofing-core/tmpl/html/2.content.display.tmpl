@@ -832,6 +832,7 @@
 			</div><!-- end overlay-cartview -->
 			<div class="PageView" id="overlay-checkout">
 				<div id="checkout-screen"></div>
+					<div id="checkout-provider-form" hidden <?php foreach (array("title" => "title", "close-label" => "close", "pay-label" => "pay", "loading" => "loading", "processing" => "processing", "failed" => "error") as $attribute => $key) { ?>data-<?php echo $attribute; ?>="<?php echo htmlspecialchars($this->getTypedValue("language", "invoice", "invoice_payment_" . $key)["value"], ENT_QUOTES); ?>" <?php } ?>></div>
 				<div class="Column2">
 					<div id="checkout-blocks">
 						<div class="Input" id="checkout-comments">
@@ -906,6 +907,7 @@
 									<input id="checkout-method-paypal" name="checkout-method" type="radio" value="paypal">
 									<label for="checkout-method-paypal"><?php echo $checkout_payment_method_paypal["html"]; ?></label>
 									<br />
+									<span class="CheckoutVenmo" style="display:none"><input id="checkout-method-venmo" name="checkout-method" type="radio" value="venmo"><label for="checkout-method-venmo">Venmo</label><br /></span>
 <?php } if ($enable_paypal_merchant_account_bool) { ?>
 									<input id="checkout-method-merchant" name="checkout-method" type="radio" value="merchant">
 									<label for="checkout-method-merchant"><?php echo $checkout_payment_method_merchant["html"]; ?></label>

@@ -4470,10 +4470,12 @@ classes.components.XMLPane = function () {
 	var _ingest = 				null;
 	var _node = 				"";
 	var _parent = 				null;
+	var _enumneration_lookup = 	{};
 	var _enumneration = 		[];
 	/* private methods
 		*/
 	function onChanged (eo) {
+		filter();
 		_instance.dispatch("onChanged");
 	}
 	function contains(a, obj) {
@@ -4483,6 +4485,45 @@ classes.components.XMLPane = function () {
 			}
 		}
 		return false;
+	}
+	function filter() {
+		var filter_by = "";
+		var filter_on = "";
+		for (var prop in _enumneration_lookup) {
+			var view = _enumneration_lookup[prop];
+			if (view.ingest) {
+				var ingest = view.ingest();
+				if (ingest._attributes) {
+					if (ingest._attributes.filter_by=="true") {
+						filter_by = prop;
+						filter_on = ingest._value;
+						break;
+					}
+				}
+			}
+		}
+		if ( filter_by!="" && filter_on!="" ) {
+			for (var prop in _enumneration_lookup) {
+				if (prop==filter_by) {
+					continue;
+				}
+				var bits = prop.split("_");
+				var view = _enumneration_lookup[prop];
+				var ingest = view.ingest();
+				view.show();
+				if (ingest._attributes) {
+					if (ingest._attributes.filter_on) {
+						if (ingest._attributes.filter_on==filter_on) {
+							view.hide();
+						}
+						continue;
+					}
+				}
+				if (bits[0]!=filter_on) {
+					view.hide();
+				}
+			}
+		}
 	}
 	function render () {
 		// create the html
@@ -4495,6 +4536,7 @@ classes.components.XMLPane = function () {
 		_inner = _parent.find('.XMLPane .Inner');
 		// loop through and init each object
 		_enumneration = [];
+		_enumneration_lookup = {};
 		var refobj = _reference.data[_node];
 		var dataset = _ingest.data[_node];
 		for (var prop in refobj) {
@@ -4597,7 +4639,9 @@ classes.components.XMLPane = function () {
 			formobject.addEventListener("onChanged", onChanged);
 			formobject.initialize();
 			_enumneration.push(formobject);
+			_enumneration_lookup[prop] = formobject;
 		}
+		filter();
 			
 	}
 	/* public methods
@@ -5797,7 +5841,7 @@ classes.components.formobjects.Input = function () {
 			xhtml += 		'<div class="TemplateTags">';
 			var tags = _ingest._attributes.tags.split(",");
 			for (var i=0; i<tags.length; ++i) {
-			xhtml += 			'<button class="TemplateTag" data-tagname="{' + tags[i] + '}">' + Lang.lookup(tags[i]) + '</button>';
+			xhtml += 			'<button type="button" class="FormButton TemplateTag" data-tagname="{' + tags[i] + '}">' + Lang.lookup(tags[i]) + '</button>';
 			}
 			xhtml += 		'</div>';
 		}
@@ -5816,7 +5860,7 @@ classes.components.formobjects.Input = function () {
 		_input.val(value);
 		if (_ingest._attributes.secret=="true") {
 			_input.val("").attr("placeholder", _ingest._attributes.configured=="true" ? "Configured — enter to replace" : "Not configured");
-			$("<button type='button'>Clear saved secret</button>").appendTo(_input.parent()).on("click", function () {
+			$("<button type='button' class='FormButton ClearSecret'></button>").text(Lang.lookup("clear_saved_secret")).appendTo(_input.parent()).on("click", function () {
 				_input.val(""); _ingest._value = ""; _ingest._attributes.clear_secret = "true"; _instance.dispatch("onChanged");
 			});
 		}

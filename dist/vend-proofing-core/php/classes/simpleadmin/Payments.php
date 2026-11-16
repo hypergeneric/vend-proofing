@@ -4,10 +4,12 @@
 	class Payments {
 		public static function get (string $suid): array {
 			$query = Database::connection()->prepare("SELECT payments.*, orders.suid, orders.total_minor, orders.email,
-				orders.access_token, orders.proofing_session_id FROM payments JOIN orders ON orders.id = payments.order_id WHERE orders.suid = ? ORDER BY payments.id DESC LIMIT 1");
+				orders.access_token, orders.status AS order_status, orders.gallery_id, orders.proofing_session_id, orders.pricing_snapshot_json FROM payments JOIN orders ON orders.id = payments.order_id WHERE orders.suid = ? ORDER BY payments.id DESC LIMIT 1");
 			$query->execute(array($suid));
 			$result = $query->fetch();
 			if (!$result) throw new InvalidArgumentException("invalid_order");
+			$result["funding"] = json_decode($result["pricing_snapshot_json"], true)["funding"] ?? "paypal";
+			unset($result["pricing_snapshot_json"]);
 			return $result;
 		}
 
@@ -64,6 +66,7 @@
 					refunded_minor = MAX(refunded_minor, ?), error_code = '', updated_at = ? WHERE id = ?")
 					->execute(array($status, $transaction, $refunded, time(), $payment["id"]));
 				if ($transaction!=="") $db->prepare("UPDATE orders SET transaction_reference = ? WHERE id = ?")->execute(array($transaction, $payment["order_id"]));
+				if (in_array($status, array("paid", "refunded"), true)) OrderRecords::place($db, (int) $payment["order_id"]);
 				if ($status==="refunded") $db->prepare("UPDATE fulfillments SET status = 'revoked' WHERE order_id = ? AND method = 'digital'")->execute(array($payment["order_id"]));
 				if ($status==="paid" && $old!=="paid") self::ready($db, $payment);
 				return $old!==$status;
@@ -118,6 +121,11 @@
 		}
 
 		public static function invoiceUrl (array $payment): string {
+			if ($payment["order_status"]==="checkout") {
+				$query = Database::connection()->prepare("SELECT suid FROM pages WHERE id = ?");
+				$query->execute(array($payment["gallery_id"]));
+				return Func::getPublicBaseUrl(false) . "/?/set/" . $query->fetchColumn() . "/#/checkout/";
+			}
 			return Func::getPublicBaseUrl(false) . "/?/order/" . $payment["suid"] . "/invoice/" . md5($payment["email"]) . "/";
 		}
 	}

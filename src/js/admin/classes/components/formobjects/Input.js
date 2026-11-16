@@ -114,7 +114,7 @@ classes.components.formobjects.Input = function () {
 			xhtml += 		'<div class="TemplateTags">';
 			var tags = _ingest._attributes.tags.split(",");
 			for (var i=0; i<tags.length; ++i) {
-			xhtml += 			'<button class="TemplateTag" data-tagname="{' + tags[i] + '}">' + Lang.lookup(tags[i]) + '</button>';
+			xhtml += 			'<button type="button" class="FormButton TemplateTag" data-tagname="{' + tags[i] + '}">' + Lang.lookup(tags[i]) + '</button>';
 			}
 			xhtml += 		'</div>';
 		}
@@ -133,7 +133,7 @@ classes.components.formobjects.Input = function () {
 		_input.val(value);
 		if (_ingest._attributes.secret=="true") {
 			_input.val("").attr("placeholder", _ingest._attributes.configured=="true" ? "Configured — enter to replace" : "Not configured");
-			$("<button type='button'>Clear saved secret</button>").appendTo(_input.parent()).on("click", function () {
+			$("<button type='button' class='FormButton ClearSecret'></button>").text(Lang.lookup("clear_saved_secret")).appendTo(_input.parent()).on("click", function () {
 				_input.val(""); _ingest._value = ""; _ingest._attributes.clear_secret = "true"; _instance.dispatch("onChanged");
 			});
 		}

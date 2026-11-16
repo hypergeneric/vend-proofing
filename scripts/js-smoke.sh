@@ -10,3 +10,5 @@ docker run --rm --network none -v "$project_dir":/app:ro -w /app \
 
 docker run --rm --network none -v "$project_dir":/app:ro -w /app \
   devwithlando/php:8.4-apache-7 php scripts/language-test.php
+
+node scripts/payment-ui-test.js

@@ -16,7 +16,7 @@
 		public static function configured (string $provider): bool {
 			if (!in_array($provider, array("stripe", "paypal"), true) || self::get($provider . "_enabled_bool")!=="true") return false;
 			$prefix = $provider . "_" . self::mode($provider);
-			$required = $provider==="stripe" ? array("secret", "webhook") : array("client_id", "secret", "webhook_id");
+			$required = $provider==="stripe" ? array("secret", "publishable_key", "webhook") : array("client_id", "secret", "webhook_id");
 			foreach ($required as $key) if (trim(self::get($prefix . "_" . $key))==="") return false;
 			try { Func::getPublicBaseUrl(); } catch (InvalidArgumentException $error) { return false; }
 			return true;
@@ -30,7 +30,7 @@
 			}
 			foreach (array("stripe", "paypal") as $provider) {
 				$document->editNode("data.payment_gateway." . $provider . "_status", self::configured($provider) ? "Configured" : "Disabled or incomplete");
-				$document->editNode("data.payment_gateway." . $provider . "_webhook_url", Func::getPublicBaseUrl(false) . "/vend-proofing-gateway.php?action=payment_webhook&provider=" . $provider . "&mode=" . self::mode($provider));
+				$document->editNode("data.payment_gateway." . $provider . "_webhook_endpoint", Func::getPublicBaseUrl(false) . "/vend-proofing-gateway.php?action=payment_webhook&provider=" . $provider . "&mode=" . self::mode($provider));
 			}
 			return $document->toRuntimeString();
 		}

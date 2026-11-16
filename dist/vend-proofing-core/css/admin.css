@@ -1251,7 +1251,7 @@ table.AssetTable .AudioObject div {
 }.FormObject.Input textarea {
   max-width: 900px;
   resize: none;
-}.FormObject.Input .TemplateTag {
+}.FormObject.Input .FormButton {
   cursor: pointer;
   font-size: 12px;
   color: #333333 !important;
@@ -1263,9 +1263,11 @@ table.AssetTable .AudioObject div {
   padding: 5px 7px;
   margin-right: 5px;
   margin-bottom: 5px;
-}.FormObject.Input .TemplateTag:hover {
+}.FormObject.Input .FormButton:hover {
   color: #000 !important;
   background: #eee;
+}.FormObject.Input .ClearSecret {
+  margin-top: 5px;
 }.FormObject.Ratio {
   max-width: 300px;
 }.FormObject.Ratio input {

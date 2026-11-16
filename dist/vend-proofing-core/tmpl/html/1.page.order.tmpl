@@ -359,6 +359,7 @@
 	<link rel="stylesheet" type="text/css" href="<?php echo SA_DIR_COREPATH; ?>/css/invoice-print.css?v=<?php echo filemtime(SA_DIR_COREPATH . "/css/invoice-print.css"); ?>" media="print" />
 	<!-- Javascript -->
 	<script type="text/javascript" src="<?php echo SA_DIR_COREPATH; ?>/js/jquery.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/jquery.js"); ?>"></script>
+	<script src="<?php echo SA_DIR_COREPATH; ?>/js/payments.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/payments.js"); ?>"></script>
 </head>
 <body>
 	<div id="container">
@@ -381,16 +382,22 @@
 <?php if ($payment["error_code"]!=="") { ?><p><?php echo htmlspecialchars($data_language->getNodeVal("data.checkout.checkout_" . $payment["error_code"])); ?></p><?php } ?>
 <?php if ($payment["provider"]!=="offline" && !in_array($payment["status"], array("paid", "refunded"), true)) { ?>
 	<button type="button" id="vend-payment-retry"><?php echo htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_retry")); ?></button>
+	<div id="vend-payment-form" hidden <?php foreach (array("title" => "title", "close-label" => "close", "pay-label" => "pay", "loading" => "loading", "processing" => "processing", "failed" => "error") as $attribute => $key) { ?>data-<?php echo $attribute; ?>="<?php echo htmlspecialchars($data_language->getNodeVal("data.invoice.invoice_payment_" . $key), ENT_QUOTES); ?>" <?php } ?>></div>
+	<p id="vend-payment-error" role="status"></p>
 	<script>
 	document.getElementById("vend-payment-retry").onclick = function () {
-		this.disabled = true;
-		var fields = new URLSearchParams(<?php echo json_encode(array("action" => "payment_start", "order" => $orderid, "access" => $payment["access_token"]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
-		fetch(<?php echo json_encode(Func::getPublicBaseUrl(false) . "/vend-proofing-gateway.php"); ?>, {method:"POST",body:fields}).then(function (response) { return response.json(); }).then(function (result) {
-			if (result.url) { window.location.href = result.url; return; }
-			if (result.providerOrder) { window.location.href = <?php echo json_encode(Func::getPublicBaseUrl(false) . "/vend-proofing-gateway.php?action=payment_approve&order=" . $orderid . "&access=" . $payment["access_token"]); ?>; return; }
-			document.getElementById("vend-payment-state").appendChild(document.createTextNode(<?php echo json_encode($data_language->getNodeVal("data.invoice.invoice_payment_retry_failed"), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>));
-			document.getElementById("vend-payment-retry").disabled = false;
-		});
+		var button = this;
+		button.disabled = true;
+		var endpoint = <?php echo json_encode(Func::getPublicBaseUrl(false) . "/vend-proofing-gateway.php"); ?>;
+		var order = <?php echo json_encode(array("order" => $orderid, "access" => $payment["access_token"]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+		function failed () {
+			document.getElementById("vend-payment-error").textContent = <?php echo json_encode($data_language->getNodeVal("data.invoice.invoice_payment_retry_failed"), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+			button.disabled = false;
+		}
+		document.getElementById("vend-payment-error").textContent = "";
+		VendPayments.request(endpoint, "payment_start", order).then(function (result) {
+			return VendPayments.pay(result, document.getElementById("vend-payment-form"), endpoint, failed, function () { button.disabled = false; });
+		}).catch(failed);
 	};
 	</script>
 <?php } ?>

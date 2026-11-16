@@ -401,7 +401,7 @@
 					}
 				}
 				try {
-					$orderid = OrderRecords::prequalify($puid, $name, $orderid, $code, (string) $subtotal);
+					$orderid = OrderRecords::prequalify($puid, $name, $orderid, $code, (string) $subtotal, (string) $this->getRequestVariable("details", ""));
 				} catch (InvalidArgumentException $error) {
 					$message = $error->getMessage();
 					if (!str_starts_with($message, "discount_")) $message = "invalid_order";

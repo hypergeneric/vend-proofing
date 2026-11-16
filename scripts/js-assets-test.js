@@ -5,7 +5,7 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist/vend-proofing-core/js');
-const expected = ['admin.js', 'jquery.js', 'storefront.js'];
+const expected = ['admin.js', 'jquery.js', 'payments.js', 'storefront.js'];
 const { copy } = require('../assets.config');
 assert.deepEqual(fs.readdirSync(output).filter((name) => name.endsWith('.js')).sort(), expected);
 let sourceCount = 0;
@@ -35,4 +35,4 @@ for (const [template, bundle] of [['admin', 'admin'], ['content', 'storefront'],
 }
 assert.ok(!fs.existsSync(path.join(root, 'dist/vend-proofing-core/admin')), 'Admin sources remain in core');
 assert.ok(!fs.existsSync(path.join(root, 'dist/vend-proofing-core/tmpl/js')), 'PHP script templates remain');
-console.log(`PASS two JS bundles and copied invoice jQuery, ${sourceCount} mapped sources, script links, and one panel inclusion`);
+console.log(`PASS three JS bundles and copied invoice jQuery, ${sourceCount} mapped sources, script links, and one panel inclusion`);

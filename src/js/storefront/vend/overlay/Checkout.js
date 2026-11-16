@@ -312,7 +312,14 @@ classes.overlay.Checkout = (function () {
 			["final_value", "discount_value", "final_shipping", "final_handling", "final_tax"].forEach(function (key) { order[key] = Number(order[key].toFixed(2)); });
 			$("#cart-final-total").find(".Value").html(Func.getFormattedPrice(order.final_value-order.discount_value+order.final_shipping+order.final_handling+order.final_tax));
 		}
+		var venmoEligible = false;
 		function updatePaymentMethod () {
+			var showVenmo = venmoEligible && order.country_code==="US";
+			$(".CheckoutVenmo").toggle(showVenmo);
+			if (!showVenmo && order.payment_method==="venmo") {
+				order.payment_method = "paypal";
+				$("#checkout-method-paypal").prop("checked", true);
+			}
 			var products = Session.getPackagesLength();
 			var cart_items = Session.getCartLength();
 			var downloads = Session.getDownloadsLength();
@@ -360,7 +367,7 @@ classes.overlay.Checkout = (function () {
 			}
 			$("#checkout-country option").eq(0).html( order.shipping_method=="local" ? L10N.get("checkout", "checkout_billing_country") : L10N.get("checkout", "checkout_shipping_country") );
 			$("#checkout-shipping-postal-code").attr( "placeholder", order.shipping_method=="local" ? L10N.get("checkout", "checkout_billing_postal_code") : L10N.get("checkout", "checkout_shipping_postal_code") );
-			if (order.payment_method=="paypal") {
+			if (order.payment_method=="paypal" || order.payment_method=="venmo") {
 				$("#shipping-method-ship").next().html(L10N.get("checkout", "checkout_shipping_method_ship"));
 				$("#checkout-cc").hide();
 				$("#checkout-info").show();
@@ -377,11 +384,11 @@ classes.overlay.Checkout = (function () {
 				$("#checkout-shipping_address").toggle( order.shipping_method!="local" );
 			}
 			if ( options.offline && (options.merchant||options.paypal) ) {
-				$("#checkout-method-merchant, #checkout-method-paypal").removeAttr("disabled", "disabled")
+				$("#checkout-method-merchant, #checkout-method-paypal, #checkout-method-venmo").removeAttr("disabled", "disabled")
 					.next()
 					.removeClass("Disabled");
 				if (subtotal==0) {
-					$("#checkout-method-merchant, #checkout-method-paypal").attr("disabled", "disabled")
+					$("#checkout-method-merchant, #checkout-method-paypal, #checkout-method-venmo").attr("disabled", "disabled")
 						.next()
 						.addClass("Disabled");
 					if (order.payment_method!="offline") {
@@ -475,7 +482,7 @@ classes.overlay.Checkout = (function () {
 				updatePaymentMethod();
 				updateTotals();
 			}
-			if ( $(this).parent().parent().parent().attr("id") == "checkout-payment" ) {
+			if ( $(this).closest("#checkout-payment").length ) {
 				order.payment_method = $(this).val();
 				updatePaymentMethod();
 				updateTotals();
@@ -590,6 +597,14 @@ classes.overlay.Checkout = (function () {
 			}
 			// update
 			updateTotals();
+			if (options.paypal && options.currency==="USD") {
+				window.VendPayments.paypal(options).then(function (sdk) {
+					return sdk.findEligibleMethods({currencyCode:options.currency});
+				}).then(function (methods) {
+					venmoEligible = methods.isEligible("venmo");
+					updatePaymentMethod();
+				}).catch(function () { /* Leave Venmo hidden if eligibility cannot be established. */ });
+			}
 		}
 		function resize () {
 			var sw = StageProxy.width();
@@ -644,52 +659,30 @@ classes.overlay.Checkout = (function () {
 				dataarr.push(comments);								// comments
 			var post = {
 				action: "checkout_submit", puid: Overlay.pageid(), name: Session.getHash(),
-				provider: order.payment_method=="merchant" ? "stripe" : order.payment_method, data: dataarr.join("\t")
+				provider: order.payment_method=="merchant" ? "stripe" : (order.payment_method=="venmo" ? "paypal" : order.payment_method),
+				funding: order.payment_method=="venmo" ? "venmo" : "paypal", data: dataarr.join("\t")
 			};
 			if (subtotal==0) post.provider = "offline";
 			$.ajax({url: APP_ROOT + "vend-proofing-gateway.php", method: "POST", data: post, dataType: "json"})
 				.done(function (result) {
 					if (!result.success) { if (result.invoice) window.location.href = result.invoice; else paymentError(result.error); return; }
 					if (result.url) { window.location.href = result.url; return; }
-					paypalPayment(result);
+					var paymentForm = document.getElementById("checkout-provider-form");
+					var endpoint = APP_ROOT + "vend-proofing-gateway.php";
+					if (result.clientSecret) disable({open:false});
+					VendPayments.pay(result, paymentForm, endpoint, paymentError, paymentClosed);
 				}).fail(function () { paymentError("payment_connection_failed"); });
 		}
-		function paymentError (key) {
+		function paymentClosed () {
 			disable({open:false});
-			Dialog.options({modal:false, title:L10N.get("checkout", "checkout_order_error_title"), description:L10N.get("checkout", "checkout_" + key)});
-			Dialog.draw();
+			$("#checkout-discount input").prop("disabled", false);
+			$("#checkout-discount button").off().click(click).removeClass("Disabled .Disabled");
 			process_obj.off().click(click);
 		}
-		function paypalPayment (orderData) {
-			var endpoint = APP_ROOT + "vend-proofing-gateway.php";
-			function call (action) {
-				return $.ajax({url:endpoint, method:"POST", dataType:"json", data:{action:action, order:orderData.order, access:orderData.access}});
-			}
-			function initialize () {
-				window.paypal.createInstance({clientId:options.paypalClientId, components:["paypal-payments"]}).then(function (sdk) {
-					return sdk.findEligibleMethods({currencyCode:options.currency, amount:order.final_value.toFixed(2)}).then(function (methods) {
-						if (!methods.isEligible("paypal")) throw new Error("unavailable");
-						var paymentSession = sdk.createPayPalOneTimePaymentSession({
-							onApprove:function (data) {
-								if (data.orderId!==orderData.providerOrder) { paymentError("invalid_order"); return; }
-								return call("payment_capture").then(function (response) {
-									if (response.success) window.location.href = response.url;
-									else paymentError(response.error);
-								});
-							},
-							onCancel:function () { call("payment_cancel"); paymentError("payment_cancelled"); },
-							onError:function () { paymentError("payment_connection_failed"); }
-						});
-						return paymentSession.start({presentationMode:"auto"}, Promise.resolve({orderId:orderData.providerOrder}));
-					});
-				}).catch(function () { paymentError("payment_connection_failed"); });
-			}
-			if (window.paypal && window.paypal.createInstance) { initialize(); return; }
-			var script = document.createElement("script");
-			script.src = options.paypalMode=="live" ? "https://www.paypal.com/web-sdk/v6/core" : "https://www.sandbox.paypal.com/web-sdk/v6/core";
-			script.onload = initialize;
-			script.onerror = function () { paymentError("payment_connection_failed"); };
-			document.head.appendChild(script);
+		function paymentError (key) {
+			paymentClosed();
+			Dialog.options({modal:false, title:L10N.get("checkout", "checkout_order_error_title"), description:L10N.get("checkout", "checkout_" + key)});
+			Dialog.draw();
 		}
 		function processPayment () { finalizeOrder(); }
 		function onPrequalifyResponse (success, data) {
@@ -819,6 +812,9 @@ classes.overlay.Checkout = (function () {
 				orderid: 	order.id,
 				subtotal: 	order.final_value,
 				code: 	appliedDiscountCode(),
+				details: JSON.stringify($("#checkout-blocks input, #checkout-blocks select, #checkout-blocks textarea").map(function () {
+					return {id:this.id, value:this.value, checked:this.checked};
+				}).get()),
 				email: 	$("#checkout-email-address").val()
 			}, function(str) {
 				var bits = str.split("\t");
