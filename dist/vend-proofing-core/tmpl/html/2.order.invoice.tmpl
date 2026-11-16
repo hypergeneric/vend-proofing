@@ -330,118 +330,24 @@
 
 	if (count($session_downloads)>0) { 
 
-		$button_text;
-		$button_action;
-		$span_text;
-		$dropboxer = new Dropboxer();
-		list($success, $data, $error) = $dropboxer->connect();
-		if ($success) {
-			list($success, $data, $erro) = $dropboxer->getOrderInfo($orderid);
-			if ($success) {
-				if ( $data[0]<3 ) { // can still download
-					if ( $data[1]==0 ) {
-						$button_text = $download_start;
-						$button_action = "start";
-						$span_text = $download_start_label;
-					} else if ( $data[1]==1 ) {
-						$button_text = $download_show;
-						$button_action = "download";
-						$span_text = $download_show_label;
-					} else {
-						$button_text = $download_continue_processing;
-						$button_action = "next";
-						$span_text = $download_continue_processing_label;
-					}
-				} else {
-					$button_text = $download_reset;
-					$button_action = "reset";
-					$span_text = $download_reset_label;
-				}
-			} else {
-				$button_text = $download_notify;
-				$button_action = "notify";
-				$span_text = $download_notify_label;
-			}
-		} else {
-			$button_text = $download_notify;
-			$button_action = "notify";
-			$span_text = $download_notify_label;
-		}			
+		$downloadStatus = Downloads::status($orderid);
+		$button_action = $downloadStatus["count"]>=3 ? "reset" : ($downloadStatus["progress"]==1 ? "download" : ($downloadStatus["started"] ? "next" : "start"));
+		$labels = array("start" => $download_start, "next" => $download_continue_processing, "download" => $download_show, "reset" => $download_reset);
+		$hints = array("start" => $download_start_label, "next" => $download_continue_processing_label, "download" => $download_show_label, "reset" => $download_reset_label);
+		$button_text = $labels[$button_action];
+		$span_text = $hints[$button_action];
+		$downloadConfig = array("url" => "?/order/" . $orderid . "/process/", "labels" => $labels, "hints" => $hints,
+			"processing" => $download_processing, "progress" => $download_processing_label, "link" => $download_link_format,
+			"sent" => $download_reply_sent, "reply" => $download_reset_reply,
+			"error" => $LANG->lookup("download_request_failed"));
+		array_walk_recursive($downloadConfig, function (&$value) { $value = html_entity_decode($value, ENT_QUOTES, "UTF-8"); });
+
 ?>
-					<div id="download-process">
+					<div id="download-process" data-config="<?php echo htmlspecialchars(json_encode($downloadConfig, JSON_THROW_ON_ERROR), ENT_QUOTES, 'UTF-8'); ?>">
 						<button id="download-button" data-action="<?php echo $button_action; ?>"><?php echo $button_text; ?></button>
 						<span id="download-text"><?php echo $span_text; ?></span>
 					</div>
-					<script>
-						function update () {
-							var button = $("#download-button");
-							var action = button.data("action");
-							var text = $("#download-text");
-							button.off();
-							button.click(function () {
-								button.attr("disabled", "disabled");
-								$.get( "?/order/<?php echo $orderid; ?>/process/" + action + "/", function (str) {
-									if (str=="-1") {
-										button.data("action", "notify");
-										button.removeAttr("disabled");
-										button.html("<?php echo $download_notify; ?>");
-										text.html("<?php echo $download_notify_label; ?>");
-									}
-									if (action=="start") {
-										var progress = 0;
-										var label = "<?php echo $download_processing_label; ?>";
-										button.data("action", "next");
-										button.html("<?php echo $download_processing; ?>");
-										text.html(label.split("{PERCENT}").join(progress));
-										button.removeAttr("disabled");
-										button.click();
-									} else if (action=="next") {
-										if (str=="1") {
-											button.data("action", "download");
-											button.html("<?php echo $download_show; ?>");
-											text.html("<?php echo $download_show_label; ?>");
-											button.removeAttr("disabled");
-										} else {
-											var progress = parseFloat(str);
-											progress = Math.round(progress*100);
-											var label = "<?php echo $download_processing_label; ?>";
-											button.data("action", "next");
-											button.html("<?php echo $download_processing; ?>");
-											text.html(label.split("{PERCENT}").join(progress));
-											button.removeAttr("disabled");
-											button.click();
-										}
-									} else if (action=="download") {
-										if (str.length>0) {
-											var urls = str.split(",");
-											var markup = "";
-											for (var i=0; i<urls.length; ++i) {
-												var label = "<?php echo $download_link_format; ?>";
-												label = label.split("{COUNT}").join(i+1).split("{TOTAL}").join(urls.length);
-												markup += '<a href="' + urls[i] + '" target="_blank">' + label + '</a>';
-											}
-											text.html(markup);
-										} else {
-											button.data("action", "reset");
-											button.html("<?php echo $download_reset; ?>");
-											text.html("<?php echo $download_reset_label; ?>");
-											button.removeAttr("disabled");
-										}
-									} else if (action=="reset") {
-										button.data("action", "reset");
-										button.html("<?php echo $download_reply_sent; ?>");
-										text.html("<?php echo $download_reset_reply; ?>");
-									} else if (action=="notify") {
-										button.data("action", "notify");
-										button.html("<?php echo $download_reply_sent; ?>");
-										text.html("<?php echo $download_notify_reply; ?>");
-									}
-									update();
-								}, "text");
-							});
-						}
-						update();
-					</script>
+					<script src="<?php echo SA_DIR_COREPATH; ?>/js/downloads.js?v=<?php echo filemtime(SA_DIR_COREPATH . "/js/downloads.js"); ?>"></script>
 					<table class="PurchaseTable">
 						<colgroup class="Column0"></colgroup>
 						<colgroup class="Column1" width="100px"></colgroup>

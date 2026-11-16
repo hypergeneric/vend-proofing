@@ -231,14 +231,15 @@ test -n "$dropbox_suid"
 test ! -e "vend-proofing-data/storage/$dropbox_suid/image.table"
 test ! -e "vend-proofing-data/storage/$dropbox_suid/set.category.table"
 php ../scripts/dropbox-records-test.php "$dropbox_suid"
+dropbox_key=$(cat /tmp/dropbox-key)
 dropbox_images=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=image_list" --data-urlencode "name=page" --data-urlencode "suid=$dropbox_suid" --data-urlencode "token=$token" "$gateway")
-case "$dropbox_images" in *ceremony-a.jpg*) ;; *) echo "FAIL Dropbox relational image list: $dropbox_images"; exit 1 ;; esac
+case "$dropbox_images" in *"$dropbox_key"*) ;; *) echo "FAIL Dropbox relational image list: $dropbox_images"; exit 1 ;; esac
 dropbox_meta=$(curl -fsS -c /tmp/basic-cookies -b /tmp/basic-cookies --data-urlencode "action=dropboxset_meta" --data-urlencode "suid=$dropbox_suid" --data-urlencode "token=$token" "$gateway")
 case "$dropbox_meta" in *image_count%3D1*category_count%3D1*) ;; *) echo "FAIL Dropbox metadata: $dropbox_meta"; exit 1 ;; esac
 mkdir -p "vend-proofing-data/storage/$dropbox_suid"
-cp /tmp/basic-set.jpg "vend-proofing-data/storage/$dropbox_suid/ceremony-a.jpg"
-curl -fsS "http://127.0.0.1:8080/?/set/$dropbox_suid/remote-gallery/" | grep -Fq "ceremony-a.jpg"
-curl -fsS --get --data-urlencode "q=$dropbox_suid:ceremony-a.jpg:120:90:1:jpg" -o /tmp/dropbox-resized.jpg http://127.0.0.1:8080/vend-proofing-resample.php
+cp /tmp/basic-set.jpg "vend-proofing-data/storage/$dropbox_suid/$dropbox_key"
+curl -fsS "http://127.0.0.1:8080/?/set/$dropbox_suid/remote-gallery/" | grep -Fq "$dropbox_key"
+curl -fsS --get --data-urlencode "q=$dropbox_suid:$dropbox_key:120:90:1:jpg" -o /tmp/dropbox-resized.jpg http://127.0.0.1:8080/vend-proofing-resample.php
 php -r '\''$size=getimagesize("/tmp/dropbox-resized.jpg"); if($size[0]!==120 || $size[1]!==90) exit(1);'\''
 test ! -e "vend-proofing-data/storage/$dropbox_suid/image.table"
 test ! -e "vend-proofing-data/storage/$dropbox_suid/set.category.table"

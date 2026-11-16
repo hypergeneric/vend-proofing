@@ -45,10 +45,13 @@
 			"paypal_live_client_id": {},
 			"paypal_live_secret": {"_attributes": {"secret": "true", "private": "true"}},
 			"paypal_live_webhook_id": {},
-			"dropbox_api_key": {"_attributes": {"private": "true", "encoded": "true"}},
-			"dropbox_api_secret": {"_attributes": {"private": "true", "encoded": "true"}},
-			"dropbox_authorization_code": {"_attributes": {"private": "true", "encoded": "true"}},
-			"dropbox_token": {"_attributes": {"access": "h", "private": "true", "hash": ""}}
+			"dropbox_api_key": {"_attributes": {"private": "true"}},
+			"dropbox_api_secret": {"_attributes": {"private": "true", "secret": "true"}},
+			"dropbox_authorization_code": {"_attributes": {"private": "true"}},
+			"dropbox_status": {"_attributes": {"access": "r"}},
+			"dropbox_token": {"_attributes": {"access": "h", "private": "true"}},
+			"dropbox_refresh_token": {"_attributes": {"access": "h", "private": "true"}},
+			"dropbox_expires_at": {"_attributes": {"access": "h", "private": "true"}}
 		}
 	}
 }

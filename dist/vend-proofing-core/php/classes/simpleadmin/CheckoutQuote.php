@@ -210,7 +210,8 @@
 			$locale = json_decode(file_get_contents(SA_DIR_LANG . "/en.json"), true, 512, JSON_THROW_ON_ERROR)["data"];
 			$countries = array_column(array_column($locale["country_iso_codes"]["code"], "_attributes"), "value");
 			if ($country==="--" || !in_array($country, $countries, true)) throw new InvalidArgumentException("invalid_order");
-			if (self::enabled("calculate_and_display_sales_tax_bool") && $country===$home && in_array($home, array("US", "CA"), true)) {
+			$needsTaxLocation = $cart["physical"] || self::enabled("downloads_taxable_bool");
+			if ($needsTaxLocation && self::enabled("calculate_and_display_sales_tax_bool") && $country===$home && in_array($home, array("US", "CA"), true)) {
 				$states = array_column(array_column($locale[$home==="US" ? "us_states" : "ca_province"]["code"], "_attributes"), "value");
 				if (($row[13] ?? "--")==="--" || !in_array($row[13] ?? "", $states, true)) throw new InvalidArgumentException("invalid_order");
 			}

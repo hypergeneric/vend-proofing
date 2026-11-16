@@ -30,7 +30,7 @@ function countPayment (string $table, string $where='1'): int {
 }
 Database::install();
 Database::migrate();
-checkPayment(countPayment('schema_migrations')===13, 'Migration did not apply once.');
+checkPayment(countPayment('schema_migrations')===14, 'Migration did not apply once.');
 foreach (array(array('A * .125 + Q', 80, 2, 0, 12), array('Q >= 3 ? P * .8 : P', 0, 4, 10, 8),
 	array('max(2, Math.round(P / 3))', 0, 0, 10, 3), array('2 ** 3 ** 2', 0, 0, 0, 512), array('P > 0 ? 10/P : 0', 0, 1, 0, 0), array('Q && 1/Q', 0, 0, 0, 0), array('Q || 1/2', 0, 2, 0, 2)) as [$formula, $area, $quantity, $price, $expected]) {
 	checkPayment(PriceExpression::evaluate($formula, $area, $quantity, $price)===$expected * 1.0, 'Pricing expression changed: ' . $formula);
@@ -354,7 +354,11 @@ Proofing::clear($gallery, $session, 'cart');
 echo "PASS discount eligibility, Canadian compound tax, VAT, pickup and international handling\n";
 
 $digitalGallery = 'b1'; Records::savePage($digitalGallery, array('Digital fixture', 'DropboxSet', '0'));
-Records::replaceDropboxImages($digitalGallery, array(), array(array('digital-a.jpg', '/b1/a.jpg', '640x480', '', '1', '', '', '/b1/a.jpg'), array('digital-b.jpg', '/b1/b.jpg', '640x480', '', '1', '', '', '/b1/b.jpg')));
+Records::syncDropboxImages($digitalGallery, array(
+	array('id' => 'id:digital-a', 'name' => 'a.jpg', 'path_lower' => '/b1/a.jpg', 'path_display' => '/b1/a.jpg', 'rev' => 'abcdef123', 'size' => 1),
+	array('id' => 'id:digital-b', 'name' => 'b.jpg', 'path_lower' => '/b1/b.jpg', 'path_display' => '/b1/b.jpg', 'rev' => 'abcdef123', 'size' => 1)
+));
+$digitalKey = array_key_first(Records::imageRows($digitalGallery));
 $download = Configuration::getDocument('downloads');
 foreach (array('allow_single_downloads_bool' => 'true', 'allow_web_version_bool' => 'true', 'allow_download_all_bool' => 'true', 'download_all_flatfee_bool' => 'true', 'single_download_price' => '4.25', 'web_version_download_price' => '1.50', 'single_download_all_price' => '6.50') as $key => $value) $download->editNode('data.settings.' . $key, $value);
 Configuration::save('downloads', null, $download->toString());
@@ -365,7 +369,7 @@ $keys = array_keys(Proofing::responseRows($digitalGallery, $digitalSession, 'dow
 Proofing::deleteItem($digitalGallery, $digitalSession, 'download', $keys[0]);
 rejectsPayment(fn () => CheckoutQuote::cart($digitalGallery, $digitalSession), 'Incomplete flat-price bundle accepted.');
 Proofing::clear($digitalGallery, $digitalSession, 'cart');
-Proofing::save($digitalGallery, $digitalSession, 'download', array('digital-d', $digitalGallery, 'digital-a.jpg', 'a.jpg', '640x480', 'high', '4.25', '0'));
+Proofing::save($digitalGallery, $digitalSession, 'download', array('digital-d', $digitalGallery, $digitalKey, 'a.jpg', '640x480', 'high', '4.25', '0'));
 $id = OrderRecords::prequalify($digitalGallery, $digitalSession, '', '', '4.25');
 $digitalRow = array($id, $digitalGallery, '0', 'offline', '', 'local', '', 'Digital Buyer', 'digital@example.invalid', '', '', 'US', '', 'CA', '4.25', '4.25', '0', '0', '0', '0', '0', 'false', 'false', 'false', '');
 rejectsPayment(fn () => OrderRecords::create($digitalGallery, $digitalSession, $digitalRow, 'USD'), 'Unpaid manual digital purchase accepted.');
@@ -375,17 +379,27 @@ checkPayment(!Payments::canDownload($id), 'Pending order authorized digital deli
 Payments::reconcile($id, 'stripe', 'cs_digital', 'pi_digital', 425, 'USD', 'paid', 'digital_paid', 'completed');
 Payments::reconcile($id, 'stripe', 'cs_digital', 'pi_digital', 425, 'USD', 'paid', 'digital_paid', 'completed');
 checkPayment(Payments::canDownload($id) && countPayment('fulfillments', "method = 'digital'")===1, 'Digital entitlement not created exactly once.');
+(static function ($id, $digitalGallery) { require __DIR__ . '/download-test.php'; })($id, $digitalGallery);
 Payments::refund($id, 'stripe', 'pi_digital', 'refund_a', 100, 'USD'); Payments::refund($id, 'stripe', 'pi_digital', 'refund_a', 100, 'USD');
 checkPayment(Payments::get($id)['status']==='paid' && (int) Payments::get($id)['refunded_minor']===100, 'Partial refund duplicated or declared full refund.');
 Payments::refund($id, 'stripe', 'pi_digital', 'refund_b', 325, 'USD');
 checkPayment(Payments::get($id)['status']==='refunded' && !Payments::canDownload($id), 'Full refund did not revoke digital entitlement.');
+rejectsPayment(fn () => Downloads::prepare($id), 'Refunded order prepared downloads.');
+rejectsPayment(fn () => Downloads::links($id), 'Refunded order obtained links.');
 Payments::reconcile($id, 'stripe', 'cs_digital', 'pi_digital', 425, 'USD', 'paid', 'late_digital_success', 'completed');
 checkPayment(!Payments::canDownload($id), 'Late success restored refunded entitlement.');
 $download->editNode('data.settings.single_download_price', '0'); Configuration::save('downloads', null, $download->toString());
-Proofing::save($digitalGallery, $digitalSession, 'download', array('free-d', $digitalGallery, 'digital-a.jpg', 'a.jpg', '640x480', 'high', '0', '0'));
+Proofing::save($digitalGallery, $digitalSession, 'download', array('free-d', $digitalGallery, $digitalKey, 'a.jpg', '640x480', 'high', '0', '0'));
 $id = OrderRecords::prequalify($digitalGallery, $digitalSession, '', '', '0'); $digitalRow[0] = $id; $digitalRow[3] = 'offline'; $digitalRow[14] = '0'; $digitalRow[15] = '0';
+// The download-only UI hides the address when downloads are not taxable.
+setting('calculate_and_display_sales_tax_bool', 'true');
+$digitalRow[13] = '--';
+setting('downloads_taxable_bool', 'true');
+rejectsPayment(fn () => CheckoutQuote::verify($digitalGallery, $digitalSession, $digitalRow), 'Taxable downloads accepted a missing tax location.');
+setting('downloads_taxable_bool', 'false');
 OrderRecords::create($digitalGallery, $digitalSession, $digitalRow, 'USD');
-checkPayment(Payments::canDownload($id), 'Verified free order not fulfilled.');
+checkPayment(Payments::canDownload($id), 'Non-taxable free download with hidden/unset state was rejected.');
+setting('calculate_and_display_sales_tax_bool', 'false');
 rejectsPayment(fn () => Payments::authorize($id, 'wrong-token'), 'Order access token not enforced.');
 checkPayment(!str_contains(Payments::summary($id), Payments::get($id)['access_token']), 'Diagnostic output disclosed order access token.');
 echo "PASS digital individual/bulk pricing, paid-only entitlement, duplicate/full/partial refunds and free orders\n";

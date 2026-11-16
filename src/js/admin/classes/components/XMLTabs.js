@@ -44,13 +44,18 @@ classes.components.XMLTabs = function () {
 		});
 	}
 	function saveComplete (success, data) {
+		if (!success) {
+			_panel.screen(false);
+			Dialog.create({size: "500x*", title: Lang.lookup("Save Failed"), content: data, options: [{label: Lang.lookup("OK")}]});
+			return;
+		}
 		_unsaved = false;
 		_panel.screen(false);
 		_panel.disableOptions("save", "cancel");
 		_panel.enableOptions("revert");
 		if (success) {
 			_instance.dispatch("onDataChanged");
-			// Reload write-only payment fields and configuration status after saving.
+			// Reload write-only integration fields and configuration status after saving.
 			if (_type=="ordering") loadBaseFile();
 		}
 	}

@@ -188,6 +188,7 @@
 			$this->image_original_uri = SA_DIR_STORAGE . "/" . $this->flag_basename . "/" . $this->flag_filename;
 			$this->watermark_uri = SA_DIR_STORAGE . "/asset/" . $this->flag_watermark_asset;
 			$this->image_unique_hash = md5(
+				(@filemtime($this->image_original_uri) ?: 0) . "-" .
 				$this->flag_basename . "-" . 
 				$this->flag_filename . "-" . 
 				$this->flag_filename_ext . "-" . 
@@ -380,7 +381,7 @@
 					}
 				}
 			}
-			return $img_src;
+			return $img_src . (str_contains($img_src, "?") ? "&" : "?") . "v=" . (@filemtime($this->image_original_uri) ?: 0);
 		}
 		
 		public function sourceSet ($max=3) {

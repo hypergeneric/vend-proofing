@@ -22,72 +22,23 @@
 			global $LANG;
 			switch ($this->action) {
 			 case "delete_dropbox_set" :
-				$dropboxer = new Dropboxer();
-				list($success, $data, $error) = $dropboxer->connect();
-				if ($success) {
-					$orderid = $this->getRequestVariable("orderid");
-					list($success, $data, $error) = $dropboxer->deleteDownloadFiles($orderid);
-					if ($success) {
-						$this->respond(array(
-							"success" => true,
-							"data" => $data
-						));
-					} else {
-						$this->respond(array(
-							"success" => false,
-							"data" => $LANG->lookup($data) . " - " . $error
-						));
-					}
-				} else {
-					$this->respond(array(
-						"success" => false,
-						"data" => $LANG->lookup($data) . " - " . $error
-					));
+				try {
+					Downloads::delete($this->getRequestVariable("orderid"));
+					$this->respond(array("success" => true, "data" => ""));
+				} catch (RuntimeException $error) {
+					$this->respond(array("success" => false, "data" => htmlspecialchars($LANG->lookup($error->getMessage()), ENT_QUOTES, "UTF-8")));
 				}
 			 case "next_dropbox_chunk" :
-				$dropboxer = new Dropboxer();
-				list($success, $data, $error) = $dropboxer->connect();
-				if ($success) {
-					$suid = $this->getRequestVariable("suid");
-					list($success, $data, $error) = $dropboxer->processNextChunk($suid);
-					if ($success) {
-						$this->respond(array(
-							"success" => true,
-							"data" => $data
-						));
-					} else {
-						$this->respond(array(
-							"success" => false,
-							"data" => $LANG->lookup($data) . " - " . $error
-						));
-					}
-				} else {
-					$this->respond(array(
-						"success" => false,
-						"data" => $LANG->lookup($data) . " - " . $error
-					));
-				}
 			 case "sync_dropbox" :
-				$dropboxer = new Dropboxer();
-				list($success, $data, $error) = $dropboxer->connect();
-				if ($success) {
+				try {
+					$sync = new DropboxSync();
 					$suid = $this->getRequestVariable("suid");
-					list($success, $data, $error) = $dropboxer->syncFolder($suid);
-					if ($success) {
-						$this->respond(array(
-							"success" => true
-						));
-					} else {
-						$this->respond(array(
-							"success" => false,
-							"data" => $LANG->lookup($data) . " - " . $error
-						));
-					}
-				} else {
-					$this->respond(array(
-						"success" => false,
-						"data" => $LANG->lookup($data) . " - " . $error
-					));
+					$progress = 0;
+					if ($this->action==="sync_dropbox") $sync->sync($suid);
+					else $progress = $sync->next($suid);
+					$this->respond(array("success" => true, "data" => $progress, "invalidate" => true));
+				} catch (RuntimeException | InvalidArgumentException $error) {
+					$this->respond(array("success" => false, "data" => htmlspecialchars($LANG->lookup($error->getMessage()), ENT_QUOTES, "UTF-8")));
 				}
 			 case "dropboxset_meta" :
 				$suid = $this->getRequestVariable("suid");
@@ -154,14 +105,12 @@
 					"success" => true
 				));
 			 case "authorize_dropbox" :
-				$dropboxer = new Dropboxer();
-				list($success, $data, $error) = $dropboxer->authorize();
-				if ($success) {
-					header("Location: " . $data);
+				try {
+					header("Location: " . DropboxClient::authorize());
 					exit();
-				} else {
-					$error = $LANG->lookup($data) . " - " . $error;
-					$help_link_uri = "https://intothedarkroom.zendesk.com/hc/en-us/articles/209636333";
+				} catch (RuntimeException $exception) {
+					$error = $LANG->lookup($exception->getMessage());
+					$help_link_uri = "";
 					include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
 					exit();
 				}

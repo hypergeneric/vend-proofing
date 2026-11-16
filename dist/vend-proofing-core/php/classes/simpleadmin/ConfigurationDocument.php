@@ -17,6 +17,29 @@
 			return $this->data;
 		}
 
+		/** Defaults own the field tree and control definitions; saved fields own their values. */
+		public function syncDefaults (ConfigurationDocument $defaults): void {
+			$this->data = array("data" => self::syncNode($defaults->data["data"], $this->data["data"]));
+		}
+
+		private static function syncNode (array $template, array $saved): array {
+			// Repeated template entries are definitions, not a user-managed list.
+			if (array_is_list($template)) return $template;
+			$result = $template;
+			$result["_value"] = $saved["_value"];
+			foreach ($template["_attributes"] as $name => $value) {
+				// Blank attributes are editable data slots (href, dimensions, timezone, etc.).
+				if (($value==="" || $name==="default") && array_key_exists($name, $saved["_attributes"])) {
+					$result["_attributes"][$name] = $saved["_attributes"][$name];
+				}
+			}
+			foreach ($template as $name => $node) {
+				if ($name==="_value" || $name==="_attributes") continue;
+				if (isset($saved[$name]) && !array_is_list($saved[$name])) $result[$name] = self::syncNode($node, $saved[$name]);
+			}
+			return $result;
+		}
+
 		public function toString (): string {
 			$compact = $this->data;
 			$compact["data"] = self::compactNode($compact["data"]);

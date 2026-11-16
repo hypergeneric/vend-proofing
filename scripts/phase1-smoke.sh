@@ -34,6 +34,7 @@ cp "$project_dir/scripts/public-base-url-test.php" "$fixture_dir/scripts/public-
 cp "$project_dir/scripts/password-recovery-test.php" "$fixture_dir/scripts/password-recovery-test.php"
 cp "$project_dir/scripts/password-recovery-http-test.php" "$fixture_dir/scripts/password-recovery-http-test.php"
 cp "$project_dir/scripts/configuration-test.php" "$fixture_dir/scripts/configuration-test.php"
+cp "$project_dir/scripts/configuration-sync-test.php" "$project_dir/scripts/sync-settings.php" "$fixture_dir/scripts/"
 cp "$project_dir/scripts/dev-router.php" "$fixture_dir/scripts/dev-router.php"
 
 docker run --rm --network none -v "$fixture_dir":/app -w /app/dist devwithlando/php:8.4-apache-7 sh -lc '
@@ -49,6 +50,7 @@ php ../scripts/foundation-test.php
 php ../scripts/public-base-url-test.php
 php -d error_reporting=24575 -d disable_functions=checkdnsrr ../scripts/password-recovery-test.php
 php ../scripts/configuration-test.php
+php ../scripts/configuration-sync-test.php
 php -r '\''define("SA_DIR_AUTH", "/app/dist/vend-proofing-data/auth"); require "vend-proofing-core/php/classes/simpleadmin/Database.php"; require "vend-proofing-core/php/classes/simpleadmin/Records.php"; Records::savePage("875c", ["Test Gallery", "UploadSet", 0]); Records::addMedia("asset", "asset", ["test.png", "test.png", "1x1"]); foreach (["mp4", "webm", "ogg"] as $extension) Records::addMedia("asset", "asset", ["test.$extension", "test.$extension", "1x1"]); unlink("vend-proofing-data/storage/set.page.table");'\''
 php -d display_errors=1 -d error_reporting=24575 -d disable_functions=checkdnsrr,mail,curl_init,fsockopen -S 127.0.0.1:8080 -t /app/dist /app/scripts/dev-router.php >/tmp/vend-server.log 2>&1 &
 server_pid=$!

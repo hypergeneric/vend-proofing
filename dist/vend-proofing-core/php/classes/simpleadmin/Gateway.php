@@ -352,8 +352,16 @@
 				switch ($this->command) {
 				 case "save" :
 					$data = $this->getRequestVariable("data");
+					if ($type==="ordering") {
+						try {
+							$data = DropboxClient::merge(PaymentSettings::merge($data));
+						} catch (RuntimeException $error) {
+							global $LANG;
+							$this->respond(array("success" => false, "data" => htmlspecialchars($LANG->lookup($error->getMessage()), ENT_QUOTES, "UTF-8")));
+						}
+					}
 					$this->respond(array(
-						"success" => Configuration::save($type, $suid, $type==="ordering" ? PaymentSettings::merge($data) : $data),
+						"success" => Configuration::save($type, $suid, $data),
 						"invalidate" => true
 					));
 				 case "revert" :
@@ -369,7 +377,7 @@
 					));
 				 case "load" :
 					$response = Configuration::getJson($type, $suid);
-					if ($type==="ordering" && $response!==false) $response = PaymentSettings::forAdmin($response);
+					if ($type==="ordering" && $response!==false) $response = DropboxClient::forAdmin(PaymentSettings::forAdmin($response));
 					$this->respond(array(
 						"success" => $response!==false,
 						"data" => $response

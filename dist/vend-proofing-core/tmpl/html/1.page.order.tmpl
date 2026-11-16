@@ -104,45 +104,30 @@
 	$sessionobj = 		array();
 	$orderobj = 		array();
 	
-	/* ---- If we're processing dropbox files, there is no need for the overhead below, do it now --- */
+	/* Process invoice downloads before rendering the page. */
 	if ( $view=="process" ) {
-		if (($_SESSION["authorized_order"] ?? "")!==$orderid || !Payments::canDownload($orderid)) {
+		$ownerReset = $email_hash==="reset" && hash_equals(hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret()), (string) ($fragments[0] ?? ""));
+		if ((!$ownerReset && ($_SESSION["authorized_order"] ?? "")!==$orderid) || !Payments::canDownload($orderid)) {
 			http_response_code(403);
 			exit("-1");
 		}
-		$_SESSION["order_object"] = OrderRecords::get($orderid);
-		$_SESSION["session_object"] = OrderRecords::items($orderid);
+		if (!$ownerReset && ($_SERVER["REQUEST_METHOD"] ?? "GET")!=="POST") {
+			http_response_code(405);
+			exit("-1");
+		}
 		$action = $email_hash;
-		if ($action=="start") {
-			$dropboxer = new Dropboxer();
-			list($success, $data, $error) = $dropboxer->connect();
-			if ($success) {
-				list($success, $filedata, $error) = $dropboxer->getImageData($orderid);
-				if ($success) {
-					print "1";
-					exit;
-				}
+		if (in_array($action, array("start", "next", "download"), true)) {
+			header("Content-Type: application/json");
+			try {
+				$result = array("success" => true);
+				if ($action==="start") Downloads::prepare($orderid);
+				if ($action==="next") $result["progress"] = Downloads::next($orderid);
+				if ($action==="download") $result["links"] = Downloads::links($orderid);
+				print json_encode($result, JSON_THROW_ON_ERROR);
+			} catch (RuntimeException $error) {
+				print json_encode(array("success" => false, "error" => $LANG->lookup($error->getMessage())), JSON_THROW_ON_ERROR);
 			}
-		} else if ($action=="next") {
-			$dropboxer = new Dropboxer();
-			list($success, $data, $error) = $dropboxer->connect();
-			if ($success) {
-				list($success, $progress, $error) = $dropboxer->copyOrderChunk($orderid);
-				if ($success) {
-					print $progress;
-					exit;
-				}
-			}
-		} else if ($action=="download") {
-			$dropboxer = new Dropboxer();
-			list($success, $data, $error) = $dropboxer->connect();
-			if ($success) {
-				list($success, $urls, $error) = $dropboxer->getShareLinks($orderid);
-				if ($success) {
-					print $urls;
-					exit;
-				}
-			}
+			exit;
 		} else if ( $action=="reset" || $action=="notify" ) {
 			$checkhash = array_shift($fragments);
 			$order = new Order();
@@ -168,8 +153,8 @@
 				}
 			}
 			$pre = array (
-				"RESET_URL" => Func::getBaseUrl() . "/?/order/$orderid/process/reset/" . hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret()) . "/",
-				"INVOICE_URL" => Func::getBaseUrl() . "/?/order/$orderid/invoice/" . md5($post["PURCHASER_EMAIL"]) . "/"
+				"RESET_URL" => Func::getPublicBaseUrl() . "/?/order/$orderid/process/reset/" . hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret()) . "/",
+				"INVOICE_URL" => Func::getPublicBaseUrl() . "/?/order/$orderid/invoice/" . md5($post["PURCHASER_EMAIL"]) . "/"
 			);
 			if ($action=="notify") {
 				$email = new Email();
@@ -183,32 +168,22 @@
 				print "1";
 				exit;
 			}
-			if ($checkhash==hash_hmac("sha256", "reset:" . $orderid, Database::installationSecret())) {
-				$dropboxer = new Dropboxer();
-				list($success, $data, $error) = $dropboxer->connect();
-				if ($success) {
-					list($success, $str, $error) = $dropboxer->resetDownloadCount($orderid);
-					if ($success) {
-						$email = new Email();
-						$email->setSender($post["OWNER_EMAIL"], $post["OWNER_NAME"]);
-						$email->setRecipient($post["PURCHASER_EMAIL"], $post["PURCHASER_NAME"]);
-						$email->setSubjectTemplate("data.contact.dropbox_reset_approved_subject");
-						$email->setBodyTemplate("data.contact.dropbox_reset_approved_body");
-						$email->addPreTags($pre);
-						$email->addPostTags($post);
-						$email->send();
-						unset($error);
-						$message_title = $LANG->lookup("download_reset_success");
-						$message_description = str_replace("{OID}", $orderid, $LANG->lookup("download_reset_success_description"));
-						$help_link_uri = "";
-						include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
-						exit;
-					}
-				} else {
-					$error = $LANG->lookup($data) . " - " . $error;
-					$help_link_uri = "https://intothedarkroom.zendesk.com/hc/en-us/articles/209636333";
-					include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
-				}
+			if ($ownerReset) {
+				Downloads::reset($orderid);
+				$email = new Email();
+				$email->setSender($post["OWNER_EMAIL"], $post["OWNER_NAME"]);
+				$email->setRecipient($post["PURCHASER_EMAIL"], $post["PURCHASER_NAME"]);
+				$email->setSubjectTemplate("data.contact.dropbox_reset_approved_subject");
+				$email->setBodyTemplate("data.contact.dropbox_reset_approved_body");
+				$email->addPreTags($pre);
+				$email->addPostTags($post);
+				$email->send();
+				unset($error);
+				$message_title = $LANG->lookup("download_reset_success");
+				$message_description = str_replace("{OID}", $orderid, $LANG->lookup("download_reset_success_description"));
+				$help_link_uri = "";
+				include SA_DIR_COREPATH . "/tmpl/html/1.page.message.tmpl";
+				exit;
 			} else {
 				$email = new Email();
 				$email->setSender($post["PURCHASER_EMAIL"], $post["PURCHASER_NAME"]);

@@ -5,6 +5,8 @@ cd "$project_dir"
 npm run check:js
 node scripts/js-assets-test.js
 node scripts/language-test.js
+node scripts/dropbox-ui-test.js
+node scripts/download-ui-test.js
 docker run --rm --network none -v "$project_dir":/app:ro -w /app \
   devwithlando/php:8.4-apache-7 php scripts/js-config-test.php
 

@@ -73,4 +73,29 @@
 			)->execute(array($type, $scopeId));
 			return true;
 		}
+
+		/** Refresh only saved documents; unsaved scopes already read current defaults. */
+		public static function syncDefaults (bool $dryRun=false): array {
+			return Database::transaction(function (PDO $db) use ($dryRun): array {
+				$rows = $db->query('SELECT type, scope_id, json_text FROM configuration_documents ORDER BY type, scope_id')->fetchAll();
+				$report = array();
+				$templates = array();
+				$update = $db->prepare('UPDATE configuration_documents SET json_text = ?, updated_at = ? WHERE type = ? AND scope_id = ?');
+				foreach ($rows as $row) {
+					$type = $row["type"];
+					$path = self::defaultPath($type);
+					$status = "skipped (no default)";
+					if ($path!==null) {
+						$templates[$type] ??= new ConfigurationDocument(file_get_contents($path));
+						$document = new ConfigurationDocument($row["json_text"]);
+						$document->syncDefaults($templates[$type]);
+						$json = $document->toString();
+						$status = $json===$row["json_text"] ? "unchanged" : ($dryRun ? "would update" : "updated");
+						if (!$dryRun && $status==="updated") $update->execute(array($json, time(), $type, $row["scope_id"]));
+					}
+					$report[] = array("type" => $type, "scope" => $row["scope_id"], "status" => $status);
+				}
+				return $report;
+			});
+		}
 	}

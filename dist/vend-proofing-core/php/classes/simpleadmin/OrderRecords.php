@@ -160,8 +160,10 @@
 						$description, $item["quantity"], CheckoutQuote::cents($quote["amounts"][$item["id"]][0]),
 						CheckoutQuote::cents($quote["amounts"][$item["id"]][1]), $item["selection_json"], $position, $item["public_key"]));
 					$orderItemIds[$item["id"]] = (int) $db->lastInsertId();
-					$db->prepare("UPDATE order_items SET formula_snapshot_json = ? WHERE id = ?")->execute(array(
-						json_encode($quote["rules"][$item["public_key"]], JSON_THROW_ON_ERROR), $orderItemIds[$item["id"]]));
+					$rules = $quote["rules"][$item["public_key"]];
+					if ($item["item_type"]==="download") $rules["download_source"] = DropboxDelivery::snapshot((int) $assetId, $values["quality"]);
+					$db->prepare("UPDATE order_items SET formula_snapshot_json = ? WHERE id = ?")
+						->execute(array(json_encode($rules, JSON_THROW_ON_ERROR), $orderItemIds[$item["id"]]));
 				}
 				$parentLink = $db->prepare("UPDATE order_items SET parent_item_id = ? WHERE id = ?");
 				foreach ($items as $item) {
@@ -373,6 +375,7 @@
 		}
 
 		public static function delete (string $suid): void {
+			Downloads::delete($suid);
 			Database::transaction(function (PDO $db) use ($suid): void {
 				$query = $db->prepare("SELECT id FROM orders WHERE suid = ?");
 				$query->execute(array($suid));

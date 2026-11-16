@@ -24,6 +24,7 @@ module.exports = {
 		'invoice-print': { source: 'src/scss/invoice-print.scss' },
 	},
 	js: {
+		downloads: { source: ['src/js/downloads.js'] },
 		payments: { source: ['src/js/payments.js'] },
 		storefront: {
 			prepend: [

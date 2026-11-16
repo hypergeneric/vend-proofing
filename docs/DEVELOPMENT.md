@@ -148,10 +148,11 @@ Each file has a generated `.css.map`. Component `@use` order preserves the origi
 |---|---|---|
 | `js.admin` | Admin vendor dependencies and application classes | `admin.js` |
 | `js.storefront` | Storefront vendor dependencies and application classes | `storefront.js` |
+| `js.downloads` | Browser-driven invoice download preparation | `downloads.js` |
 | `js.payments` | Shared Stripe/PayPal/Venmo UI for checkout and invoice retries | `payments.js` |
 | `copy['jquery.js']` | Unchanged vendor dependency for invoice pages | `jquery.js` |
 
-The three application bundles have `.js.map` files. Every admin panel is included once; the old PHP assembler accidentally included panels twice. The former `vend.js`/`vend-core.js` generated files are removed, and `dist/vend-proofing-core/admin/` no longer contains application sources.
+The four application bundles have `.js.map` files. Every admin panel is included once; the old PHP assembler accidentally included panels twice. The former `vend.js`/`vend-core.js` generated files are removed, and `dist/vend-proofing-core/admin/` no longer contains application sources.
 
 `Admin.js` owns a compact configuration object with plain tab/content-type arrays, title, and badge properties. Its consumers use ordinary properties and boolean flags. The bootstrap supplies the fixed namespace and class scaffolding; there is no global admin configuration object. The admin page passes only installation language/basepath/indexpath through one escaped JSON `data-config` attribute. There is no admin configuration script template, hub mode, or embedded-admin mode; navigation always uses browser history and logout is always available.
 
@@ -169,6 +170,7 @@ Readable upstream sources at pinned existing versions are a desired follow-up, n
 
 ## Development rules
 
+- Prefer a small, direct implementation for a low-traffic photographer application. Keep checks tied to actual credentials, data integrity and demonstrated failures; do not add generalized job frameworks, speculative recovery layers or compatibility with earlier development commits. There are no deployed installations or data migrations to support.
 - Keep changes small and test the contract of the affected subsystem.
 - Edit JavaScript in `src/js/admin/` or `src/js/storefront/`, then run `npm run build:js` or use `npm run dev`. Edit styles in `src/scss/`. Do not hand-edit the generated files under `dist/vend-proofing-core/js/` or `dist/vend-proofing-core/css/`; see the asset-development sections above.
 - Match the tab-indented PHP style in touched files. Use named intermediate values and readable method bodies for new persistence code; keep SQL and multi-step writes easy to follow.
@@ -177,6 +179,21 @@ Readable upstream sources at pinned existing versions are a desired follow-up, n
 - Do not run mail, payment, Dropbox, or destructive migration operations against live data during tests.
 - Update [VEND-MODERNIZATION.md](VEND-MODERNIZATION.md) with decisions, tests, limitations, and the next step when a phase changes.
 - Keep user-facing instructions in the [manual](MANUAL.md); agent workflow belongs in [AGENTS.md](../AGENTS.md).
+
+## Refresh saved settings after template changes
+
+Run from the repository root after changing JSON defaults:
+
+```sh
+lando php scripts/sync-settings.php --dry-run
+lando php scripts/sync-settings.php
+```
+
+Plain PHP is also supported; `--data-dir DIR` selects an alternate application data directory containing `auth/vend.sqlite`. The command updates existing `configuration_documents` rows, including gallery/profile scopes. Unsaved documents already read the current defaults and are not created. Types with no matching source default are reported as skipped, not deleted.
+
+Defaults own field names, nesting, order and control attributes. Sync adds new fields with default values, removes retired fields/attributes and refreshes control definitions such as `secret`, `access`, `options` and numeric limits. Existing field values remain unchanged, including deliberate blanks and hidden credentials. Attributes with blank defaults are editable data slots and retain saved values (for example `href`, dimensions, selection SUID and timezone/offset). The saved document's `default` flag also remains unchanged. Repeated template entries, if introduced, are replaced from the template. This refresh does not rename fields or convert stored value formats.
+
+All updates run in one transaction; malformed documents/templates roll back the operation. Dry runs do not change saved rows. Output lists document types/scopes and status, never settings values. Unchanged documents retain their timestamps. `Configuration::syncDefaults()` and `ConfigurationDocument::syncDefaults()` implement the operation; the CLI is a thin wrapper. The foundation smoke includes isolated CLI and merge tests in `scripts/configuration-sync-test.php`.
 
 ## Payment development
 
@@ -190,6 +207,14 @@ Migration 013 extends existing tables; no separate commerce database or queue se
 
 Use the new asset workflow above for payment UI edits. Sandbox/live credentials, webhook subscriptions, receipt recovery, pricing limits and external qualification procedures belong in the [manual](MANUAL.md#payment-setup). Do not put credentials in source, fixtures, generated JavaScript or diagnostic logs. Account-specific sandbox operations remain a separate verification step from mocks.
 
+## Invoice download development
+
+`Downloads` is the invoice boundary for status, preparation, bounded progress, links, reset and cleanup. `DropboxDelivery` implements revision-specific copies, web JPEG uploads, shared folder links and deletion; `DropboxClient` supplies HTTP/OAuth. The retired `Dropboxer` application class is gone; removing its now-unused Composer dependency remains part of the paused vendor cleanup.
+
+Purchase source references live alongside the item's rules in `formula_snapshot_json.download_source`, leaving selection snapshots unchanged for cart clearing. Installation SQL `014_downloads.sql` adds `download_jobs` with a JSON manifest/progress record, independently of payment entitlement. Apply schema additions in a local checkout with `lando php scripts/migrate.php`; there is no historical order import or backfill. Preparation uses a random owned output root and persists each completed file. A per-order private `flock` serializes requests without holding SQLite transactions over network calls. No worker or queue service. Invoice status reads only SQLite; POST processing requires the authorized order session and paid/free entitlement. Signed owner reset links retain their existing URL shape.
+
+`src/js/downloads.js` supplies the static invoice bundle; the template passes escaped JSON through `data-config`. Errors stop automatic progression and retain the action for an explicit retry. The payment smoke includes `scripts/download-test.php` with mocked provider traffic; `scripts/download-ui-test.js` checks progression, retry, network failure, links and reset behavior. Actual file bytes, Dropbox permissions and real shared-folder packaging still require the manual's small live acceptance check.
+
 ## Current sequence
 
-PHP 8.4, unified SQLite persistence, static asset builds, multiple administrator accounts and modern payments are implemented. The developer accepted local cart-first payment behavior on 2026-11-15. Next: consolidate pricing into one server-side calculation, simplify payment orchestration, then reorganize existing settings using `XMLPane.filter()`. Preserve the accepted customer workflow and existing pricing rules. The [modernization log](VEND-MODERNIZATION.md) records qualification limits and deferred work; the vendor-cleanup pause boundary above still applies.
+PHP 8.4, unified SQLite persistence, static asset builds, multiple administrator accounts and modern payments are implemented. The developer accepted local cart-first payment behavior, Dropbox authorization, gallery sync and preview rendering. Invoice delivery now uses the small service above; real-account invoice acceptance is next. Local upload/category downloads, crop/color processing, pricing/payment simplification, `XMLPane.filter()` organization and vendor cleanup remain separate work. The [modernization log](VEND-MODERNIZATION.md) records evidence and limits; the vendor-cleanup pause boundary still applies.

@@ -3648,13 +3648,18 @@ classes.components.XMLTabs = function () {
 		});
 	}
 	function saveComplete (success, data) {
+		if (!success) {
+			_panel.screen(false);
+			Dialog.create({size: "500x*", title: Lang.lookup("Save Failed"), content: data, options: [{label: Lang.lookup("OK")}]});
+			return;
+		}
 		_unsaved = false;
 		_panel.screen(false);
 		_panel.disableOptions("save", "cancel");
 		_panel.enableOptions("revert");
 		if (success) {
 			_instance.dispatch("onDataChanged");
-			// Reload write-only payment fields and configuration status after saving.
+			// Reload write-only integration fields and configuration status after saving.
 			if (_type=="ordering") loadBaseFile();
 		}
 	}
@@ -16207,18 +16212,10 @@ classes.panels.DropboxSet = function () {
 		*/
 		
 	function syncClick () {
-		Dialog.create({
-			size: "500x*",
-			title: Lang.lookup("Dropbox Verify Warning"),
-			content: Lang.lookup("Dropbox Verify Warning Description"),
-			owner: this,
-			options: [{
-				label: Lang.lookup("Dropbox Verify Warning Accept"),
-				func: syncDropboxAccept
-			},{
-				label: Lang.lookup("Cancel")
-			}]
-		});
+		if (_obj_sync.hasClass("Disabled")) return;
+		_obj_sync.addClass("Disabled");
+		_panel.screen(true);
+		syncDropboxAccept();
 	}
 	function syncDropboxAccept () {
 
@@ -16237,7 +16234,7 @@ classes.panels.DropboxSet = function () {
 			desc = desc.split("{PROGRESS}").join(progress);
 			Dialog.create({
 				size: "500x*",
-				title: Lang.lookup["Dropbox Now Syncing"],
+				title: Lang.lookup("Dropbox Now Syncing"),
 				content: desc,
 				owner: this,
 				options: []
@@ -16296,13 +16293,14 @@ classes.panels.DropboxSet = function () {
 				content: data,
 				owner: this,
 				options: [{
-					label: Lang.lookup["ok"],
+					label: Lang.lookup("ok"),
 					func: syncDropboxErrorAccept
 				}]
 			});
 		}
 	}
 	function syncDropboxErrorAccept () {
+		_obj_sync.removeClass("Disabled");
 		_panel.screen(false);
 	}
 	
@@ -16314,7 +16312,7 @@ classes.panels.DropboxSet = function () {
 		_panel.screen(false);
 		/* parse through the data
 			*/
-		var pairs = data.split("&");
+		var pairs = data ? data.split("&") : [];
 		var rows = [];
 		for (var i=0; i<pairs.length; ++i) {
 			var pair = pairs[i].split("=");
@@ -16443,7 +16441,8 @@ classes.panels.DropboxSet = function () {
 					}
 				},{
 					title: Lang.lookup("Category"),
-					data: "label"	
+					data: "label",
+					render: $.fn.dataTable.render.text()
 				},{
 					title: Lang.lookup("Images"),
 					type: "num",

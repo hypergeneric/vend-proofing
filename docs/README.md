@@ -15,6 +15,7 @@ Project records:
 - [Product discovery and technical audit](VEND-PRODUCT-DISCOVERY-AND-TECHNICAL-AUDIT.md)
 - [Modernization log](VEND-MODERNIZATION.md)
 - [Payment audit and implementation plan](VEND-PAYMENTS.md)
+- [Dropbox and digital delivery assessment](VEND-DIGITAL-DELIVERY.md)
 - [Historical storage strategy and source review](VEND-STORAGE-STRATEGY.md) (document-store proposal superseded by the modernization log)
 
 Keep instructions in their audience's document. Link to another document rather than copying long guidance across them.

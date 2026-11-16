@@ -1,4 +1,5 @@
 {
+	"download_request_failed": "Download preparation stopped. Click the button to retry; contact the photographer if it continues.",
 	"data": {
 		"base_url": {"_attributes": {"name": "Base URL"}},
 		"recovery_unavailable": {"_attributes": {"name": "Unable to load password recovery. Please try again."}},
@@ -91,7 +92,7 @@
 		"dropbox_folder_location": {"_attributes": {"name": "Unique Dropbox Folder Location"}},
 		"dropbox_sync_directions": {
 			"_attributes": {
-				"name": "<a href=\"https://intothedarkroom.zendesk.com/hc/en-us/articles/208110476-Images-Dropbox-set-digital-downloads-\" target=\"_blank\"><u><b>Full Directions Here</b></u></a><br /><br />Go to your Dropbox account or drive and create a folder with the folder name given below in your Vend App Folder.<br /><br />Copy your high resolution images into this folder. Depending on the number of images you have, this could take hours. HINT: If you would like to categorize your images (i.g. reception, ceremony, bridal party, etc), name the folders that you place in the set folders with the category names and add the images to the appropriate folder.<br /><br />Once the images are uploaded to Dropbox, you will click the \"Sync\" button below.<br /><br />Once the files are synced, it will show you the date and number of images that are in this set. If you change anything in this Dropbox set folder, you must resync the folder. Once you send out the link to the client is is best not to re-sync anything."
+				"name": "Create the gallery folder shown below inside your Dropbox app folder. Add JPEG or PNG images directly, or organize them in subfolders. Click Sync Files after changes. Sync preserves customer selections and image identities, including renamed files. Removed files leave the gallery; their records and existing selections remain. Keep this tab open while previews download. Dropbox documents a 20 MB source-image limit for its preview API."
 			}
 		},
 		"dropbox_sync_heading": {"_attributes": {"name": "Dropbox"}},
@@ -111,7 +112,7 @@
 		"dropbox_verify_failure": {"_attributes": {"name": "Sync Failed"}},
 		"dropbox_setup_failure": {
 			"_attributes": {
-				"name": "Communication with Dropbox failed.  If you have made changes to your App settings, moved your product, or reset your Setup tab, you need to re-authorize your account.  Please reset your Dropbox Authorization Code."
+				"name": "Dropbox connection failed. Check the ordering settings and authorize again if needed."
 			}
 		},
 		"php_version_530_required": {
@@ -352,7 +353,7 @@
 		"dropbox_api_key": {"_attributes": {"name": "Dropbox API Key"}},
 		"dropbox_api_secret": {"_attributes": {"name": "Dropbox API Secret"}},
 		"dropbox_authorization_code": {
-			"_attributes": {"name": "Dropbox Authorization Code<br /><br /><a href=\"javascript:classes.helpers.Func.authDropbox();\"><u>Create One Now</u></a>"}
+			"_attributes": {"name": "Dropbox Authorization Code<br /><br />Save the app key and secret first. <a href=\"javascript:classes.helpers.Func.authDropbox();\"><u>Authorize Dropbox</u></a>, paste the returned code here, then save. Vend clears the code and refreshes access automatically."}
 		},
 		"providence_label": {"_attributes": {"name": "Province"}},
 		"edit_providence_tax": {"_attributes": {"name": "Edit Province Tax"}},

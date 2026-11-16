@@ -1182,7 +1182,7 @@
 		public static function categoryRows (string $suid): array {
 			$isDropboxSet = self::pageType($suid)==="DropboxSet";
 			$sql = "SELECT categories.public_key, categories.name,
-				(SELECT COUNT(*) FROM gallery_images WHERE category_id = categories.id) AS image_count
+				(SELECT COUNT(*) FROM gallery_images WHERE category_id = categories.id AND status = 'ready') AS image_count
 				FROM gallery_categories AS categories
 				JOIN pages ON pages.id = categories.gallery_id
 				WHERE pages.suid = ?
@@ -1192,6 +1192,7 @@
 			$rows = array();
 
 			foreach ($query as $category) {
+				if ($isDropboxSet && (int) $category["image_count"]===0) continue;
 				$key = $category["public_key"];
 				$rows[$key] = array($key, $category["name"]);
 				if ($isDropboxSet) $rows[$key][] = (string) $category["image_count"];
@@ -1269,7 +1270,7 @@
 				JOIN media_assets AS assets ON assets.id = images.asset_id
 				LEFT JOIN gallery_categories AS categories ON categories.id = images.category_id
 				JOIN pages ON pages.id = images.gallery_id
-				WHERE pages.suid = ?
+				WHERE pages.suid = ? AND images.status = 'ready'
 				ORDER BY images.position, images.id";
 			$query = Database::connection()->prepare($sql);
 			$query->execute(array($suid));
@@ -1296,54 +1297,71 @@
 			return $rows;
 		}
 
-		public static function replaceDropboxImages (string $suid, array $categories, array $images): void {
-			if (self::pageType($suid)!=="DropboxSet") {
-				throw new InvalidArgumentException("Dropbox images require a Dropbox set.");
-			}
-
-			Database::transaction(function (PDO $db) use ($suid, $categories, $images): void {
-				$page = $db->prepare("SELECT id FROM pages WHERE suid = ?");
-				$page->execute(array($suid));
-				$pageId = (int) $page->fetchColumn();
-				$db->prepare("DELETE FROM proofing_sessions WHERE gallery_id = ?")->execute(array($pageId));
-				$oldAssets = $db->prepare("SELECT asset_id FROM gallery_images WHERE gallery_id = ?");
-				$oldAssets->execute(array($pageId));
-				$assetIds = $oldAssets->fetchAll(PDO::FETCH_COLUMN);
-				$db->prepare("DELETE FROM gallery_images WHERE gallery_id = ?")->execute(array($pageId));
-				$db->prepare("DELETE FROM gallery_categories WHERE gallery_id = ?")->execute(array($pageId));
-				$deleteAsset = $db->prepare("DELETE FROM media_assets WHERE id = ? AND id NOT IN (SELECT asset_id FROM gallery_images)");
-				foreach ($assetIds as $assetId) $deleteAsset->execute(array($assetId));
-
-				$categoryIds = array();
-				$insertCategory = $db->prepare("INSERT INTO gallery_categories (gallery_id, public_key, name, position) VALUES (?, ?, ?, ?)");
-				foreach ($categories as $key => $name) {
-					$insertCategory->execute(array($pageId, $key, $name, count($categoryIds)));
-					$categoryIds[$key] = (int) $db->lastInsertId();
+		/** Apply a complete Dropbox listing without replacing image or proofing identities. */
+		public static function syncDropboxImages (string $suid, array $files): void {
+			if (self::pageType($suid)!=="DropboxSet") throw new InvalidArgumentException("Dropbox set required.");
+			Database::transaction(function (PDO $db) use ($suid, $files): void {
+				$query = $db->prepare("SELECT id FROM pages WHERE suid = ?");
+				$query->execute(array($suid));
+				$pageId = (int) $query->fetchColumn();
+				$existing = array();
+				foreach (self::dropboxImages($suid) as $image) $existing[$image["metadata"]["dropbox_id"]] = $image;
+				$db->prepare("UPDATE gallery_images SET status = 'missing' WHERE gallery_id = ?")->execute(array($pageId));
+				$seen = array();
+				foreach ($files as $file) {
+					if (isset($seen[$file["id"]])) throw new InvalidArgumentException("Duplicate Dropbox file identity.");
+					$seen[$file["id"]] = true;
+					$relative = substr($file["path_display"], strlen("/$suid/"));
+					$folder = dirname($relative);
+					$categoryId = null;
+					if ($folder!==".") {
+						$categoryKey = md5(strtolower($folder));
+						self::saveCategory($suid, $categoryKey, $folder);
+						$query = $db->prepare("SELECT id FROM gallery_categories WHERE gallery_id = ? AND public_key = ?");
+						$query->execute(array($pageId, $categoryKey));
+						$categoryId = (int) $query->fetchColumn();
+					}
+					$image = $existing[$file["id"]] ?? null;
+					$metadata = array("dropbox_id" => $file["id"], "dropbox_rev" => $file["rev"],
+						"original_size" => $file["size"], "preview_rev" => $image["metadata"]["preview_rev"] ?? "");
+					$json = json_encode($metadata, JSON_THROW_ON_ERROR);
+					if ($image) {
+						$assetId = $image["asset_id"];
+						$db->prepare("UPDATE media_assets SET original_name = ?, source_uri = ?, metadata_json = ? WHERE id = ?")
+							->execute(array($file["name"], $file["path_lower"], $json, $assetId));
+						$db->prepare("UPDATE gallery_images SET category_id = ?, source_entry = ?, status = 'ready' WHERE id = ?")
+							->execute(array($categoryId, $file["path_lower"], $image["image_id"]));
+					} else {
+						$key = "dropbox-" . md5($suid . ":" . $file["id"]) . ".jpg";
+						$db->prepare("INSERT INTO media_assets (public_key, original_name, media_type, relative_path, width, height, byte_size, source_uri, metadata_json, created_at)
+							VALUES (?, ?, 'image', ?, 0, 0, 0, ?, ?, ?)")
+							->execute(array($key, $file["name"], $suid . "/" . $key, $file["path_lower"], $json, time()));
+						$assetId = (int) $db->lastInsertId();
+						$query = $db->prepare("SELECT COALESCE(MAX(position), -1) + 1 FROM gallery_images WHERE gallery_id = ?");
+						$query->execute(array($pageId));
+						$db->prepare("INSERT INTO gallery_images (gallery_id, asset_id, category_id, position, source_entry) VALUES (?, ?, ?, ?, ?)")
+							->execute(array($pageId, $assetId, $categoryId, (int) $query->fetchColumn(), $file["path_lower"]));
+					}
 				}
-
-				$insertAsset = $db->prepare("INSERT INTO media_assets (public_key, original_name, media_type, relative_path, width, height, byte_size, source_uri, created_at) VALUES (?, ?, 'image', ?, 0, 0, 0, ?, ?)");
-				$insertImage = $db->prepare("INSERT INTO gallery_images (gallery_id, asset_id, category_id, position, source_entry) VALUES (?, ?, ?, ?, ?)");
-				foreach ($images as $position => $image) {
-					$key = $image[0];
-					$remotePath = $image[1];
-					$categoryId = $categoryIds[$image[6] ?? ""] ?? null;
-					$insertAsset->execute(array($key, $remotePath, $suid . "/" . $key, $remotePath, time()));
-					$insertImage->execute(array($pageId, $db->lastInsertId(), $categoryId, $position, $remotePath));
-				}
-
-				$update = $db->prepare("UPDATE pages SET image_count = ?, updated_at = ? WHERE id = ?");
-				$update->execute(array(count($images), time(), $pageId));
+				$db->prepare("UPDATE pages SET image_count = ?, updated_at = ? WHERE id = ?")->execute(array(count($files), time(), $pageId));
 			});
 		}
 
-		public static function updateDropboxThumbnail (string $suid, string $key, string $name, int $width, int $height, int $size): void {
+		public static function dropboxImages (string $suid): array {
 			if (self::pageType($suid)!=="DropboxSet") throw new InvalidArgumentException("Dropbox set required.");
-			Database::transaction(function (PDO $db) use ($suid, $key, $name, $width, $height, $size): void {
-				$sql = "UPDATE media_assets SET original_name = ?, width = ?, height = ?, byte_size = ?
-					WHERE public_key = ? AND id IN (SELECT images.asset_id FROM gallery_images AS images JOIN pages ON pages.id = images.gallery_id WHERE pages.suid = ?)";
-				$db->prepare($sql)->execute(array($name, $width, $height, $size, $key, $suid));
-				$db->prepare("UPDATE pages SET updated_at = ? WHERE suid = ?")->execute(array(time(), $suid));
-			});
+			$query = Database::connection()->prepare("SELECT assets.*, images.id AS image_id, images.asset_id, images.status AS image_status
+				FROM gallery_images AS images JOIN media_assets AS assets ON assets.id = images.asset_id
+				JOIN pages ON pages.id = images.gallery_id WHERE pages.suid = ? ORDER BY images.position, images.id");
+			$query->execute(array($suid));
+			$images = $query->fetchAll();
+			foreach ($images as &$image) $image["metadata"] = json_decode($image["metadata_json"], true, 512, JSON_THROW_ON_ERROR);
+			return $images;
+		}
+
+		public static function updateDropboxThumbnail (int $assetId, string $revision, int $width, int $height, int $size): void {
+			Database::connection()->prepare("UPDATE media_assets SET width = ?, height = ?, byte_size = ?,
+				metadata_json = json_set(metadata_json, '$.preview_rev', ?) WHERE id = ?")
+				->execute(array($width, $height, $size, $revision, $assetId));
 		}
 
 		public static function dropboxMeta (string $suid): array {
