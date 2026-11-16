@@ -1,5 +1,9 @@
 # Vend modernization log
 
+## Post-check-in documentation cleanup (2026-11-16)
+
+Reviewed commit `c26018f` with a clean working tree. Updated the manual's digital-delivery overview and purchased Dropbox revision guidance, and marked the original delivery assessment as historical with links to the implemented local/Dropbox workflows. Removed its broken link to retired Dropboxer source. Documentation-only follow-up; checked internal section targets and diff formatting. No runtime changes or additional tests were needed. Real-gallery acceptance for local downloads and representative hosting capacity remain open; vendor cleanup stays a separate phase.
+
 ## Configurable image output ceiling (2026-11-16)
 
 Added Setup `max_image_dimension_num`, default 2048 pixels. Graphic applies the single dimension ceiling proportionally after fitting/cropping and multiplier calculations, including omitted-size requests. Removed the special uploaded-gallery flag and download-eligibility lookup. The ceiling is part of server cache identity and storefront configuration; browser zoom uses it instead of the fixed 2000-pixel maximum. Smaller images can use the existing original-file shortcut. This supersedes the earlier mandatory re-encoding and uploaded-gallery-only preview policy. Uploads, purchased originals and LocalDelivery web-size renditions remain separate.

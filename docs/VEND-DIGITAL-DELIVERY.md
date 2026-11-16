@@ -1,6 +1,8 @@
 # Dropbox and digital delivery assessment
 
-Source review: 2026-11-15. The historical findings below describe the pre-restoration code. Authorization and manual gallery sync have since been implemented; see the latest [modernization checkpoint](VEND-MODERNIZATION.md) and [connection steps](MANUAL.md#dropbox-connection-and-gallery-sync). Invoice delivery is now implemented behind `Downloads` and `DropboxDelivery`; real-account acceptance remains open. Runtime guidance remains in [DEVELOPMENT.md](DEVELOPMENT.md); phase status and validation are in the [modernization log](VEND-MODERNIZATION.md).
+**Current status (2026-11-16):** Dropbox authorization, gallery sync and invoice delivery are implemented and have been exercised locally by the developer. Basic/upload and category galleries now use `LocalDelivery` through the same `Downloads` service, with private ZIP delivery and a bundled PclZip fallback. Public image output uses the photographer's **Max Image Dimension** setting. See the [development contract](DEVELOPMENT.md#invoice-download-development), [operator manual](MANUAL.md#uploaded-gallery-downloads) and [modernization log](VEND-MODERNIZATION.md) for current behavior, tests and remaining hosting qualification.
+
+The assessment below records the **pre-restoration source review from 2026-11-15**. Its old class names, missing features and proposed sequence are historical evidence, not outstanding implementation requirements.
 
 ## Recommendation
 
@@ -8,11 +10,11 @@ Preserve the Dropbox photographer workflow: put originals into a gallery folder,
 
 Keep the first restoration to originals and web-size delivery. The developer clarified that crop/color processing is optional future work. Large original images should not need decoding to deliver them unchanged. Do not add transformation infrastructure just to restore downloads.
 
-## What the source actually does
+## Historical source behavior
 
 | Concern | Evidence and behavior |
 |---|---|
-| Gallery import | [Dropboxer.php](../dist/vend-proofing-core/php/classes/simpleadmin/Dropboxer.php), `syncFolder()` and `parseFolderMeta()`, recursively list `/<gallery SUID>`, accepting JPEG/PNG. It accepts either root images or categories, rejecting a mixture. Categories use the immediate parent folder name, so separate nested folders with identical names collide. |
+| Gallery import | `Dropboxer.php` (retired), `syncFolder()` and `parseFolderMeta()`, recursively list `/<gallery SUID>`, accepting JPEG/PNG. It accepts either root images or categories, rejecting a mixture. Categories use the immediate parent folder name, so separate nested folders with identical names collide. |
 | Previews | `processNextChunk()` requests `getThumbnail(path, "huge", "jpeg")`. The bundled SDK maps `huge` to `w1024h768`. Vend caches the preview and builds gallery derivatives from it; it does not download the full original for gallery rendering. |
 | Digital products | [downloads.json](../dist/vend-proofing-core/defaults/downloads.json) supports original/web versions, individual/all-image purchases, and flat/per-image bulk pricing. The storefront assigns download profiles only to Dropbox sets. [CheckoutQuote.php](../dist/vend-proofing-core/php/classes/simpleadmin/CheckoutQuote.php) explicitly rejects downloads for other gallery types. |
 | Invoice preparation | `getImageData()` selects purchased `-d` rows. High quality uses Dropbox copy references; low quality uploads the cached local preview. Output goes into `/orders/<order>/files[/quality/...]`, with numbered folders for larger purchases. |
@@ -24,7 +26,7 @@ Keep the first restoration to originals and web-size delivery. The developer cla
 
 The screenshot's `Apps/vend files`, `8602`, and `orders` are consistent with the historical layout. Only the screenshot was inspected; neither account contents nor application registration/credentials were verified. Root `info.txt` contents are unknown. Browser login alone does not establish that Vend has API authorization.
 
-## Problems to resolve before restoring delivery
+## Problems identified before restoration
 
 - Sync allocates fresh image keys and [Records::replaceDropboxImages()](../dist/vend-proofing-core/php/classes/simpleadmin/Records.php) deletes proofing sessions, gallery images, and categories. Repeat sync must instead retain identity and selections for unchanged or renamed files. Source deletion needs an unavailable state for purchased images, not loss of the order's source reference.
 - Listing errors can become partial or empty results. Missing purchased originals are silently skipped. Neither condition can become a successful complete package.
@@ -66,15 +68,15 @@ Shared-link delivery is subject to account bandwidth limits and can be suspended
 
 If full-resolution crops/color variants are introduced later, measure decoded pixel memory and working buffers rather than compressed JPEG size. Run transforms outside interactive PHP requests with explicit resource limits. ImageMagick supports memory, disk, dimension and execution-time policies; using Imagick alone does not remove resource pressure. [ImageMagick resources](https://imagemagick.org/resources/).
 
-## Bounded implementation sequence
+## Original bounded implementation sequence (implemented)
 
 1. **Dropbox connection and safe sync.** Replace token handling; implement a small client with mocked transport. Preserve image keys using provider IDs/revisions and stage complete listings before applying changes. Test pagination, rename, deletion, duplicate folder names, partial failures, token refresh and preview errors. Qualify a disposable synthetic Dropbox gallery separately; never run the old verifier/purger against the surviving archive.
 2. **Restore invoice delivery behind the service.** Preserve original/web products and invoice interactions. Replace remote flags with durable jobs, use exact purchased references, and retain Dropbox server-side copy/preview reuse. Test interrupted work, simultaneous requests, missing originals, byte-identical original delivery, package completeness, denied/refunded access and expiry. Verify actual Dropbox folder-download behavior and limits before retaining its split policy.
 3. **Add local upload/category downloads.** Use the same invoice service with local originals and ZIP output. Expose download settings and update trusted quoting deliberately. Test retained original bytes, web-rendition policy, large packages and access isolation. This provides a second implementation that tests whether the abstraction is useful.
 
-Full-resolution transformations, another cloud provider, automatic webhooks, generalized storage management and pricing/payment cleanup remain separate phases. Connection plus non-destructive sync is now implemented. The developer reinforced simplicity and no compatibility/migration work; prefer the existing browser-driven chunks over the more general job machinery originally considered here.
+Full-resolution transformations, another cloud provider, automatic webhooks, generalized storage management and pricing/payment cleanup remain separate phases. All three implementation steps above are complete; representative hosting capacity and provider limits still need qualification. The developer reinforced simplicity and no compatibility/migration work; prefer the existing browser-driven chunks over the more general job machinery originally considered here.
 
-## Validation
+## Initial assessment validation
 
 Reviewed current source and the named 2018 baseline, plus current primary provider documentation. Ran `bash scripts/basic-set-smoke.sh`: passed, including relational Dropbox metadata/category rollback, cached-image rendering/resizing, upload sets, proofing, configured quotes and offline invoice behavior. This fixture has no provider access and does not establish that OAuth, remote sync, copy, sharing or cleanup works. No account files, application settings, credentials or runtime code were changed.
 

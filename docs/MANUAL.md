@@ -16,7 +16,7 @@ In the administration interface, create a gallery set and add photographs. Uploa
 
 Create formats, papers, modifiers, packages, and products in pricing before offering them in a gallery. A package bundles chosen photographs into specified print formats; a product is package-like without format allocations. Orders provide invoices and production instructions. Physical prints are fulfilled manually by the photographer or their chosen lab.
 
-Digital orders historically use Dropbox: Vend displays browsing previews, then arranges purchased files in Dropbox order folders and supplies shared download links. Current Dropbox and payment integrations are under modernization; confirm their status in the [modernization log](VEND-MODERNIZATION.md) before using them for real orders.
+Digital downloads are available for Dropbox, basic/upload and category sets through assigned download profiles. Paid or free invoices prepare original or web-size files: Dropbox supplies shared-folder downloads, while uploaded galleries use private ZIP packages. See [Dropbox delivery](#dropbox-invoice-downloads) and [uploaded gallery downloads](#uploaded-gallery-downloads) for setup, retention and hosting limits.
 
 ## For gallery visitors
 
@@ -107,7 +107,7 @@ The connection and gallery-sync implementation is ready for local account testin
 4. Create a new Dropbox Set. Inside the app folder, create the gallery folder shown in Vend. For the first test, use a few synthetic JPEG/PNG files. Put images directly in that folder, or organize them into subfolders; do not mix both layouts. Nested category labels include their relative folder path.
 5. Click **Sync Files** and keep the tab open while previews download. Vend retains originals in Dropbox and stores 1024×768-bounded JPEG previews locally. Sync again after changes or to resume an interrupted preview transfer. Unchanged previews are reused.
 
-Renaming or moving a file inside the gallery preserves its Vend identity and customer selections. Removing a file hides it from the gallery but retains its record and previous selections. Returning the same Dropbox file restores its gallery identity. Uploading a different file at the same path is a new image. Sync preserves existing image/category ordering and appends new entries. Changing a file's contents refreshes its preview; fulfillment of previously purchased versions is not yet implemented.
+Renaming or moving a file inside the gallery preserves its Vend identity and customer selections. Removing a file hides it from the gallery but retains its record and previous selections. Returning the same Dropbox file restores its gallery identity. Uploading a different file at the same path is a new image. Sync preserves existing image/category ordering and appends new entries. Changing a file's contents refreshes its preview. New purchases record the Dropbox revision; delivery requests that purchased revision rather than silently substituting the latest file. If Dropbox no longer retains it, preparation stops with an error.
 
 Dropbox's thumbnail API documents a **20 MB original-image limit**. Vend reports oversized originals instead of downloading and decoding them in PHP. The preview shown on Dropbox's own website is not evidence that its API will deliver a preview for that file. Use smaller originals for this first qualification; large-original/alternate-preview support is still open. [Dropbox's API specification](https://github.com/dropbox/dropbox-api-spec/blob/main/files.stone).
 
